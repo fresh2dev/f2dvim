@@ -1,60 +1,83 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with the Neovim
-config in this directory.
+## What this repo is
 
-## What this is
+**f2dvim**: Fresh2dev's Neovim config (`config/`) and its Plugins, packaged as one pure-Python wheel with a launcher. See `README.md` for users and `GLOSSARY.md` for the terms (Home machine, Plugin file, Exclusion list, Stale Plugin).
+
+Generated from the [copier-python](https://github.com/fresh2dev/copier-python) template; the answers are in `.copier-answers.yml`.
+
+## Architecture
+
+- `config/`: the Neovim config itself; see [Neovim config](#neovim-config-config) below.
+- `src/f2dvim/`: the package. `__main__.py` is the `f2dvim` command: it execs `nvim` with `NVIM_APPNAME=f2dvim`, the packaged `init.lua`, and `stub.lua`, which replaces `vim.pack.add` with `packadd`. `docs/adr/0001-f2dvim-launcher.md` explains why.
+- `bundle.py`: stages the config (minus the Exclusion list in `[tool.f2dvim]`) and each declared Plugin, `git archive`d at its `nvim-pack-lock.json` revision from the Home machine's `vim.pack` install. Also a small CLI (`stale`, `exclude`, `plugins`).
+- `hatch_build.py`: the hatchling hook (`[tool.hatch.build.targets.wheel.hooks.custom]`) that puts `bundle.py`'s output into the wheel. Without that table the wheel ships no config.
+- `tests/`: unit tests for `bundle.py`, plus a smoke test that builds the wheel and runs it headlessly with `uvx`. The smoke test skips without `nvim` or installed Plugins, so it only runs on the Home machine, not in CI.
+
+## Commands
+
+Tasks run through `just` (bare `just` lists them). Most tools are pinned in the justfiles and run via `uvx` / `uv run --with`; the CLIs they need on `PATH` (just, uv, prek, wrangler) are pinned in `mise.toml`, so install them with `mise install` (after `mise trust`). treefmt and its formatters come from the machine. CI installs the same `mise.toml` tools and runs the same recipes.
+
+- `just format [paths]`: format with treefmt (`.treefmt.toml`).
+- `just changelog`: prepend unreleased commits to `CHANGELOG.md` with git-cliff.
+- `just install`: sync `.venv` with `uv`.
+- `just test`, `just lint` (alias `check`), `just fix`, `just check-types`, `just check-docstrings`.
+- `just build`, `just publish-test`, `just publish`. Building needs the Plugins installed by `vim.pack` on this machine.
+- `just link`, `just update`, `just prune`: symlink `config/` to `~/.config/${NVIM_APPNAME:-nvim}`, update Plugins and the lockfile headlessly (no review buffer), delete Stale Plugins (declared by no `plugin/` or `ftplugin/` file).
+- `stylua config src`: format the Lua; run it before committing Lua changes.
+- `just docs-serve`, `just docs-build`, `just docs-publish`.
+- `prek run --all-files`: run the git hooks (this project uses `prek`, not `pre-commit`).
+
+## Conventions
+
+- Commit messages follow Conventional Commits; `just changelog` groups them by type and skips `docs`/`style`/`build`/`ci`/`test`.
+- The commit hook runs `just format` and `just check ./src`; don't rename the recipes it calls.
+- The version comes from unprefixed git tags (`0.1.0`) via `uv-dynamic-versioning`. `src/f2dvim/__version__.py` is generated and gitignored, so don't edit it.
+- Dev dependencies go in `pyproject.toml` dependency groups (`pytest` is in `tests`), not only in a justfile `--with`.
+- `docs/index.md`, `docs/changelog.md` and `docs/license.md` include `README.md`, `CHANGELOG.md` and `LICENSE`, so edit those root files instead.
+- zensical builds the docs into `public/r/f2dvim` (`site_dir` in `mkdocs.yml`), which `wrangler.toml` serves at <https://f2dv.com/r/f2dvim>.
+- Template-owned files (`justfile`, `*.just`, `.treefmt.toml`, `.cliff.toml`, `.pre-commit-config.yaml`, `mkdocs.yml`, `wrangler.toml`) are reset by `copier recopy --trust -r dev --skip 'src/**/*' --skip-answered`; review `git diff` afterwards. Keep the justfile's Project-specific recipes (`link`, `update`, `prune`) and the `hooks.custom` table in `pyproject.toml`.
+- CI: `.github/workflows/checks.yml` runs every hook except `format` (CI doesn't format), `check-types`, `check-docstrings`, and `just test` on the minimum and latest Python. Pushing a version tag runs `release.yml`, which publishes the docs after those checks pass. It does not publish to PyPI: the runner has no Plugins to build with, so the wheel is built and published from the Home machine (README, "Releasing"). `just publish` would upload the sdist too; use `uv publish dist/*.whl`.
+- `.beads/` is gitignored on purpose.
+
+## Neovim config (`config/`)
 
 A personal Neovim configuration (Neovim 0.12+, verified against v0.12.5). It began
 as a `nvim-lua/kickstart.nvim` derivative — a few `kickstart-*` augroup names and
 commented-out kickstart blocks survive — but has been restructured away from a
-single-file config.
+single-file config. Paths in this section are relative to `config/`.
 
-It is the `config/` directory of the f2dvim project; the project's `justfile` serves
-it too, and there is no justfile here. In short:
-
-- `just link` in the project root symlinks this directory to
-  `~/.config/${NVIM_APPNAME:-nvim}`. On a linked machine, edits here are live on the next
-  `nvim` start.
-- `vim.pack` writes `nvim-pack-lock.json` through that symlink into this directory, so
+- `just link` symlinks `config/` to `~/.config/${NVIM_APPNAME:-nvim}`. On a linked
+  machine, edits to `config/` are live on the next `nvim` start.
+- `vim.pack` writes `nvim-pack-lock.json` through that symlink into `config/`, so
   plugin installs and updates appear as diffs in the repo. Commit the
   lockfile with the change that caused it.
-- Every external tool and language server this config needs is installed by mise from
+- Every external tool and language server the config needs is installed by mise from
   fresh2dev's dotfiles (`home/.config/mise/config.toml` there), not from this project.
   Add new ones there; there is no Mason.
 
-## Commands
+### Verifying config changes
+
+There is no test suite for the config itself. Verify changes by hand, from `config/`:
 
 ```sh
-just -f ../justfile link    # symlink this directory to ~/.config/${NVIM_APPNAME:-nvim}
-just -f ../justfile update  # vim.pack.update() headlessly, no review buffer
-just -f ../justfile prune   # delete plugins no plugin/ or ftplugin/ file declares
-stylua .                    # format
-```
-
-There is no test suite and no lint target. Verify changes by hand, from this
-directory:
-
-```sh
+cd config
 nvim --headless -c 'qa'                                                # startup errors surface here
 nvim --headless -c 'e ../README.md' -c 'e init.lua' -c 'qa'            # install ftplugin plugins
 nvim --headless -c 'lua vim.pack.update(nil, {offline=true})' -c 'qa'  # plugin state
-stylua --check .                                                       # formatting
 ```
 
-These run whatever `~/.config/nvim` points at, which is this directory on a linked
+These run whatever `~/.config/nvim` points at, which is `config/` on a linked
 machine. Opening one markdown and one Lua buffer makes the `ftplugin/` plugins get
 installed and land in `nvim-pack-lock.json` (the lockfile only gains an entry when a
 plugin is first installed). `-c` commands run before `VimEnter`, so fugitive's `:Gcd`
-has not moved the working directory yet and the relative paths resolve here.
+has not moved the working directory yet and the relative paths resolve to `config/`.
 
-Lua here is formatted with **stylua** per `.stylua.toml` (88 columns, 2-space indent,
-double quotes, `collapse_simple_statement = "Never"`). stylua finds that file from the
-formatted file's directory, so any treefmt that runs stylua on these files applies it too.
-
-Run `stylua .` here before committing.
-
-## Architecture
+Lua is formatted with **stylua** per the root `.stylua.toml` (88 columns, 2-space
+indent, double quotes, `collapse_simple_statement = "Never"`). The stylua CLI only
+reads the working directory's config, so run `stylua config src` (or `just format`)
+from the root; inside `config/` it needs `--search-parent-directories`. The stylua
+language server finds the file from its root marker, searching up from the edited file.
 
 ### Plugin management: `vim.pack`, one file per plugin
 
@@ -152,16 +175,16 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - `laststatus = 3` (global statusline) is assumed by the snacks `zen` config.
 - Snacks' `picker` and `quickfile` are disabled on purpose — fzf-lua is the picker and the `vim.ui.select` handler. `Snacks.picker.undo` / `Snacks.picker.projects` are still called directly because fzf-lua has no equivalent.
 
-## f2dvim
+### Packaging constraints
 
-f2dvim (the parent directory) packages this directory, minus the Plugin files on its
+f2dvim packages `config/`, minus the Plugin files on its
 Exclusion list, for machines that cannot reach GitHub; it runs this config unchanged
 with `vim.pack.add` replaced by `packadd`. Keep the config working when an external
 tool or language server is missing (check with `vim.fn.executable`), keep plugins pure
-Lua/Vimscript or put them on the Exclusion list, and run `just test` in `..` after
+Lua/Vimscript or put them on the Exclusion list, and run `just test` after
 adding or removing a plugin.
 
-## External tool dependencies
+### External tool dependencies
 
 Beyond the language servers, the config shells out to: `rg` (`grepprg`, fzf-lua),
 `fd`, `bat` (fzf-lua preview; optional, falls back to the builtin previewer), `treefmt` (formatting for everything except the

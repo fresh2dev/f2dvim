@@ -1,0 +1,60 @@
+# Linters, plus the test suite on the oldest and newest Python.
+# Runs on pull requests and pushes to main, and gates every publish job in
+# release.yml (through `workflow_call`), so nothing ships until it passes.
+# Tools come from mise.toml and the steps run the git hooks and justfile recipes.
+# Formatting is left to the commit hook, so CI skips it.
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: "3.12"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@v5
+      # Every hook except `format` (treefmt): the builtin file checks and `just check ./src`.
+      - name: Run hooks
+        env:
+          SKIP: format
+        run: prek run --all-files --show-diff-on-failure
+      - name: Check types
+        run: just check-types
+      - name: Check docstrings
+        run: just check-docstrings src
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The minimum supported version (requires-python) and the latest stable release.
+        python-version: ["3.12", "3.x"]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          check-latest: true
+      - uses: jdx/mise-action@v5
+      - name: Run pytest
+        env:
+          UV_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: just test

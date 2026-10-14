@@ -1,8 +1,15 @@
-# f2dvim
+<div align="center">
+  <h1>f2dvim</h1>
+  <hr>
+  <img src="https://img.fresh2.dev/file/imgcap/1791145565-3DaE3tKEuq.svg" alt="logo" width="160">
+  <p><em>Fresh2dev's Neovim config</em></p>
+  <hr>
+  <a href="https://f2dv.com/r/f2dvim/">Documentation</a> |
+  <a href="https://github.com/fresh2dev/f2dvim/">Git Repo</a>
+  <hr>
+</div>
 
-An experimental, portable, immutable Neovim distribution that installs with Python.
-
-f2dvim is a complete Neovim setup: fresh2dev's config plus the ~60 plugins it uses,
+*f2dvim* is a complete Neovim setup: fresh2dev's config plus the ~60 plugins it uses,
 pinned and packed into one pure-Python wheel. If you have `uv`, you can run it without
 installing anything:
 
@@ -43,6 +50,7 @@ uvx f2dvim
 - [Extending the config](#extending-the-config)
 - [Working on the config](#working-on-the-config)
 - [Building from source](#building-from-source)
+  - [Releasing](#releasing)
 - [License](#license)
 
 <!-- /TOC -->
@@ -175,7 +183,7 @@ nvim-pack-lock.json pinned plugin revisions
 
 Every `plugin/NN-name.lua` calls `vim.pack.add` for the plugin it configures and
 then configures it in place: `setup()`, keymaps, autocmds, user commands. There
-is no central plugin list. See `config/CLAUDE.md` for the conventions in detail.
+is no central plugin list. See `CLAUDE.md` for the conventions in detail.
 
 ## Things to know before you start
 
@@ -1110,10 +1118,10 @@ Command-line abbreviations: `grep`, `lgrep`, `g`, `git`.
   `ftplugin/<ft>_<name>.lua` when the filetype already has a file) behind a
   `vim.g.loaded_<...>_config` guard, as `ftplugin/markdown.lua` and
   `ftplugin/lua_lazydev.lua` do.
-- Before committing, run `stylua .` and the check commands under
+- Before committing, run `stylua config` and the check commands under
   [Working on the config](#working-on-the-config).
 
-`config/CLAUDE.md` documents the conventions and the deliberate deviations in more
+`CLAUDE.md` documents the conventions and the deliberate deviations in more
 depth.
 
 ## Working on the config
@@ -1142,15 +1150,15 @@ NVIM_APPNAME=nvim-dev nvim
 ```
 
 `just update` and `just prune` maintain the plugins (see
-[Building from source](#building-from-source)). Format Lua with `stylua .` in `config/`,
-which picks up its `.stylua.toml`. To check a change:
+[Building from source](#building-from-source)). Format Lua with `stylua config` from the
+project root, which picks up the root `.stylua.toml`. To check a change:
 
 ```sh
 cd config
 nvim --headless -c 'qa'                                                # startup errors surface here
 nvim --headless -c 'e ../README.md' -c 'e init.lua' -c 'qa'            # one buffer per ftplugin, so those plugins reach the lockfile
 nvim --headless -c 'lua vim.pack.update(nil, {offline=true})' -c 'qa'  # plugin state
-stylua --check .                                                       # formatting
+stylua --check --search-parent-directories .                           # formatting
 ```
 
 On the Home machine, mise installs Neovim, the tools and the language servers from
@@ -1160,17 +1168,17 @@ new dependency there, not here.
 ## Building from source
 
 f2dvim is built from [`config/`](config) in this project, using the
-plugins that Neovim installed there. You need `uv`, `just` and `gum`. From this
-directory:
+plugins that Neovim installed there. You need `uv` and `just` (`mise install` provides
+both, from `mise.toml`), and `gum` for `just prune`. From this directory:
 
 | Recipe | Effect |
 |---|---|
 | `just link` | Symlink `config/` to `~/.config/${NVIM_APPNAME:-nvim}`, refusing to replace a real directory |
-| `just build` | Build the wheel into `dist/` |
-| `just test` | Build, then run the tests, including a headless smoke test of the wheel |
+| `just build` | Build the sdist and wheel into `dist/`, versioned from the latest git tag |
+| `just test` | Run the tests, including a headless smoke test of a freshly built wheel (skipped without `nvim` or installed plugins, as in CI) |
 | `just update` | Update the config's plugins and `nvim-pack-lock.json` |
 | `just prune` | Delete installed plugins that no plugin file declares, after confirming |
-| `just release` | Interactive checklist: bump the version, test, commit, tag `f2dvim-v<version>`, publish |
+| `just lint`, `just check-types`, `just check-docstrings` | The checks CI runs |
 
 `[tool.f2dvim]` in `pyproject.toml` controls the build:
 
@@ -1184,6 +1192,19 @@ exports each plugin that the remaining files declare, with `git archive` at its
 has no license.
 
 Only wheels are published. An sdist couldn't be rebuilt without the installed plugins.
+
+### Releasing
+
+Versions come from unprefixed git tags (`0.1.0`). Release from the Home machine, on a
+clean tree, since CI has no plugins to build with:
+
+```sh
+just test
+git tag 0.1.0
+just clean build        # clean empties dist/, so only this version is uploaded
+uv publish dist/*.whl   # the wheel only
+git push origin 0.1.0   # runs the checks, then publishes the docs
+```
 
 Terms used in the code are defined in [GLOSSARY.md](GLOSSARY.md).
 

@@ -1,1 +1,3 @@
-"""An experimental, portable, immutable Neovim distribution that installs with Python."""
+from .__version__ import __version__
+
+__all__ = ["__version__"]

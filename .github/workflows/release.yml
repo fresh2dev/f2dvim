@@ -1,0 +1,40 @@
+# Publishes the docs when an unprefixed version tag (e.g. `0.1.0`) is pushed.
+# The docs job needs `checks` (checks.yml), so nothing ships unless the
+# linters and tests pass. The wheel is published from the Home machine instead
+# (README, "Releasing"): building it needs the Plugins vim.pack installed there.
+name: Release
+
+on:
+  push:
+    tags: ["[0-9]+.[0-9]+.[0-9]+*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  # Deploys with wrangler; set the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
+  # secrets on the repo or the `docs` environment.
+  docs:
+    name: Publish docs
+    needs: checks
+    runs-on: ubuntu-latest
+    environment:
+      name: docs
+      url: https://f2dv.com/r/f2dvim/
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: jdx/mise-action@v5
+      - env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: just docs-publish

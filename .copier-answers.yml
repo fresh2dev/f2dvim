@@ -1,0 +1,17 @@
+---
+# Changes here will be overwritten by Copier
+_commit: a1fb285
+_src_path: ../copier-python
+author_email: hello@f2dv.com
+author_name: Donald Mellenbruch
+docs: true
+docs_route: /r/f2dvim
+home_domain: f2dv.com
+license_type: MIT
+project_description: Fresh2dev's Neovim config
+project_display_name: f2dvim
+project_type: python
+python_version: '3.12'
+repo_host: github.com
+repo_owner: fresh2dev
+repo_ssh_url: git@github.com:fresh2dev/f2dvim.git

@@ -23,6 +23,11 @@ class F2dvimBuildHook(BuildHookInterface):
         for entry in ("config", "site", "longest-lua-path"):
             build_data["force_include"][str(out / entry)] = f"f2dvim/{entry}"
 
-    def finalize(self, version: str, build_data: dict[str, Any], artifact: str) -> None:
+    def finalize(
+        self,
+        version: str,
+        build_data: dict[str, Any],
+        artifact_path: str,
+    ) -> None:
         if stage := getattr(self, "_stage", None):
             stage.cleanup()
