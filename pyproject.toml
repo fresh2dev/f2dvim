@@ -1,0 +1,49 @@
+[project]
+name = "f2dvim"
+version = "0.0.2"
+description = "An experimental, portable, immutable Neovim distribution that installs with Python."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = []
+
+[project.scripts]
+f2dvim = "f2dvim.__main__:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.f2dvim]
+# The Neovim config to package, relative to this file.
+config-dir = "config"
+# The Exclusion list: Plugin files (relative to config-dir) left out of f2dvim.
+exclude = [
+  "plugin/90-treesitter.lua",
+  "plugin/99-zellij.lua",
+  "plugin/99-zellij-agent-pane.lua",
+]
+
+# SPDX ids for Plugins that state their license only in their README or docs.
+[tool.f2dvim.licenses]
+"conflict-marker.vim" = "MIT"
+"vim-easy-align" = "MIT"
+"vim-eunuch" = "Vim"
+"vim-flog" = "Vim"
+"vim-fugitive" = "Vim"
+"vim-repeat" = "Vim"
+"vim-sensible" = "Vim"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/f2dvim"]
+
+# hatch_build.py stages the Neovim config and its Plugins into the wheel.
+[tool.hatch.build.targets.wheel.hooks.custom]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
