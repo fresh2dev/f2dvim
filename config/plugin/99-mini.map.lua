@@ -15,6 +15,14 @@ MiniMap.setup({
   },
 })
 
+-- open()/close() only on a state change: open() on an open map re-renders it
+local function set_map_open(want)
+  local win = MiniMap.current.win_data[vim.api.nvim_get_current_tabpage()]
+  if want ~= (win ~= nil and vim.api.nvim_win_is_valid(win)) then
+    (want and MiniMap.open or MiniMap.close)()
+  end
+end
+
 vim.api.nvim_create_autocmd({ "WinEnter", "FileType" }, {
   pattern = "*",
   callback = function()
@@ -23,16 +31,18 @@ vim.api.nvim_create_autocmd({ "WinEnter", "FileType" }, {
     local excluded_filetypes =
       { "help", "quickfix", "nofile", "terminal", "ministarter" }
 
-    if buftype == "" and not vim.tbl_contains(excluded_filetypes, filetype) then
-      MiniMap.open()
-    else
-      MiniMap.close()
-    end
+    set_map_open(buftype == "" and not vim.tbl_contains(excluded_filetypes, filetype))
   end,
 })
 
+-- Skip floats: completion/hover popups close constantly while typing
 vim.api.nvim_create_autocmd("WinClosed", {
-  callback = MiniMap.refresh,
+  callback = function(ev)
+    local win = tonumber(ev.match)
+    if vim.api.nvim_win_get_config(win).relative == "" then
+      MiniMap.refresh()
+    end
+  end,
 })
 
 -- Auto-close minimap if cursor is near the edge
@@ -40,10 +50,6 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
   callback = function()
     local _, col = unpack(vim.api.nvim_win_get_cursor(0))
     local width = vim.api.nvim_win_get_width(0)
-    if width - col < 20 then
-      MiniMap.close()
-    else
-      MiniMap.open()
-    end
+    set_map_open(width - col >= 20)
   end,
 })
