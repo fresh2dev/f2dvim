@@ -755,7 +755,9 @@ defaults are mapped):
 
 Column-style file explorer with a preview pane that edits the filesystem like
 a buffer: rename by editing a line, create by adding one, delete by deleting
-one, then synchronise. Also replaces netrw for directory arguments.
+one, then synchronise. Also replaces netrw for directory arguments. Renames and
+moves are reported to the language servers (`Snacks.rename`), so a server that
+supports it updates imports and other references to the file.
 
 | Key | Action |
 |---|---|

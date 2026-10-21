@@ -1,6 +1,7 @@
 vim.pack.add({
   { src = "https://github.com/nvim-mini/mini.files" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
+  { src = "https://github.com/folke/snacks.nvim" },
 })
 
 local MiniFiles = require("mini.files")
@@ -83,6 +84,14 @@ vim.api.nvim_create_autocmd("User", {
     -- Tweak keys to your liking
     map_split(buf_id, "<C-o>", "belowright horizontal")
     map_split(buf_id, "<C-v>", "belowright vertical")
+  end,
+})
+
+-- Let language servers update imports when a file is renamed or moved here.
+vim.api.nvim_create_autocmd("User", {
+  pattern = { "MiniFilesActionRename", "MiniFilesActionMove" },
+  callback = function(args)
+    Snacks.rename.on_rename_file(args.data.from, args.data.to)
   end,
 })
 
