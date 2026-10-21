@@ -29,7 +29,8 @@ Snacks.setup({
   animate = { enabled = false },
   bigfile = { enabled = true },
   dashboard = { enabled = false },
-  indent = { enabled = true },
+  -- Guides only: mini.indentscope draws the current scope.
+  indent = { enabled = true, scope = { enabled = false } },
   input = { enabled = true },
   lazygit = {
     enabled = true,

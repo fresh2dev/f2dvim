@@ -377,7 +377,8 @@ the mouse by default.
 #### snacks.nvim (`99-snacks.lua`)
 
 A collection of small features from folke. Enabled modules: `bigfile`
-(disables heavy features for huge files), `indent` (indent guides), `input`
+(disables heavy features for huge files), `indent` (indent guides, also on
+blank lines; the current scope is mini.indentscope's), `input`
 (nicer `vim.ui.input`), `lazygit`, `notifier` (notifications, 8 s timeout),
 `picker` (see [Snacks picker](#snacks-picker-99-snackslua) below), `scratch`,
 `statuscolumn`, `terminal`, `words` (highlights other references of the symbol
@@ -415,10 +416,6 @@ and a `gr` group for Neovim's default LSP mappings.
 #### colorful-winsep.nvim (`99-colorful-winsep.lua`)
 
 Highlights the borders of the active window. Animation disabled. No mappings.
-
-#### indent-blankline.nvim (`99-indent-blankline.lua`)
-
-Indent guides that also appear on blank lines. Defaults. No mappings.
 
 #### mini.indentscope (`99-mini.indentscope.lua`)
 
