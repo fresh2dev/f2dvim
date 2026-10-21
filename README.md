@@ -136,8 +136,7 @@ it, and language servers that aren't installed are skipped.
 
 | Tool | Used for | Install |
 |---|---|---|
-| `rg` | `:Grep`, live grep | your package manager |
-| `fzf` | fuzzy pickers | `go install github.com/junegunn/fzf@latest` |
+| `rg` | `:Grep`, file and grep pickers | your package manager |
 | `lazygit` | `<leader>lg` | `go install github.com/jesseduffield/lazygit@latest` |
 | `treefmt` | format on save | `go install github.com/numtide/treefmt/v2@latest` |
 | `stylua` 2.x or newer | Lua formatting (as an LSP) | `npm i -g @johnnymorganz/stylua-bin` |
@@ -147,7 +146,6 @@ it, and language servers that aren't installed are skipped.
 | `gopls` | Go | `go install golang.org/x/tools/gopls@latest` |
 | `bash-language-server` | shell | `npm i -g bash-language-server` |
 | `lua-language-server`, `rust-analyzer`, `typos-lsp` | Lua, Rust, spelling in markdown and text | your package manager |
-| `fd`, `bat`, `delta` | faster file lists, previews, diffs | your package manager; falls back to `rg`/`find`, the builtin previewer, and plain `git diff` |
 
 ## What's left out
 
@@ -166,7 +164,7 @@ f2dvim runs a personal Neovim configuration for **Neovim 0.12+**. It uses the ed
 built-in `vim.pack` plugin manager, keeps one config file per plugin, loads everything
 eagerly, and leans on Neovim's own defaults wherever they are good enough.
 Formatting is delegated to whatever `treefmt` the project you are editing
-configures, `fzf-lua` is the picker, and tpope-style mnemonics are kept where
+configures, Snacks is the picker, and tpope-style mnemonics are kept where
 they exist (`ys`/`ds`/`cs`, `[q`/`]q`, `[p`/`]p`).
 
 It lives in [`config/`](config); paths below are relative to it.
@@ -220,7 +218,7 @@ another distribution.
   `cxx` exchanges lines; in visual mode the key is `X`. `gm` multiplies
   (duplicates).
 - **`gs` / `gS` go to a symbol**: fuzzy-pick an LSP symbol in the current
-  buffer or across the workspace (fzf-lua). mini.operators' sort operator,
+  buffer or across the workspace (Snacks picker). mini.operators' sort operator,
   which defaults to `gs`, is disabled to make room.
 - **Yanking keeps the cursor and the scroll position where they were**
   (sticky yank, so `ygg` no longer jumps to the top). `.` repeats without
@@ -264,7 +262,7 @@ Leader groups (which-key shows these):
 | Prefix | Group | Where |
 |---|---|---|
 | `<leader>c` | Code (LSP, diff conflicts) | lspconfig, diffview |
-| `<leader>f` | Find (fzf-lua) | fzf-lua, snacks |
+| `<leader>f` | Find (pickers) | snacks, lspconfig |
 | `<leader>g` | Git | fugitive, flog, diffview |
 | `<leader>gh` | Git hunk | gitsigns |
 | `<leader>l` | Lazygit | snacks |
@@ -381,10 +379,9 @@ the mouse by default.
 A collection of small features from folke. Enabled modules: `bigfile`
 (disables heavy features for huge files), `indent` (indent guides), `input`
 (nicer `vim.ui.input`), `lazygit`, `notifier` (notifications, 8 s timeout),
-`scratch`, `statuscolumn`, `terminal`, `words` (highlights other references of
-the symbol under the cursor), and `zen`. `picker` is disabled because fzf-lua
-is the picker; only the `undo` and `projects` pickers, which fzf-lua lacks, are
-called directly. Animations are off.
+`picker` (see [Snacks picker](#snacks-picker-99-snackslua) below), `scratch`,
+`statuscolumn`, `terminal`, `words` (highlights other references of the symbol
+under the cursor), and `zen`. Animations are off.
 
 | Key | Action |
 |---|---|
@@ -395,9 +392,6 @@ called directly. Animations are off.
 | `<leader>ti` | Toggle indent guides |
 | `<leader>tz` / `gz` | Toggle zoom (current window full-size); also turns off line numbers in that window |
 | `<leader>tZ` / `gZ` | Toggle zen mode; also turns off line numbers in that window |
-| `<leader>fp` | Projects picker |
-| `<leader>fu` / `U` | Undo tree |
-| `<leader>f-` | Notification history |
 | `<leader>lg` | Lazygit |
 | `` <leader>` `` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
@@ -538,7 +532,7 @@ line.
 | `<leader>P` | Replace to the end of the line, like `D`/`C` (custom, `<leader>p$`) |
 
 The evaluate operator (`g=`) is disabled, and the sort operator (`gs`) is
-disabled because `gs`/`gS` are the fzf-lua symbol pickers.
+disabled because `gs`/`gS` are the Snacks symbol pickers.
 Exchanged and replaced text is reindented linewise.
 
 #### mini.comment (`99-mini.comment.lua`) and nvim-ts-context-commentstring
@@ -695,51 +689,68 @@ unfolded; a one-character fold column with custom fold glyphs is always shown
 
 ### Search and navigation
 
-#### fzf-lua (`99-fzf.lua`)
+#### Snacks picker (`99-snacks.lua`)
 
-The picker for files, grep, buffers, LSP symbols, git objects and more. Also
-provides `vim.ui.select`. Previews use `bat`, laid out below the list. Grep
-includes hidden files and follows symlinks.
+The picker for files, grep, buffers, LSP locations, git objects and more. Also
+provides `vim.ui.select`. The preview sits below the list (the `vertical`
+layout) except in `vim.ui.select` and the history pickers. Files and grep use
+`rg`, include hidden files, follow symlinks and are smart-case; `.gitignore`d
+files are left out except by `<leader>fF` and `<leader>fS`. See
+[ADR 0002](docs/adr/0002-snacks-picker.md) for why it replaced fzf-lua.
+
+In the grep pickers, anything after ` -- ` in the input is passed to `rg` as
+extra arguments. For example, `snacks -- -s` searches case-sensitively, so it
+matches `snacks` but not `Snacks`. This only works in grep: the file pickers
+fuzzy-match their whole input.
 
 | Key | Mode | Action |
 |---|---|---|
-| `<leader>F` | n | Menu of every fzf-lua picker |
-| `<leader>ff` | n | Files |
-| `<leader>fr` | n | Recent files (current directory only) |
-| `<leader>fb` | n | Buffers, most recent first |
-| `<leader>ft` | n | Tabs |
-| `<leader>f"` | n | Registers |
+| `<leader>F` | n | Resume the last picker |
+| `<leader>fa` | n | All pickers |
+| `<leader>ff` | n | Files, open buffers and recent files first (`smart`, current directory only) |
+| `<leader>fF` | n | Files, including ignored ones |
 | `<leader>fs` | n | Live grep |
-| `<leader>fs` | x | Grep the selection |
-| `<leader>fS` | n | Resume the last live grep |
+| `<leader>fS` | n | Live grep, including ignored files |
+| `<leader>fs` / `<leader>fw` | x | Grep the selection |
+| `<leader>fw` | n | Grep the word under the cursor |
 | `<leader>fl` | n | Lines in the current buffer |
-| `<leader>fq` | n | Grep within the quickfix list |
-| `<leader>fa` | n | Argument list |
+| `<leader>fL` | n | Grep the open buffers |
+| `<leader>fb` | n | Buffers |
+| `<leader>f"` | n | Registers |
 | `<leader>fj` / `<leader>f<C-o>` | n | Jump list |
+| `<leader>fm` | n | Marks |
+| `<leader>fq` | n | Quickfix list |
 | `gs` | n | Document symbols |
 | `gS` | n | Workspace symbols (live) |
 | `<leader>fd` | n | Document diagnostics |
 | `<leader>fD` | n | Workspace diagnostics |
 | `<leader>fg` | n | Git commits touching this buffer |
+| `<leader>fG` | n | Changed git hunks |
+| `<leader>ft` | n | TODO comments (todo-comments) |
+| `<leader>fn` | n | Notification history |
+| `<leader>fu` / `U` | n | Undo history, with a diff preview |
 | `<leader>fc` | n | Commands |
 | `<leader>fC` | n | Command history |
+| `<leader>f/` | n | Search history |
 | `<leader>fh` | n | Help tags |
 | `<leader>fk` | n | Keymaps |
 
-Inside a picker (custom action and keymap tables; both replace fzf-lua's
-defaults wholesale, so binds not listed here, such as `<M-a>` select-all, are
-absent, while fzf's own keys still work):
+`<leader>fi` / `<leader>fo` (incoming / outgoing calls) are LSP buffer maps; see
+[nvim-lspconfig](#nvim-lspconfig-90-lspconfiglua).
+
+Inside a picker (Snacks defaults, with these changes; none of its `<A-…>`
+defaults are mapped):
 
 | Key | Action |
 |---|---|
-| `<Enter>` | Open (or send all to quickfix when multiple are selected) |
-| `<C-o>` / `<C-v>` / `<C-t>` | Open in split / vsplit / tab (pickers that produce files) |
-| `<C-g>` | Toggle `.gitignore` filtering |
-| `<C-/>` (grep) | Switch between grep and live grep |
-| `<F1>` / `<F2>` / `<F3>` / `<F4>` | Help, fullscreen, preview wrap, preview toggle |
-| `<F5>` … `<F9>` | Rotate the preview, treesitter context (builtin previewer only; the default previewer is `bat` when installed) |
-| `<S-Down>` `<S-Up>` | Half a page down / up in the result list (custom; fzf-lua's default scrolls the preview) |
-| `<Tab>` | Select multiple items (default) |
+| `<Enter>` | Open (opens every selected item when several are selected) |
+| `<C-o>` / `<C-v>` / `<C-t>` | Open in split below (custom, replaces `<C-s>`) / vsplit / tab |
+| `<C-g>` | Switch between live grep and filtering the results |
+| `<C-/>` | Toggle the preview (custom) |
+| `<F1>` | Help (custom; `?` in the list) |
+| `<C-f>` `<C-b>`, `<S-Down>` `<S-Up>` | Scroll the preview (`<S-…>` custom) |
+| `<Tab>` | Select multiple items |
+| `<C-q>` | Send the selected (or all) items to quickfix |
 
 ### Files, buffers, windows
 
@@ -926,16 +937,18 @@ start them. Servers must already be installed. Neovim's default LSP mappings
 (`K` hover, `grn` rename, `gra` code action, `grr` references, `gri`
 implementation, `grt` type definition, `gO` document symbols, insert-mode
 `<C-s>` signature help) apply; the config routes the list-producing ones
-through fzf-lua and adds `<leader>c` aliases. All are buffer-local and appear
+through the Snacks picker and adds `<leader>c` aliases. All are buffer-local and appear
 in which-key with an `LSP:` prefix.
 
 | Key | Mode | Action |
 |---|---|---|
-| `gd` | n | Definitions (fzf-lua) |
+| `gd` | n | Definitions (picker) |
 | `gD` | n | Declaration |
-| `grr` | n | References (fzf-lua) |
-| `gri` / `gI` | n | Implementations (fzf-lua) |
-| `gO` | n | Document symbols (fzf-lua); `gs` from `99-fzf.lua` is the same picker, `gS` the workspace one |
+| `grr` | n | References (picker) |
+| `gri` | n | Implementations (picker) |
+| `grt` | n | Type definitions (picker) |
+| `gO` | n | Document symbols (picker); `gs` from `99-snacks.lua` is the same picker, `gS` the workspace one |
+| `<leader>fi` / `<leader>fo` | n | Incoming / outgoing calls (picker) |
 | `<C-s>` | n | Signature help |
 | `<leader>cr` | n | Rename |
 | `<leader>ca` | n, x | Code action |
@@ -1076,7 +1089,7 @@ treefmt.
 ### Libraries
 
 Installed because another plugin requires them; no user-facing behaviour:
-**nvim-web-devicons** (icons for fzf-lua, lualine, mini.files, tabby),
+**nvim-web-devicons** (icons for the Snacks picker, lualine, mini.files, tabby),
 **plenary.nvim** (todo-comments), **promise-async** (ufo, fundo),
 **mini.extra** (mini.ai's `ae`/`ie`), **nvim-ts-context-commentstring**
 (mini.comment).

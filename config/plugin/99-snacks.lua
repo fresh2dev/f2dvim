@@ -5,6 +5,26 @@ vim.pack.add({
 -- TODO: deleteme
 Snacks = require("snacks")
 
+-- Shared by the picker's input and list windows. The `<a-*>` defaults are
+-- unbound because this config maps no Alt keys; their actions are not rebound.
+local picker_keys = {
+  ["<c-o>"] = { "edit_split", mode = { "i", "n" } },
+  ["<c-s>"] = false,
+  ["<c-/>"] = { "toggle_preview", mode = { "i", "n" } },
+  -- What many terminals send for <c-/>.
+  ["<c-_>"] = { "toggle_preview", mode = { "i", "n" } },
+  ["<S-Down>"] = { "preview_scroll_down", mode = { "i", "n" } },
+  ["<S-Up>"] = { "preview_scroll_up", mode = { "i", "n" } },
+  ["<a-d>"] = false,
+  ["<a-f>"] = false,
+  ["<a-h>"] = false,
+  ["<a-i>"] = false,
+  ["<a-m>"] = false,
+  ["<a-p>"] = false,
+  ["<a-r>"] = false,
+  ["<a-w>"] = false,
+}
+
 Snacks.setup({
   animate = { enabled = false },
   bigfile = { enabled = true },
@@ -19,23 +39,37 @@ Snacks.setup({
   },
   notifier = {
     enabled = true,
-    timeout = 8000,
-    style = "fancy", -- 'compact', 'fancy', 'minimal'
+    timeout = 5000,
+    style = "minimal", -- 'compact', 'fancy', 'minimal'
   },
-  -- fzf-lua is the picker for everything it has a provider for; `Snacks.picker`
-  -- is only called directly (below) for `undo` and `projects`, which fzf-lua
-  -- lacks. Disabling it here keeps fzf-lua as the `vim.ui.select` handler.
-  picker = { enabled = false },
-  quickfile = { enabled = false }, -- Doesn't make much of a difference.
-  scratch = {
+  -- The picker for everything, and the `vim.ui.select` handler.
+  picker = {
     enabled = true,
-    root = vim.fs.joinpath(vim.env.HOME, ".scratch"),
-    filekey = {
-      cwd = true, -- use current working directory
-      branch = false, -- use current branch name
-      count = false, -- use vim.v.count1
+    layout = "vertical",
+    sources = {
+      -- `smart` gets these too: its files finder inherits the `files` source.
+      files = { cmd = "rg", hidden = true, follow = true },
+      grep = { hidden = true, follow = true },
+      grep_word = { hidden = true, follow = true },
+      smart = { filter = { cwd = true } },
+    },
+    win = {
+      input = {
+        keys = vim.tbl_extend("force", picker_keys, {
+          ["<F1>"] = { "toggle_help_input", mode = { "i", "n" } },
+          -- close the picker on ESC instead of going to normal mode
+          ["<Esc>"] = { "close", mode = { "n", "i" } },
+        }),
+      },
+      list = {
+        keys = vim.tbl_extend("force", picker_keys, {
+          ["<F1>"] = "toggle_help_list",
+        }),
+      },
     },
   },
+  quickfile = { enabled = false }, -- Doesn't make much of a difference.
+  scratch = { enabled = false },
   scroll = { enabled = false }, -- Still buggy.
   statuscolumn = { enabled = true },
   terminal = { enabled = true },
@@ -89,20 +123,50 @@ Snacks.toggle.indent():map("<leader>ti")
 -- Snacks.toggle.dim():map("<leader>tD")
 
 -- vim.keymap.set({ 'n', 'x' }, '<leader>gB', Snacks.gitbrowse, { desc = "Git Browse" })
--- vim.keymap.set('n', '<leader>fr', function() Snacks.picker.recent({ filter = { cwd = true } }) end,
---   { desc = "Recent (cwd)" })
-vim.keymap.set("n", "<leader>fp", function()
-  Snacks.picker.projects()
-end, { desc = "Projects" })
-vim.keymap.set("n", "<leader>fu", function()
-  Snacks.picker.undo()
-end, { desc = "Undotree" })
-vim.keymap.set("n", "<leader>f-", function()
-  Snacks.notifier.show_history()
-end, { desc = "Notification History" })
-vim.keymap.set("n", "U", function()
-  Snacks.picker.undo()
-end, { desc = "Undotree" })
+--------------------------------------------------------------------------------
+--- Pickers
+--------------------------------------------------------------------------------
+
+local function pick(mode, lhs, source, desc, opts)
+  vim.keymap.set(mode, lhs, function()
+    Snacks.picker[source](opts)
+  end, { desc = desc })
+end
+
+pick("n", "<leader>F", "resume", "[F]ind: Resume Last Picker")
+pick("n", "<leader>fa", "pickers", "[F]ind [A]ll Pickers")
+pick("n", "<leader>ff", "smart", "[F]ind [F]iles (recent first)")
+pick("n", "<leader>fF", "files", "[F]ind [F]iles (incl. ignored)", { ignored = true })
+pick("n", "<leader>fs", "grep", "[F]ind by Grep [S]earch")
+pick("n", "<leader>fS", "grep", "[F]ind by Grep [S]earch (incl. ignored)", {
+  ignored = true,
+})
+pick("x", "<leader>fs", "grep_word", "[F]ind Selection by Grep [S]earch")
+pick({ "n", "x" }, "<leader>fw", "grep_word", "[F]ind [W]ord by Grep")
+pick("n", "<leader>fl", "lines", "[F]ind [L]ines in Buffer")
+pick("n", "<leader>fL", "grep_buffers", "[F]ind [L]ines in Open Buffers")
+pick("n", "<leader>fb", "buffers", "[F]ind [B]uffers")
+pick("n", "<leader>fh", "help", "[F]ind [H]elp")
+pick("n", "<leader>fk", "keymaps", "[F]ind [K]eymaps")
+pick("n", "<leader>fc", "commands", "[F]ind [C]ommands")
+pick("n", "<leader>fC", "command_history", "[F]ind [C]ommands (history)")
+pick("n", "<leader>f/", "search_history", "[F]ind Search History")
+pick("n", '<leader>f"', "registers", "[F]ind Registers")
+pick("n", "<leader>fj", "jumps", "[F]ind [J]umps")
+pick("n", "<leader>f<C-o>", "jumps", "[F]ind [J]umps")
+pick("n", "<leader>fm", "marks", "[F]ind [M]arks")
+pick("n", "<leader>fd", "diagnostics_buffer", "[F]ind [D]iagnostics (buffer)")
+pick("n", "<leader>fD", "diagnostics", "[F]ind [D]iagnostics (workspace)")
+pick("n", "<leader>fg", "git_log_file", "[F]ind [G]it Commits for Buffer")
+pick("n", "<leader>fG", "git_diff", "[F]ind [G]it Changed Hunks")
+pick("n", "<leader>fq", "qflist", "[F]ind in [Q]uickfix")
+pick("n", "<leader>fn", "notifications", "[F]ind [N]otifications")
+-- Source registered by todo-comments.nvim.
+pick("n", "<leader>ft", "todo_comments", "[F]ind [T]odo Comments")
+pick("n", "<leader>fu", "undo", "[F]ind [U]ndo History")
+pick("n", "U", "undo", "Undotree")
+pick("n", "gs", "lsp_symbols", "Document [S]ymbols")
+pick("n", "gS", "lsp_workspace_symbols", "Workspace [S]ymbols")
 
 -- Make it easier to get out of terminal mode using Ctrl-w
 vim.keymap.set("t", "<C-w>", "<C-\\><C-n><C-w>", { desc = "Window Navigation" })

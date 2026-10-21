@@ -117,7 +117,7 @@ No plugin is loaded from `init.lua`.
 - Servers are declared in one `servers` table, then applied with a `vim.lsp.config(name, server)` + `vim.lsp.enable(name)` loop. Add a server by adding a table entry; use `root_markers`, not the deprecated `lspconfig.util.root_pattern`.
 - **There is no Mason.** Language servers must be on `$PATH` already.
 - **`stylua` is an LSP client here** (`stylua --lsp`, filetype `lua`) and it is the Lua *formatter*: conform skips Lua (see Formatting below) and the stylua server formats on save. `lua_ls` has `documentFormattingProvider` disabled in `on_init` **and** `Lua.format.enable = false` so the two never both format. Don't re-enable it. Workspace-library settings for Neovim config work come from lazydev, not from `lua_ls.on_init`.
-- All LSP keymaps are set inside the `LspAttach` autocmd, buffer-local, prefixed `LSP:` in their `desc`. Neovim's own defaults (`K`, `grn`, `gra`, `grr`, `gri`, `gO`) are not re-declared; only the maps routed through fzf-lua (`gd`, `grr`, `gri`, `gI`, `gO`) and the `<leader>c*` aliases are. `symbol-usage` is set up once at file top level, not per attach.
+- All LSP keymaps are set inside the `LspAttach` autocmd, buffer-local, prefixed `LSP:` in their `desc`. Neovim's own defaults (`K`, `grn`, `gra`, `grr`, `gri`, `grt`, `gO`) are not re-declared; only the maps routed through the Snacks picker (`gd`, `grr`, `gri`, `grt`, `gO`, plus `<leader>fi`/`<leader>fo` for incoming/outgoing calls) and the `<leader>c*` aliases are. They call `Snacks.picker.*` from callbacks, so the file does not declare snacks. `symbol-usage` is set up once at file top level, not per attach.
 
 ### Formatting (`plugin/99-conform.lua`)
 
@@ -151,10 +151,11 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 
 - Leader and localleader are both `<Space>`.
 - Leader groups are registered in the `which-key` spec in `plugin/99-which-key.lua`: `<leader>c` Code, `<leader>f` Find, `<leader>g` Git (`<leader>gh` Git Hunk, gitsigns), `<leader>l` Lazygit, `<leader>p` replace-with-register operator (mini.operators), `<leader>q` Quit, `<leader>t` Toggle. **When adding a mapping under a new leader group, add the group to that spec.** `<localleader>m` (Markdown) is the exception: it is buffer-local, registered with `which-key.add({ buffer = ... })` in `ftplugin/markdown.lua`.
+- Never use `Alt`/`Meta` (`<A-…>`, `<M-…>`, `<a-…>`) as a modifier in any mapping this config defines, including plugin-internal keymap tables.
 - Every mapping gets a `desc`; group letters are marked in the description with brackets (`"[G]oto [D]efinition"`).
 - Ownership of contested keys, so they are not re-declared elsewhere:
   - `<leader>gd` is Diffview (`99-diffview.lua`); fugitive single-file diffs use `:Gvdiffsplit` or `dt` in the status buffer.
-  - `gs` / `gS` are fzf-lua's document / workspace symbol pickers (`99-fzf.lua`, global, not under `<leader>f`). mini.operators' sort operator (default prefix `gs`) is disabled in `99-mini.operators.lua` for that reason; don't re-enable it.
+  - `gs` / `gS` are the Snacks document / workspace symbol pickers (`99-snacks.lua`, global, not under `<leader>f`). mini.operators' sort operator (default prefix `gs`) is disabled in `99-mini.operators.lua` for that reason; don't re-enable it.
   - gitsigns hunk actions live under `<leader>gh*` (buffer-local) so they never shadow the global fugitive `<leader>g*` maps.
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.
   - `s`/`S`: normal `s`/`S` and visual `s` are vim-sneak (`99-sneak.lua`); visual `S` is mini.surround's "surround selection" (`99-mini.surround.lua`). Neither is mapped in operator-pending mode, so `ys`/`ds`/`cs` keep working. cutlass maps `s`/`S` first and is deliberately overridden by these later files. The visual `S` mapping must stay a `:<C-u>lua MiniSurround.add("visual")<CR>` command mapping, not a Lua callback: leaving Visual mode via `:` is what refreshes the `'<`/`'>` marks the function reads, and a callback sees the previous selection's marks (wrong text, or an out-of-range cursor error).
@@ -164,7 +165,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
   - Markdown buffers (`ftplugin/markdown.lua`) map `<CR>`, `<Tab>`, `<S-Tab>`, `<BS>`, `<A-CR>`, `o`, `O`, `[[`/`]]` and `[f`/`]f` buffer-locally to markdown-plus `<Plug>` mappings. The plugin's own defaults are disabled (`keymaps.enabled = false`) because `<localleader>` is `<Space>` and its `<localleader>t`/`<localleader>lt`/`]b` defaults would shadow the Toggle and Lazygit groups and buffer navigation; the context-aware keys hand the key back to blink/autopairs/native outside lists and tables. `<BS>` is the one key not mapped straight to a `<Plug>`: nvim-autopairs re-maps `<BS>` buffer-locally from its own `FileType` autocmd (which runs after the ftplugin), so the markdown file applies an expression mapping via `vim.schedule` that removes an empty list marker and otherwise calls `autopairs_bs()`. `gd` and `<C-t>` are deliberately not mapped.
 - Command-line abbreviations go through `require("util").cabbrev(lhs, rhs)` (only fires when `lhs` is the whole command line) — used for `grep`→`Grep`, `lgrep`→`LGrep`, `g`/`git`→`Git`.
 - Mappings that must leave the cursor where it was wrap the edit in `require("util").keep_cursor(fn)` (`.` and `[<Space>`/`]<Space>` in `init.lua`). It tracks the cursor with an extmark, so the cursor stays on the same text when `fn` adds or removes lines, and it cannot end up past the end of the buffer. Sticky yank (`y`/`Y`) cannot use it: the operator runs after the expr mapping returns, and `g@` moves the cursor before calling `operatorfunc`. Instead it saves the window view (`winsaveview`) in the mapping and restores it from `TextYankPost`, only in the same window and buffer. A deferred `ModeChanged` (`*:n*`) clears the saved view, so a cancelled `y<Esc>` never makes a later `:yank` jump back to an old position. Mappings that must repeat as a whole (the `[p` family, `[e`/`]e`, `[<Space>`/`]<Space>`) are wrapped in `repeatable(lhs, fn)` in `init.lua` (vim-repeat); `.` calls `repeat#run` when `g:repeat_tick == b:changedtick`, else `keep_cursor` around `normal! .`.
-- Fugitive runs `:Gcd` on `VimEnter`, so the cwd is the git root for the whole session; fzf-lua `oldfiles`, `:Grep`, blink's path source and Snacks scratch all inherit that.
+- Fugitive runs `:Gcd` on `VimEnter`, so the cwd is the git root for the whole session; the Snacks pickers (`smart` filters to it), `:Grep`, blink's path source and Snacks scratch all inherit that.
 
 ### Deliberate deviations — do not "fix" these
 
@@ -173,7 +174,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - `swapfile` and `writebackup` are off (files are assumed to be in version control); `undofile` is on, with `fundo` for persistence.
 - Over SSH, `init.lua` sets `vim.g.clipboard` to an OSC 52 provider: copy via `vim.ui.clipboard.osc52` plus a JSON write of `{ lines, regtype }` to a shared per-user file under `stdpath("run")`; paste returns that file's entry (the latest yank of any instance on the host, which is what makes cross-pane `p` work) or, if unreadable, the instance's own last yank from a Lua table. The block is gated on `$SSH_TTY` with no `$DISPLAY`/`$WAYLAND_DISPLAY`/`$TMUX` and an unset `g:clipboard`, so local sessions keep Neovim's normal tool detection — keep it that way for portability. Neovim's own OSC 52 auto-detection cannot be relied on: multiplexers swallow its DA1/XTGETTCAP probe and it disables itself when `'clipboard'` is set. The clipboard is deliberately *not* read back through OSC 52 (terminals decline it by default and Neovim would stall on every `p`); Neovim empties the register *before* calling the provider's paste, so paste must always return `{ lines, regtype }` — never `0`, which wipes the register — and regtype must be trimmed to one character (blockwise carries a width).
 - `laststatus = 3` (global statusline) is assumed by the snacks `zen` config.
-- Snacks' `picker` and `quickfile` are disabled on purpose — fzf-lua is the picker and the `vim.ui.select` handler. `Snacks.picker.undo` / `Snacks.picker.projects` are still called directly because fzf-lua has no equivalent.
+- Snacks' `quickfile` is disabled on purpose. `Snacks.picker` is the only picker and the `vim.ui.select` handler (ADR 0002); its defaults live in `Snacks.setup` (`files`/`grep`/`grep_word`: `rg`, hidden, follow; `layout = "vertical"`), so keymaps pass only what differs (`ignored = true` for `<leader>fF`/`<leader>fS`). Inside a picker, `<c-o>` is split below (`<c-s>` is unbound), `<c-/>` toggles the preview and every `<a-*>` default is set to `false`; Snacks sets up the picker on `UIEnter`, which headless `nvim` never fires.
 
 ### Packaging constraints
 
@@ -186,10 +187,9 @@ adding or removing a plugin.
 
 ### External tool dependencies
 
-Beyond the language servers, the config shells out to: `rg` (`grepprg`, fzf-lua),
-`fd`, `bat` (fzf-lua preview; optional, falls back to the builtin previewer), `treefmt` (formatting for everything except the
+Beyond the language servers, the config shells out to: `rg` (`grepprg`, the Snacks
+file and grep pickers), `treefmt` (formatting for everything except the
 `lsp_formatted` filetypes), `stylua` (>= 2.x, run as an LSP for Lua), `tombi`
-(TOML language server and formatter), `lazygit`, and `delta`
-(fzf-lua git diffs, when installed). Missing binaries fail at use time, not at
+(TOML language server and formatter), and `lazygit`. Missing binaries fail at use time, not at
 startup. All of them, and the language servers, are pinned in fresh2dev's dotfiles'
 global mise config; a new dependency gets a pinned entry there too.

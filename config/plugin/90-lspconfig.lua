@@ -47,32 +47,36 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.diagnostic.jump({ count = 1, float = not config.virtual_lines })
     end, "Go to next [D]iagnostic message")
     -- NOTE: Neovim >= 0.11 already maps `K`, `grn`, `gra`, `grr`, `gri`, `grt`
-    -- and `gO` in LSP buffers. Only the ones routed through fzf-lua (or given an
-    -- extra `<leader>c*` alias) are declared here.
+    -- and `gO` in LSP buffers. Only the ones routed through Snacks.picker (or
+    -- given an extra `<leader>c*` alias) are declared here.
+    local pick = function(keys, source, desc)
+      map(keys, function()
+        Snacks.picker[source]()
+      end, desc)
+    end
 
     -- Jump to the definition of the word under your cursor.
     --  This is where a variable was first declared, or where a function is defined, etc.
     --  To jump back, press <C-t>.
-    map("gd", "<Cmd>FzfLua lsp_definitions<CR>", "[G]oto [D]efinition")
+    pick("gd", "lsp_definitions", "[G]oto [D]efinition")
 
     -- Open signature help (normal mode; insert-mode <C-s> is a Neovim default)
     map("<C-s>", vim.lsp.buf.signature_help, "Signature Help")
     -- Find references for the word under your cursor.
-    map("grr", "<Cmd>FzfLua lsp_references<CR>", "[G]oto [R]eferences")
+    pick("grr", "lsp_references", "[G]oto [R]eferences")
     -- Jump to the implementation of the word under your cursor.
     --  Useful when your language has ways of declaring types without an actual implementation.
-    map("gri", "<Cmd>FzfLua lsp_implementations<CR>", "[G]oto [I]mplementation")
+    pick("gri", "lsp_implementations", "[G]oto [I]mplementation")
     -- Jump to the type of the word under your cursor.
     --  Useful when you're not sure what type a variable is and you want to see
     --  the definition of its *type*, not where it was *defined*.
-    -- map('<leader>D', '<Cmd>FzfLua lsp_typedefs<CR>', 'Type [D]efinition')
+    pick("grt", "lsp_type_definitions", "[G]oto [T]ype Definition")
     -- Fuzzy find all the symbols in your current document.
     --  Symbols are things like variables, functions, types, etc.
-    map("gO", "<Cmd>FzfLua lsp_document_symbols<CR>", "[D]ocument [S]ymbols")
-
-    -- -- Fuzzy find all the symbols in your current workspace.
-    -- --  Similar to document symbols, except searches over your entire project.
-    -- map('<leader>ws', '<Cmd>FzfLua lsp_live_workspace_symbols<CR>', '[W]orkspace [S]ymbols')
+    pick("gO", "lsp_symbols", "[D]ocument [S]ymbols")
+    -- Call hierarchy: who calls the function under the cursor, and what it calls.
+    pick("<leader>fi", "lsp_incoming_calls", "[F]ind [I]ncoming Calls")
+    pick("<leader>fo", "lsp_outgoing_calls", "[F]ind [O]utgoing Calls")
 
     -- This is not Goto Definition, this is Goto Declaration.
     --  For example, in C this would take you to the header.
