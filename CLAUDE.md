@@ -92,7 +92,7 @@ there. Instead:
   - `90-` — infrastructure other configs depend on (`90-lspconfig.lua`, `90-treesitter.lua`)
   - `99-` — everything else, order-independent
 - **Everything is eager.** There is no lazy-loading layer. `vim.pack.add` installs missing plugins synchronously on first start, so the first `nvim` on a fresh machine is slow.
-- **Each file declares every plugin it needs**, even if another file also lists it (`vim.pack.add` is idempotent). `nvim-web-devicons` appears in four files and `promise-async` in two; that is deliberate so each file is self-contained. There is no shared "deps" file.
+- **Each file declares every plugin it needs**, even if another file also lists it (`vim.pack.add` is idempotent). `nvim-web-devicons` appears in three files, `snacks.nvim` and `promise-async` in two each; that is deliberate so each file is self-contained. There is no shared "deps" file.
 - Deferring load to a filetype is done with **`ftplugin/`**, not with plugin specs: `ftplugin/lua_lazydev.lua` and `ftplugin/markdown.lua` call `vim.pack.add` at first use of that filetype. Because ftplugin files run for *every* buffer of that filetype, the install/`setup()` part is guarded by a `vim.g.loaded_<name>_config` flag; only buffer-local mappings sit outside the guard. Use the `<filetype>_<suffix>.lua` form to add a second file for a filetype without clobbering the first. `lazydev` is owned entirely by its ftplugin; blink adds the `lazydev` completion source only for Lua buffers.
 
 Adding a plugin means adding one new `plugin/99-*.lua` file — do not thread it
