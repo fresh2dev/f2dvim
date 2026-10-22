@@ -579,11 +579,6 @@ bold window borders.
 
 Makes `.` repeat plugin mappings (used by the `[p`/`]p` family and vim-sneak).
 
-#### vim-sensible (`99-sensible.lua`)
-
-tpope's sensible defaults. Almost all of them are already Neovim defaults; it
-is kept for the few that are not.
-
 ### Motions and text objects
 
 #### vim-sneak (`99-sneak.lua`)

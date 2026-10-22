@@ -56,7 +56,6 @@ exclude = [
 "vim-flog" = "Vim"
 "vim-fugitive" = "Vim"
 "vim-repeat" = "Vim"
-"vim-sensible" = "Vim"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"

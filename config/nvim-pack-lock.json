@@ -206,10 +206,6 @@
       "rev": "65846025c15494983dafe5e3b46c8f88ab2e9635",
       "src": "https://github.com/tpope/vim-repeat"
     },
-    "vim-sensible": {
-      "rev": "0ce2d843d6f588bb0c8c7eec6449171615dc56d9",
-      "src": "https://github.com/tpope/vim-sensible"
-    },
     "vim-sneak": {
       "rev": "feea86adcfbf8e6b5e71fdd5f4f5736fd8819fdb",
       "src": "https://github.com/justinmk/vim-sneak"
