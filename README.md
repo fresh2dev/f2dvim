@@ -140,7 +140,7 @@ it, and language servers that aren't installed are skipped.
 | `lazygit` | `<leader>lg` | `go install github.com/jesseduffield/lazygit@latest` |
 | `treefmt` | format on save | `go install github.com/numtide/treefmt/v2@latest` |
 | `stylua` 2.x or newer | Lua formatting (as an LSP) | `npm i -g @johnnymorganz/stylua-bin` |
-| `ruff`, `basedpyright` | Python | `uv tool install ruff`, `uv tool install basedpyright` |
+| `ruff`, `ty` | Python | `uv tool install ruff`, `uv tool install ty` |
 | `tombi` | TOML | `uv tool install tombi` |
 | `just-lsp` | justfiles | `uv tool install just-lsp` |
 | `gopls` | Go | `go install golang.org/x/tools/gopls@latest` |
@@ -325,7 +325,6 @@ Everything in this section lives in `init.lua`.
 | `<C-n>` `<C-p>` | c | Walk command history unless the wildmenu is open |
 | `<Esc><Esc>` `<C-u>` | t | Leave terminal insert mode |
 | `[e` `]e` | n, x | Move the current line or selected block up / down (takes a count; the selection stays active; `.` repeats in normal mode) |
-| `[<Space>` `]<Space>` | n | Insert [count] blank lines above / below without moving the cursor (`.` repeats) |
 | `[a` `[b` `[q` `[l` and `[p` families | n | See the overview table above; the other bracket pairs there belong to plugins or to Neovim |
 
 Behaviour set by autocmds: files are re-read when changed outside Neovim, the
@@ -960,9 +959,8 @@ Symbol references under the cursor are highlighted after a short pause.
 Diagnostics show as virtual text, sorted by severity, underlined from warning
 level up.
 
-Server notes: `basedpyright` runs in basic type-checking mode with several
-noisy reports silenced; `ruff` has organise-imports off (basedpyright's is off
-too); `gopls` enables staticcheck and gofumpt; `rust_analyzer` uses its
+Server notes: the Python type checker is `ty`, with `possibly-unresolved-reference`
+raised to an error; `ruff` has organise-imports off; `gopls` enables staticcheck and gofumpt; `rust_analyzer` uses its
 defaults; `typos_lsp` only attaches to markdown and text; `bashls` also covers
 zsh; `stylua` is registered as a server (`stylua --lsp`) and is what formats
 Lua, so `lua_ls` has formatting disabled; `tombi` serves TOML and formats it on
