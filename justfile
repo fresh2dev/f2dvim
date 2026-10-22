@@ -31,10 +31,9 @@ default:
 changelog:
     {{ git_cliff }} --unreleased --prepend CHANGELOG.md
 
-# Formatters are configured in .treefmt.toml.
 [positional-arguments]
 format *paths:
-    treefmt --no-cache "$@"
+    dprint fmt "$@"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Project-specific
