@@ -144,7 +144,7 @@ it, and language servers that aren't installed are skipped.
 | `just-lsp` | justfiles | `uv tool install just-lsp` |
 | `gopls` | Go | `go install golang.org/x/tools/gopls@latest` |
 | `bash-language-server` | shell | `npm i -g bash-language-server` |
-| `lua-language-server`, `rust-analyzer`, `typos-lsp` | Lua, Rust, spelling in markdown and text | your package manager |
+| `lua-language-server`, `rust-analyzer` | Lua, Rust | your package manager |
 
 ## What's left out
 
@@ -941,8 +941,7 @@ level up.
 
 Server notes: the Python type checker is `ty`, with `possibly-unresolved-reference`
 raised to an error; `ruff` has organise-imports off; `gopls` enables staticcheck and gofumpt; `rust_analyzer` uses its
-defaults; `typos_lsp` only attaches to markdown and text; `bashls` also covers
-zsh; `tombi` serves TOML diagnostics, hover, definitions and code actions.
+defaults; `bashls` also covers zsh; `tombi` serves TOML diagnostics, hover, definitions and code actions.
 
 Formatting: `dprint lsp` is the only formatter. Every other server has its
 formatting capabilities removed on attach (and may not register them

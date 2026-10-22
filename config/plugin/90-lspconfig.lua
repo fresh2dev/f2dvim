@@ -225,9 +225,6 @@ local servers = {
   rust_analyzer = {
     filetypes = { "rust" },
   },
-  typos_lsp = {
-    filetypes = { "markdown", "text" },
-  },
   tombi = {
     filetypes = { "toml" },
   },
