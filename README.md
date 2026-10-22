@@ -301,7 +301,7 @@ Operators and their prefixes:
 | `cx` `cxx` (`X` in visual) | exchange | mini.operators |
 | `gm` `gmm` | multiply (duplicate) | mini.operators |
 | `<leader>p` `<leader>pp` `<leader>P` | replace with register (motion / line / to end of line) | mini.operators |
-| `gc` `gcc` | toggle comment | mini.comment |
+| `gc` `gcc` | toggle comment | Neovim |
 | `ga` | align | vim-easy-align |
 | `gz` `gZ` | zoom / zen mode | snacks |
 
@@ -530,19 +530,6 @@ line.
 The evaluate operator (`g=`) is disabled, and the sort operator (`gs`) is
 disabled because `gs`/`gS` are the Snacks symbol pickers.
 Exchanged and replaced text is reindented linewise.
-
-#### mini.comment (`99-mini.comment.lua`) and nvim-ts-context-commentstring
-
-Comment toggling with a comment string that follows the treesitter context
-(HTML inside markdown, JSX, and so on).
-
-| Key | Mode | Action |
-|---|---|---|
-| `gc{motion}` | n | Toggle comment (default) |
-| `gcc` | n | Toggle comment on the line (default) |
-| `gc` | x | Toggle comment on the selection (default) |
-| `gc` | o | Comment block text object, e.g. `dgc` (default) |
-| `gco` `gcO` | n | See core mappings |
 
 #### nvim-autopairs (`99-autopairs.lua`)
 
@@ -1088,8 +1075,7 @@ treefmt.
 Installed because another plugin requires them; no user-facing behaviour:
 **nvim-web-devicons** (icons for the Snacks picker, lualine, mini.files, tabby),
 **plenary.nvim** (todo-comments), **promise-async** (ufo, fundo),
-**mini.extra** (mini.ai's `ae`/`ie`), **nvim-ts-context-commentstring**
-(mini.comment).
+**mini.extra** (mini.ai's `ae`/`ie`).
 
 ## User commands
 

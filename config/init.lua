@@ -532,7 +532,7 @@ do
 end
 
 -- Add a comment line above / below the current line and start inserting into
--- it. mini.comment decides the comment leader (it is context-aware, e.g. for
+-- it. Neovim's `gcc` decides the comment leader (it is context-aware, e.g. for
 -- Lua inside Markdown), so insert a placeholder line at the current indent,
 -- let it comment that, then remove the placeholder and put the cursor there.
 local function add_comment_line(where)
@@ -543,7 +543,8 @@ local function add_comment_line(where)
     local placeholder = "\1" -- a byte that cannot already be in the comment
     vim.api.nvim_buf_set_lines(0, at, at, false, { indent .. placeholder })
     local new_row = at + 1
-    require("mini.comment").toggle_lines(new_row, new_row)
+    vim.api.nvim_win_set_cursor(0, { new_row, 0 })
+    vim.cmd.normal("gcc") -- remapped: runs the default `gcc`
     local line = vim.api.nvim_buf_get_lines(0, at, new_row, false)[1]
     local col = assert(line:find(placeholder, 1, true)) -- 1-based
     line = line:sub(1, col - 1) .. line:sub(col + 1)
