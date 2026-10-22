@@ -169,25 +169,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
 --  See `:help lsp-config` for information about keys and how to configure
 ---@type table<string, vim.lsp.Config>
 local servers = {
-  basedpyright = {
+  ty = {
     filetypes = { "python" },
     settings = {
-      basedpyright = {
-        disableOrganizeImports = true,
-        disableTaggedHints = true,
-        analysis = {
-          typeCheckingMode = "basic",
-          reportUnusedImport = "none",
-          reportPrivateUsage = "none",
-          reportImplicitOverride = "none",
-          reportAttributeAccessIssue = "none",
-          reportImportCycles = "error",
-          reportUnnecessaryIsInstance = "warning",
-          reportUnnecessaryCast = "warning",
-          reportUnnecessaryComparison = "warning",
-          reportUnnecessaryContains = "warning",
-          reportUnnecessaryTypeIgnoreComment = "warning",
-          reportShadowedImports = "warning",
+      ty = {
+        configuration = {
+          -- Off by default; flags names bound only on some paths (e.g. set
+          -- inside an `if`, used after it). No false positives on a real codebase.
+          rules = { ["possibly-unresolved-reference"] = "error" },
         },
       },
     },
