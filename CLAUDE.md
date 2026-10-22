@@ -107,7 +107,7 @@ plugin's own file.
 
 Two labelled sections, ~730 lines and ~65 lines:
 
-1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, core keymaps (including a `vim-unimpaired`-style bracket-pair family reimplemented in Lua), basic autocmds, netrw settings, ripgrep-backed `:Grep`/`:LGrep` user commands with cabbrev routing from `:grep`.
+1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, core keymaps (including a `vim-unimpaired`-style `[p` linewise-paste family; the list pairs `[a`/`[b`/`[q`/`[l`, `[d` and `[<Space>` are Neovim defaults and are not re-declared), basic autocmds, netrw settings, ripgrep-backed `:Grep`/`:LGrep` user commands with cabbrev routing from `:grep`.
 2. **SECTION 2: PLUGIN MANAGER HOOKS** — the `PackChanged` build dispatcher described above.
 
 No plugin is loaded from `init.lua`.

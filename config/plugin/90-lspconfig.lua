@@ -38,16 +38,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
     end
 
-    map("[d", function()
-      local config = vim.diagnostic.config() or {}
-      vim.diagnostic.jump({ count = -1, float = not config.virtual_lines })
-    end, "Go to previous [D]iagnostic message")
-    map("]d", function()
-      local config = vim.diagnostic.config() or {}
-      vim.diagnostic.jump({ count = 1, float = not config.virtual_lines })
-    end, "Go to next [D]iagnostic message")
     -- NOTE: Neovim >= 0.11 already maps `K`, `grn`, `gra`, `grr`, `gri`, `grt`
-    -- and `gO` in LSP buffers. Only the ones routed through Snacks.picker (or
+    -- and `gO` in LSP buffers, and `[d`/`]d` everywhere (the float comes from
+    -- `jump.on_jump` in init.lua). Only the ones routed through Snacks.picker (or
     -- given an extra `<leader>c*` alias) are declared here.
     local pick = function(keys, source, desc)
       map(keys, function()

@@ -137,8 +137,6 @@ vim.o.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
 
-vim.o.ruler = true
-
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
@@ -183,10 +181,6 @@ vim.o.linebreak = true
 -- Disable line wrapping by default
 vim.o.wrap = false
 
--- Show "1 of N" search counts (clear `S` from shortmess)
--- ref: https://vi.stackexchange.com/a/23296
-vim.opt.shortmess:remove("S")
-
 -- Use a dark background
 vim.o.background = "dark"
 
@@ -211,7 +205,6 @@ vim.g.editorconfig = false
 -- Populates the quickfix / loclist from `:Grep` / `:LGrep`
 -- https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
 vim.o.grepprg = "rg --vimgrep --no-heading"
-vim.opt.grepformat:append("%f:%l:%c:%m")
 
 local function make_grep_cmd(list_letter)
   return function(opts)
@@ -378,29 +371,9 @@ local function put(lhs, how, post_op)
   end)
 end
 
--- Bracket-pair mappings: navigate lists and paste linewise
+-- Linewise paste (vim-unimpaired style). The list pairs (`[a`, `[b`, `[q`, `[l`,
+-- ...) are Neovim defaults.
 for _, m in ipairs({
-  -- Argument list
-  { "]a", "<Cmd>next<CR>", "Next argument" },
-  { "[a", "<Cmd>prev<CR>", "Previous argument" },
-  { "]A", "<Cmd>last<CR>", "Last argument" },
-  { "[A", "<Cmd>first<CR>", "First argument" },
-  -- Buffer list
-  { "]b", "<Cmd>bnext<CR>", "Next buffer" },
-  { "[b", "<Cmd>bprev<CR>", "Previous buffer" },
-  { "]B", "<Cmd>blast<CR>", "Last buffer" },
-  { "[B", "<Cmd>bfirst<CR>", "First buffer" },
-  -- Quickfix list
-  { "]q", "<Cmd>cnext<CR>", "Next quickfix entry" },
-  { "[q", "<Cmd>cprev<CR>", "Previous quickfix entry" },
-  { "]Q", "<Cmd>clast<CR>", "Last quickfix entry" },
-  { "[Q", "<Cmd>cfirst<CR>", "First quickfix entry" },
-  -- Location list
-  { "]l", "<Cmd>lnext<CR>", "Next loclist entry" },
-  { "[l", "<Cmd>lprev<CR>", "Previous loclist entry" },
-  { "]L", "<Cmd>llast<CR>", "Last loclist entry" },
-  { "[L", "<Cmd>lfirst<CR>", "First loclist entry" },
-  -- Linewise paste (vim-unimpaired style)
   { "[p", put("[p", "[p"), "Paste linewise above" },
   { "]p", put("]p", "]p"), "Paste linewise below" },
   { "[P", put("[P", "[p"), "Paste linewise above" },
@@ -458,35 +431,6 @@ vim.keymap.set("x", "]e", move_selection("down"), { desc = "Move selection down"
 -- vim.keymap.set({ 'x' }, ']n', function()
 --   require 'vim.treesitter._select'.select_next(vim.v.count1)
 -- end, { desc = 'Select next treesitter node' })
-
--- Add [count] empty lines above / below without moving the cursor. Editing the
--- buffer directly sidesteps autoindent / indentexpr, so no 'paste' toggling.
--- https://github.com/mhinz/vim-galore?tab=readme-ov-file#quickly-add-empty-lines
-local function add_blank_lines(where)
-  return function()
-    local row = vim.api.nvim_win_get_cursor(0)[1]
-    local at = where == "above" and row - 1 or row -- 0-based insertion index
-    local blanks = {}
-    for i = 1, vim.v.count1 do
-      blanks[i] = ""
-    end
-    require("util").keep_cursor(function()
-      vim.api.nvim_buf_set_lines(0, at, at, false, blanks)
-    end)
-  end
-end
-vim.keymap.set(
-  "n",
-  "]<space>",
-  repeatable("]<space>", add_blank_lines("below")),
-  { desc = "Add empty line below" }
-)
-vim.keymap.set(
-  "n",
-  "[<space>",
-  repeatable("[<space>", add_blank_lines("above")),
-  { desc = "Add empty line above" }
-)
 
 -- Open the current buffer in a new tab (like <C-w>T but preserves the original window)
 vim.keymap.set("n", "<C-w>t", "<Cmd>tab split<CR>", { desc = "Buffer in new tab" })

@@ -325,7 +325,7 @@ Everything in this section lives in `init.lua`.
 | `<C-n>` `<C-p>` | c | Walk command history unless the wildmenu is open |
 | `<Esc><Esc>` `<C-u>` | t | Leave terminal insert mode |
 | `[e` `]e` | n, x | Move the current line or selected block up / down (takes a count; the selection stays active; `.` repeats in normal mode) |
-| `[a` `[b` `[q` `[l` and `[p` families | n | See the overview table above; the other bracket pairs there belong to plugins or to Neovim |
+| `[p` family | n | See the overview table above; the other bracket pairs there belong to plugins or to Neovim |
 
 Behaviour set by autocmds: files are re-read when changed outside Neovim, the
 cursor returns to its last position when a file is reopened, `cursorline` is
