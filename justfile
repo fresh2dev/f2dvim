@@ -54,7 +54,7 @@ update:
 prune:
     #!/usr/bin/env bash
     set -euo pipefail
-    stale=$(uv run -q python bundle.py stale)
+    stale=$(uv run -q python scripts/bundle.py stale)
     [ -n "$stale" ] || { echo "No Stale Plugins."; exit 0; }
     echo "$stale"
     gum confirm "Delete these Stale Plugins?" || exit 0

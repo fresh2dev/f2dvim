@@ -26,7 +26,7 @@ f2dvim = "f2dvim.__main__:main"
 
 [dependency-groups]
 dev = [
-  # Lets the type checkers resolve the imports in hatch_build.py.
+  # Lets the type checkers resolve the imports in scripts/hatch_build.py.
   "hatchling>=1.27",
   { include-group = "tests" },
 ]
@@ -71,14 +71,17 @@ __version__ = "{version}"
 sources = ["src"]
 only-include = ["src"]
 
-# hatch_build.py stages the Neovim config and its Plugins into the wheel.
+# scripts/hatch_build.py stages the Neovim config and its Plugins into the wheel.
 [tool.hatch.build.targets.wheel.hooks.custom]
+path = "scripts/hatch_build.py"
 
 [tool.pyrefly]
-# bundle.py lives at the project root, outside src/.
-search-path = ["."]
+# bundle.py lives in scripts/, outside src/.
+search-path = ["scripts"]
 
 [tool.pytest]
+# The tests import bundle.py, which lives in scripts/, outside src/.
+pythonpath = ["scripts"]
 testpaths = ["tests"]
 
 [tool.ruff]
@@ -113,3 +116,6 @@ style = "pep440"
 pattern = "default-unprefixed"
 metadata = true
 bump = true
+
+[tool.zuban]
+mypy_path = ["scripts"]

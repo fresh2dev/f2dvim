@@ -197,12 +197,12 @@ def stage(settings: Settings, out: Path) -> list[str]:
 if __name__ == "__main__":
     import sys
 
-    settings = Settings.load(Path(__file__).parent)
+    settings = Settings.load(Path(__file__).parents[1])
     commands = {
         "exclude": lambda: sorted(map(str, settings.exclude)),
         "plugins": lambda: sorted(settings.packaged_plugins()),
         "stale": settings.stale_plugins,
     }
     if len(sys.argv) != 2 or sys.argv[1] not in commands:
-        sys.exit(f"usage: python bundle.py {{{','.join(commands)}}}")
+        sys.exit(f"usage: python scripts/bundle.py {{{','.join(commands)}}}")
     print(*commands[sys.argv[1]](), sep="\n")
