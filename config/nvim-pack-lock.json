@@ -13,10 +13,6 @@
       "rev": "62742b2ffe7a433988759c67b5c5a22eff74a14b",
       "src": "https://github.com/rhysd/conflict-marker.vim"
     },
-    "conform.nvim": {
-      "rev": "016802de402556da54c36bd7359b441266b01cdd",
-      "src": "https://github.com/stevearc/conform.nvim"
-    },
     "cutlass.nvim": {
       "rev": "d01b5c1943050fcda8edf5c89d4419c41a65890e",
       "src": "https://github.com/gbprod/cutlass.nvim"

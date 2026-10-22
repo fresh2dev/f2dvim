@@ -116,27 +116,27 @@ No plugin is loaded from `init.lua`.
 
 - Servers are declared in one `servers` table, then applied with a `vim.lsp.config(name, server)` + `vim.lsp.enable(name)` loop. Add a server by adding a table entry; use `root_markers`, not the deprecated `lspconfig.util.root_pattern`.
 - **There is no Mason.** Language servers must be on `$PATH` already.
-- Python uses `ty` (type checking) and `ruff`. Neither formats, so nothing competes with treefmt.
-- **`stylua` is an LSP client here** (`stylua --lsp`, filetype `lua`) and it is the Lua *formatter*: conform skips Lua (see Formatting below) and the stylua server formats on save. `lua_ls` has `documentFormattingProvider` disabled in `on_init` **and** `Lua.format.enable = false` so the two never both format. Don't re-enable it. Workspace-library settings for Neovim config work come from lazydev, not from `lua_ls.on_init`.
+- Python uses `ty` (type checking) and `ruff`; ruff's formatting is stripped like every other server's (see Formatting below).
+- Workspace-library settings for Neovim config work come from lazydev, not from `lua_ls.on_init`.
 - All LSP keymaps are set inside the `LspAttach` autocmd, buffer-local, prefixed `LSP:` in their `desc`. Neovim's own defaults (`K`, `grn`, `gra`, `grr`, `gri`, `grt`, `gO`) are not re-declared; only the maps routed through the Snacks picker (`gd`, `grr`, `gri`, `grt`, `gO`, plus `<leader>fi`/`<leader>fo` for incoming/outgoing calls) and the `<leader>c*` aliases are. They call `Snacks.picker.*` from callbacks, so the file does not declare snacks. `symbol-usage` is set up once at file top level, not per attach.
 
-### Formatting (`plugin/99-conform.lua`)
+### Formatting (`dprint lsp`, in `plugin/90-lspconfig.lua`)
 
-conform.nvim is configured with a single formatter for all filetypes:
-`["_"] = { "treefmt" }`, rooted at `.git`/`treefmt.toml`/`.treefmt.toml` with
-`require_cwd = false`. Per-language formatter entries are all commented out
-deliberately — formatting is delegated to whatever `treefmt` the target project
-configures.
+There is no conform. `dprint lsp` is the only formatter: the `LspAttach`
+autocmd sets `documentFormattingProvider` / `documentRangeFormattingProvider`
+to `false` on every other client, and `vim.lsp.config("*")` declines dynamic
+formatting registration so servers that register it late (ruff) can't slip
+past. Don't re-enable formatting on another server.
 
-The exception is the `lsp_formatted` table at the top of the file (currently
-`{ lua = true, toml = true }`, formatted by `stylua --lsp` and `tombi lsp`
-respectively): for those filetypes `format_on_save` returns
-`lsp_format = "prefer"` with an empty formatter list, so the LSP server formats
-and treefmt is skipped. To move another filetype to LSP formatting, add it there
-and make sure its server is enabled in `90-lspconfig.lua`.
+dprint resolves the project's `dprint.json` per file; `useGlobalConfig = true`
+falls back to fresh2dev's global `~/.config/dprint/dprint.jsonc` (exec plugin
+running stylua, ruff, rumdl, tombi, shfmt, gofmt, rustfmt, just). The `dprint`
+entry's `filetypes` replaces lspconfig's list, so it repeats that list; add a
+filetype there to format it.
 
-Format-on-save is gated on `vim.b.disable_autoformat`, toggled by the
-`:ConformEnable` / `:ConformDisable` / `:ConformToggle` user commands.
+When dprint attaches, a buffer-local `BufWritePre` formats with
+`vim.lsp.buf.format({ name = "dprint" })`, gated on `vim.b.disable_autoformat`
+(`:FormatEnable` / `:FormatDisable` / `:FormatToggle`).
 
 ### Treesitter (`plugin/90-treesitter.lua`)
 
@@ -189,8 +189,8 @@ adding or removing a plugin.
 ### External tool dependencies
 
 Beyond the language servers, the config shells out to: `rg` (`grepprg`, the Snacks
-file and grep pickers), `treefmt` (formatting for everything except the
-`lsp_formatted` filetypes), `stylua` (>= 2.x, run as an LSP for Lua), `tombi`
-(TOML language server and formatter), and `lazygit`. Missing binaries fail at use time, not at
+file and grep pickers), `dprint` (`dprint lsp`, the only formatter; its global
+config runs stylua, ruff, rumdl, tombi, shfmt, gofmt, rustfmt and just), `tombi`
+(TOML language server), and `lazygit`. Missing binaries fail at use time, not at
 startup. All of them, and the language servers, are pinned in fresh2dev's dotfiles'
 global mise config; a new dependency gets a pinned entry there too.

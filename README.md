@@ -138,8 +138,7 @@ it, and language servers that aren't installed are skipped.
 |---|---|---|
 | `rg` | `:Grep`, file and grep pickers | your package manager |
 | `lazygit` | `<leader>lg` | `go install github.com/jesseduffield/lazygit@latest` |
-| `treefmt` | format on save | `go install github.com/numtide/treefmt/v2@latest` |
-| `stylua` 2.x or newer | Lua formatting (as an LSP) | `npm i -g @johnnymorganz/stylua-bin` |
+| `dprint` | format on save (`dprint lsp`) | `npm i -g dprint` |
 | `ruff`, `ty` | Python | `uv tool install ruff`, `uv tool install ty` |
 | `tombi` | TOML | `uv tool install tombi` |
 | `just-lsp` | justfiles | `uv tool install just-lsp` |
@@ -163,8 +162,8 @@ blink.cmp uses its pure-Lua fuzzy matcher instead of its Rust one.
 f2dvim runs a personal Neovim configuration for **Neovim 0.12+**. It uses the editor's
 built-in `vim.pack` plugin manager, keeps one config file per plugin, loads everything
 eagerly, and leans on Neovim's own defaults wherever they are good enough.
-Formatting is delegated to whatever `treefmt` the project you are editing
-configures, Snacks is the picker, and tpope-style mnemonics are kept where
+Formatting is delegated to `dprint lsp`, using the project's `dprint.json` or,
+outside one, the global `~/.config/dprint/dprint.jsonc`. Snacks is the picker, and tpope-style mnemonics are kept where
 they exist (`ys`/`ds`/`cs`, `[q`/`]q`, `[p`/`]p`).
 
 It lives in [`config/`](config); paths below are relative to it.
@@ -236,9 +235,8 @@ another distribution.
 - **The working directory jumps to the git root on startup** (fugitive
   `:Gcd`). Fuzzy finding, `:Grep`, path completion and recent files are all
   relative to that.
-- **Format on save is on** for every filetype: Lua through the stylua language
-  server, TOML through tombi, everything else through the project's `treefmt`.
-  `:ConformToggle` turns it off for the current buffer.
+- **Format on save is on** wherever `dprint lsp` attaches; dprint is the only
+  formatter. `:FormatToggle` turns it off for the current buffer.
 - **Diagnostics jump with `[d`/`]d`** and open a float when they land. `<C-s>`
   in normal mode shows signature help.
 - **`<leader>x` is "I'm done with this"**: it closes the window if the buffer
@@ -944,9 +942,17 @@ level up.
 Server notes: the Python type checker is `ty`, with `possibly-unresolved-reference`
 raised to an error; `ruff` has organise-imports off; `gopls` enables staticcheck and gofumpt; `rust_analyzer` uses its
 defaults; `typos_lsp` only attaches to markdown and text; `bashls` also covers
-zsh; `stylua` is registered as a server (`stylua --lsp`) and is what formats
-Lua, so `lua_ls` has formatting disabled; `tombi` serves TOML and formats it on
-save.
+zsh; `tombi` serves TOML diagnostics, hover, definitions and code actions.
+
+Formatting: `dprint lsp` is the only formatter. Every other server has its
+formatting capabilities removed on attach (and may not register them
+dynamically), so `gq` and `vim.lsp.buf.format()` reach dprint alone. It uses the
+project's `dprint.json` or, outside one, the global
+`~/.config/dprint/dprint.jsonc`, and formats on save with a 1 second timeout.
+
+| Command | Action |
+|---|---|
+| `:FormatDisable` / `:FormatEnable` / `:FormatToggle` | Format on save for the current buffer |
 
 #### blink.cmp (`99-blink.cmp.lua`)
 
@@ -980,20 +986,6 @@ its own, but ghost text previews the first match.
 | `<Left>` / `<Right>` | Move the cursor as usual (custom, no completion) |
 
 `/` and `?` complete from buffer words; `:` completes commands.
-
-#### conform.nvim (`99-conform.lua`)
-
-Format on save. Every filetype runs the project's `treefmt` (found from
-`.git`, `treefmt.toml` or `.treefmt.toml`, falling back to running it anyway),
-except the filetypes listed in `lsp_formatted` at the top of the file, which
-are formatted by their language server (currently Lua via `stylua --lsp` and
-TOML via `tombi lsp`).
-There is a 1 second timeout.
-
-| Command | Action |
-|---|---|
-| `:ConformDisable` / `:ConformEnable` / `:ConformToggle` | Format on save for the current buffer |
-| `:ConformInfo` | Show what would format this buffer (default) |
 
 #### nvim-treesitter (`90-treesitter.lua`)
 
@@ -1062,8 +1054,7 @@ insert-mode indent and `gd` belongs to the LSP.
 
 #### Lua
 
-lazydev, see above. Lua is formatted by the stylua language server rather than
-treefmt.
+lazydev, see above.
 
 ### Libraries
 
@@ -1079,7 +1070,7 @@ Installed because another plugin requires them; no user-facing behaviour:
 | `:Grep` `:LGrep` | init.lua | ripgrep into the quickfix / location list |
 | `:Bdelete[!] [buf]` `:Bwipeout[!] [buf]` | mini.bufremove | Delete / wipe a buffer by number or name, keeping windows |
 | `:QuitSmart[!]` `:QuitHidden[!]` `:QuitOther[!]` `:QuitAll[!]` `:QuitGit[!]` | mini.bufremove | See the quit family above |
-| `:ConformEnable` `:ConformDisable` `:ConformToggle` | conform | Format on save for this buffer |
+| `:FormatEnable` `:FormatDisable` `:FormatToggle` | 90-lspconfig | dprint format on save for this buffer |
 | `:Git` `:Gedit` `:Gwrite` `:Gdiffsplit` `:GcLog` … | fugitive | Git |
 | `:Flog` `:Flogsplit` | flog | Commit graph |
 | `:DiffviewOpen` `:DiffviewFileHistory` `:DiffviewClose` | diffview | Diffs |
@@ -1101,8 +1092,8 @@ Command-line abbreviations: `grep`, `lgrep`, `g`, `git`.
   `<leader>` prefix in `plugin/99-which-key.lua`.
 - **Add a language server**: add an entry to the `servers` table in
   `plugin/90-lspconfig.lua` and install the binary.
-- **Let an LSP format a filetype** instead of treefmt: add it to
-  `lsp_formatted` in `plugin/99-conform.lua`.
+- **Format a new filetype**: add it to the `dprint` entry's `filetypes` in
+  `plugin/90-lspconfig.lua` and give dprint a plugin for it.
 - **Add a build step** after install or update: extend the `PackChanged`
   autocmd at the bottom of `init.lua`.
 - **Defer a plugin to a filetype**: put it in `ftplugin/<ft>.lua` (or

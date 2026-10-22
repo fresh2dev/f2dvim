@@ -108,6 +108,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
     --
     -- When you move your cursor, the highlights will be cleared (the second autocommand).
     local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+    -- dprint is the only formatter: strip formatting from every other server
+    -- (formatexpr and vim.lsp.buf.format check capabilities at call time), and
+    -- format on save through dprint unless `:FormatDisable`d.
+    if client and client.name ~= "dprint" then
+      client.server_capabilities.documentFormattingProvider = false
+      client.server_capabilities.documentRangeFormattingProvider = false
+    elseif client then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = event.buf,
+        group = vim.api.nvim_create_augroup("dprint-format-on-save", { clear = false }),
+        callback = function(ev)
+          if not vim.b[ev.buf].disable_autoformat then
+            vim.lsp.buf.format({ bufnr = ev.buf, name = "dprint", timeout_ms = 1000 })
+          end
+        end,
+      })
+    end
+
     if
       client and client:supports_method("textDocument/documentHighlight", event.buf)
     then
@@ -209,40 +228,62 @@ local servers = {
   typos_lsp = {
     filetypes = { "markdown", "text" },
   },
-  -- tombi is both the TOML language server and the TOML formatter (see
-  -- `lsp_formatted` in plugin/99-conform.lua).
   tombi = {
     filetypes = { "toml" },
   },
   bashls = {
     filetypes = { "sh", "bash", "zsh" },
   },
-  -- marksman = {
-  --   filetypes = { 'markdown' },
-  -- },
-  -- stylua's LSP mode is the Lua *formatter*: conform skips Lua (see
-  -- `lsp_formatted` in plugin/99-conform.lua) and formats via this server.
-  -- Diagnostics come from lua_ls; lua_ls formatting is disabled below.
-  stylua = {
-    filetypes = { "lua" },
-  },
-
-  -- Special Lua Config, as recommended by neovim help docs
   -- Workspace library / runtime settings for Neovim config work are injected
   -- lazily by lazydev (ftplugin/lua_lazydev.lua); don't duplicate them here.
-  lua_ls = {
-    on_init = function(client)
-      -- Formatting is stylua's job (see the `stylua` entry above)
-      client.server_capabilities.documentFormattingProvider = false
-    end,
-    ---@type lspconfig.settings.lua_ls
-    settings = {
-      Lua = {
-        format = { enable = false },
-      },
+  lua_ls = {},
+  -- The only formatter (see the LspAttach autocmd above). A project's
+  -- dprint.json wins; elsewhere the global ~/.config/dprint/dprint.jsonc
+  -- applies. `filetypes` replaces lspconfig's list, so it repeats it.
+  dprint = {
+    filetypes = {
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "json",
+      "jsonc",
+      "markdown",
+      "python",
+      "toml",
+      "rust",
+      "roslyn",
+      "graphql",
+      "lua",
+      "go",
+      "sh",
+      "bash",
+      "zsh",
+      "just",
     },
+    init_options = { useGlobalConfig = true },
   },
 }
+
+for _, state in ipairs({ "Disable", "Enable" }) do
+  vim.api.nvim_create_user_command("Format" .. state, function()
+    vim.b.disable_autoformat = state == "Disable"
+  end, { desc = state .. " format on save (buffer)" })
+end
+vim.api.nvim_create_user_command("FormatToggle", function()
+  vim.b.disable_autoformat = not vim.b.disable_autoformat
+end, { desc = "Toggle format on save (buffer)" })
+
+-- Servers that register formatting dynamically (ruff) would slip past the
+-- LspAttach strip above; refusing dynamic registration makes them declare it up front.
+vim.lsp.config("*", {
+  capabilities = {
+    textDocument = {
+      formatting = { dynamicRegistration = false },
+      rangeFormatting = { dynamicRegistration = false },
+    },
+  },
+})
 
 for name, server in pairs(servers) do
   vim.lsp.config(name, server)
