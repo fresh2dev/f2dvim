@@ -2,7 +2,6 @@ vim.pack.add({
   { src = "https://github.com/folke/snacks.nvim" },
 })
 
--- TODO: deleteme
 Snacks = require("snacks")
 
 -- Shared by the picker's input and list windows. The `<a-*>` defaults are
@@ -202,13 +201,13 @@ vim.keymap.set("n", "<leader>lg", function()
   Snacks.lazygit()
 end, { desc = "[L]azy[G]it" })
 
-vim.keymap.set("n", "<leader>ghd", function()
-  Snacks.terminal({ "hunk", "diff" })
-end, { desc = "[H]unk [D]iff" })
+vim.keymap.set("n", "<leader>fp", function()
+  Snacks.terminal({ "fzj" })
+end, { desc = "[F]ind [P]roject" })
 
+-- # TODO: add commands `:LazyGit [<args>]` `:HunkDiff [<args>]` `:HunkShow [<args>]` `:Just [<args>]`, `:J [<args>]`
+
+-- TODO: replace this with a command named `:Just`
 vim.keymap.set("n", "<leader>J", function()
   Snacks.terminal({ "just" }, { auto_close = false })
 end, { desc = "[J]ust Command Runner" })
-
--- # TODO: add commands `:LazyGit [<args>]` `:HunkDiff [<args>]` `:HunkShow [<args>]` `:Just [<args>]`, `:J [<args>]`
--- # TODO: somewhat feature parity with Zed configs
