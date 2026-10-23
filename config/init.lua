@@ -598,8 +598,6 @@ vim.diagnostic.config({
   },
 })
 
--- NOTE: diagnostics-to-loclist is `<leader>cq` (plugin/90-lspconfig.lua)
-
 -- Exit terminal mode with a double <Esc> (the builtin is <C-\><C-n>)
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 

@@ -118,7 +118,7 @@ No plugin is loaded from `init.lua`.
 - **There is no Mason.** Language servers must be on `$PATH` already.
 - Python uses `ty` (type checking) and `ruff`; ruff's formatting is stripped like every other server's (see Formatting below).
 - Workspace-library settings for Neovim config work come from lazydev, not from `lua_ls.on_init`.
-- All LSP keymaps are set inside the `LspAttach` autocmd, buffer-local, prefixed `LSP:` in their `desc`. Neovim's own defaults (`K`, `grn`, `gra`, `grr`, `gri`, `grt`, `gO`) are not re-declared; only the maps routed through the Snacks picker (`gd`, `grr`, `gri`, `grt`, `gO`, plus `<leader>fi`/`<leader>fo` for incoming/outgoing calls) and the `<leader>c*` aliases are. They call `Snacks.picker.*` from callbacks, so the file does not declare snacks. `symbol-usage` is set up once at file top level, not per attach.
+- All LSP keymaps are set inside the `LspAttach` autocmd, buffer-local, prefixed `LSP:` in their `desc`. Neovim's own defaults (`K`, `grn`, `gra`, `grr`, `gri`, `grt`, `gO`) are not re-declared; only the maps routed through the Snacks picker (`gd`, `grr`, `gri`, `grt`, `gO`, plus `<leader>fi`/`<leader>fo` for incoming/outgoing calls) are. They call `Snacks.picker.*` from callbacks, so the file does not declare snacks. `symbol-usage` is set up once at file top level, not per attach.
 
 ### Formatting (`dprint lsp`, in `plugin/90-lspconfig.lua`)
 
@@ -151,7 +151,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 ### Keymap conventions
 
 - Leader and localleader are both `<Space>`.
-- Leader groups are registered in the `which-key` spec in `plugin/99-which-key.lua`: `<leader>c` Code, `<leader>f` Find, `<leader>g` Git (`<leader>gh` Git Hunk, gitsigns), `<leader>l` Lazygit, `<leader>p` replace-with-register operator (mini.operators), `<leader>q` Quit, `<leader>t` Toggle. **When adding a mapping under a new leader group, add the group to that spec.** `<localleader>m` (Markdown) is the exception: it is buffer-local, registered with `which-key.add({ buffer = ... })` in `ftplugin/markdown.lua`. A buffer-local map that fully matches fires without waiting, so a plugin's buffer-local `<localleader>` keys must not equal a global `<leader>` map or prefix; grug-far's are remapped in `99-grug-far.lua` for that reason.
+- Leader groups are registered in the `which-key` spec in `plugin/99-which-key.lua`: `<leader>f` Find, `<leader>g` Git (`<leader>gh` Git Hunk, gitsigns), `<leader>l` Lazygit, `<leader>p` replace-with-register operator (mini.operators), `<leader>q` Quit, `<leader>t` Toggle. **When adding a mapping under a new leader group, add the group to that spec.** `<localleader>m` (Markdown) is the exception: it is buffer-local, registered with `which-key.add({ buffer = ... })` in `ftplugin/markdown.lua`. A buffer-local map that fully matches fires without waiting, so a plugin's buffer-local `<localleader>` keys must not equal a global `<leader>` map or prefix; grug-far's are remapped in `99-grug-far.lua` for that reason.
 - Never use `Alt`/`Meta` (`<A-…>`, `<M-…>`, `<a-…>`) as a modifier in any mapping this config defines, including plugin-internal keymap tables.
 - Every mapping gets a `desc`; group letters are marked in the description with brackets (`"[G]oto [D]efinition"`).
 - Ownership of contested keys, so they are not re-declared elsewhere:

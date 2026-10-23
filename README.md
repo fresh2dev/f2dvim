@@ -258,7 +258,6 @@ Leader groups (which-key shows these):
 
 | Prefix | Group | Where |
 |---|---|---|
-| `<leader>c` | Code (LSP, diff conflicts) | lspconfig, diffview |
 | `<leader>f` | Find (pickers, find and replace) | snacks, lspconfig, grug-far |
 | `<leader>g` | Git | fugitive, flog, diffview |
 | `<leader>gh` | Git hunk | gitsigns |
@@ -946,8 +945,8 @@ start them. Servers must already be installed. Neovim's default LSP mappings
 (`K` hover, `grn` rename, `gra` code action, `grr` references, `gri`
 implementation, `grt` type definition, `gO` document symbols, insert-mode
 `<C-s>` signature help) apply; the config routes the list-producing ones
-through the Snacks picker and adds `<leader>c` aliases. All are buffer-local and appear
-in which-key with an `LSP:` prefix.
+through the Snacks picker. All are buffer-local and appear in which-key with an
+`LSP:` prefix.
 
 | Key | Mode | Action |
 |---|---|---|
@@ -959,10 +958,6 @@ in which-key with an `LSP:` prefix.
 | `gO` | n | Document symbols (picker); `<leader>fs` from `99-snacks.lua` is the same picker, `<leader>fS` the workspace one |
 | `<leader>fi` / `<leader>fo` | n | Incoming / outgoing calls (picker) |
 | `<C-s>` | n | Signature help |
-| `<leader>cr` | n | Rename |
-| `<leader>ca` | n, x | Code action |
-| `<leader>cc` / `<leader>cC` | n | Run / refresh code lens |
-| `<leader>cq` | n | Buffer diagnostics to the location list |
 | `[d` / `]d` | n | Previous / next diagnostic, opening a float (unless `virtual_lines` is on; it is off) |
 | `K` `grn` `gra` | n | Neovim defaults (hover, rename, code action) |
 

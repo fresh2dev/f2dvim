@@ -40,8 +40,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     -- NOTE: Neovim >= 0.11 already maps `K`, `grn`, `gra`, `grr`, `gri`, `grt`
     -- and `gO` in LSP buffers, and `[d`/`]d` everywhere (the float comes from
-    -- `jump.on_jump` in init.lua). Only the ones routed through Snacks.picker (or
-    -- given an extra `<leader>c*` alias) are declared here.
+    -- `jump.on_jump` in init.lua).
     local pick = function(keys, source, desc)
       map(keys, function()
         Snacks.picker[source]()
@@ -80,27 +79,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- map('<leader>td', function()
     --   vim.diagnostic[vim.diagnostic.is_enabled() and 'disable' or 'enable']()
     -- end, '[T]oggle [D]iagnostics')
-
-    -- Send code diagnostics to quickfix
-    map(
-      "<leader>cq",
-      vim.diagnostic.setloclist,
-      "[C]ode diagnostics to [Q]uickfix (Buffer)"
-    )
-    -- map('<leader>cQ', vim.diagnostic.setqflist, '[C]ode diagnostics to [Q]uickfix (Workspace)')
-
-    -- NOTE: disabled in favor of `Snacks.toggle.inlay_hints()`
-    -- -- The following autocommand is used to enable inlay hints in your
-    -- -- code, if the language server you are using supports them
-    -- --
-    -- -- This may be unwanted, since they displace some of your code
-    -- if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
-    --   map('<leader>th', function()
-    --     vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
-    --   end, '[T]oggle Inlay [H]ints')
-    --   -- if present, enable by default
-    --   vim.lsp.inlay_hint.enable(true)
-    -- end
 
     -- The following two autocommands are used to highlight references of the
     -- word under your cursor when your cursor rests there for a little while.
