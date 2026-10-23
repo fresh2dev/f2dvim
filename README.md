@@ -260,7 +260,7 @@ Leader groups (which-key shows these):
 | Prefix | Group | Where |
 |---|---|---|
 | `<leader>c` | Code (LSP, diff conflicts) | lspconfig, diffview |
-| `<leader>f` | Find (pickers) | snacks, lspconfig |
+| `<leader>f` | Find (pickers, find and replace) | snacks, lspconfig, grug-far |
 | `<leader>g` | Git | fugitive, flog, diffview |
 | `<leader>gh` | Git hunk | gitsigns |
 | `<leader>l` | Lazygit | snacks |
@@ -671,7 +671,7 @@ The picker for files, grep, buffers, LSP locations, git objects and more. Also
 provides `vim.ui.select`. The preview sits below the list (the `vertical`
 layout) except in `vim.ui.select` and the history pickers. Files and grep use
 `rg`, include hidden files, follow symlinks and are smart-case; `.gitignore`d
-files are left out except by `<leader>fF` and `<leader>fS`. See
+files are left out except by `<leader>fF` and `<leader>fG`. See
 [ADR 0002](docs/adr/0002-snacks-picker.md) for why it replaced fzf-lua.
 
 In the grep pickers, anything after ` -- ` in the input is passed to `rg` as
@@ -685,11 +685,11 @@ fuzzy-match their whole input.
 | `<leader>fa` | n | All pickers |
 | `<leader>ff` | n | Files, open buffers and recent files first (`smart`, current directory only) |
 | `<leader>fF` | n | Files, including ignored ones |
-| `<leader>fs` | n | Live grep |
-| `<leader>fS` | n | Live grep, including ignored files |
-| `<leader>fs` / `<leader>fw` | x | Grep the selection |
+| `<leader>fg` | n | Live grep |
+| `<leader>fG` | n | Live grep, including ignored files |
+| `<leader>fg` / `<leader>fw` | x | Grep the selection |
 | `<leader>fw` | n | Grep the word under the cursor |
-| `<leader>fl` | n | Lines in the current buffer |
+| `gl` | n | Lines in the current buffer |
 | `<leader>fL` | n | Grep the open buffers |
 | `<leader>fb` | n | Buffers |
 | `<leader>f"` | n | Registers |
@@ -700,8 +700,6 @@ fuzzy-match their whole input.
 | `gS` | n | Workspace symbols (live) |
 | `<leader>fd` | n | Document diagnostics |
 | `<leader>fD` | n | Workspace diagnostics |
-| `<leader>fg` | n | Git commits touching this buffer |
-| `<leader>fG` | n | Changed git hunks |
 | `<leader>ft` | n | TODO comments (todo-comments) |
 | `<leader>fn` | n | Notification history |
 | `<leader>fu` / `U` | n | Undo history, with a diff preview |
@@ -727,6 +725,40 @@ defaults are mapped):
 | `<C-f>` `<C-b>`, `<S-Down>` `<S-Up>` | Scroll the preview (`<S-…>` custom) |
 | `<Tab>` | Select multiple items |
 | `<C-q>` | Send the selected (or all) items to quickfix |
+
+#### grug-far.nvim (`99-grug-far.lua`)
+
+Find and replace across files, using `rg`. Opens at the bottom of the screen
+with search, replace, files-filter, flags and paths inputs; results update as
+you type. The paths input also accepts `<buflist>` and `<qflist>`, so it can
+target what `:Grep` or a picker's `<C-q>` found. The buffer is transient
+(unlisted, and deleted once its window closes). Editing result lines and
+syncing them back to the files is disabled (custom): changes go through
+Replace or Apply.
+
+| Key | Mode | Action |
+|---|---|---|
+| `<leader>fr` | n | Find and replace |
+| `<leader>fr` | x | Find and replace the selection (cursor starts in Replace) |
+| `<leader>fR` | n, x | Same, in a new tab |
+
+In the grug-far buffer (custom; `g?` lists them). With `<localleader>` on
+`<Space>`, none of these may equal a global `<leader>` map, or it would shadow
+it; `<localleader>qq` deliberately takes over Quit smart.
+
+| Key | Action |
+|---|---|
+| `<localleader>R` | Replace all matches |
+| `<localleader>j` / `<localleader>k` | Apply the next / previous match only |
+| `<Enter>` | Go to the location, in the window above |
+| `K` | Preview the location in a float |
+| `<C-q>` | Send the results to quickfix |
+| `<localleader>h` / `<localleader>H` | Open / add to history |
+| `<F5>` | Refresh |
+| `<localleader>A` | Abort a running search or replace |
+| `<localleader>c` | Show the `rg` command |
+| `<localleader>qq` | Close |
+| `<Tab>` / `<S-Tab>` | Next / previous input |
 
 ### Files, buffers, windows
 
@@ -1074,6 +1106,7 @@ Installed because another plugin requires them; no user-facing behaviour:
 | `:Flog` `:Flogsplit` | flog | Commit graph |
 | `:DiffviewOpen` `:DiffviewFileHistory` `:DiffviewClose` | diffview | Diffs |
 | `:TodoQuickFix` `:TodoLocList` | todo-comments | List `TODO:` comments |
+| `:GrugFar` `:GrugFarWithin` | grug-far | Find and replace across files / within the visual range |
 | `:Toc` `:Toch` `:Toct` | markdown-plus (markdown buffers) | Navigable table of contents in a split / tab |
 | `:ColorizerToggle` | colorizer | Colour preview |
 | `:Remove` `:Move` `:Rename` `:Chmod` `:Mkdir` `:SudoWrite` … | eunuch | Filesystem |
