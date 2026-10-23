@@ -164,8 +164,8 @@ pick("n", "<leader>fn", "notifications", "[F]ind [N]otifications")
 pick("n", "<leader>ft", "todo_comments", "[F]ind [T]odo Comments")
 pick("n", "<leader>fu", "undo", "[F]ind [U]ndo History")
 pick("n", "U", "undo", "Undotree")
-pick("n", "gs", "lsp_symbols", "Document [S]ymbols")
-pick("n", "gS", "lsp_workspace_symbols", "Workspace [S]ymbols")
+pick("n", "<leader>fs", "lsp_symbols", "[F]ind [S]ymbols (buffer)")
+pick("n", "<leader>fS", "lsp_workspace_symbols", "[F]ind [S]ymbols (workspace)")
 
 -- Make it easier to get out of terminal mode using Ctrl-w
 vim.keymap.set("t", "<C-w>", "<C-\\><C-n><C-w>", { desc = "Window Navigation" })

@@ -216,9 +216,8 @@ another distribution.
 - **`cx` is exchange**: `cxiw` on one word, `cxiw` on another, and they swap.
   `cxx` exchanges lines; in visual mode the key is `X`. `gm` multiplies
   (duplicates).
-- **`gs` / `gS` go to a symbol**: fuzzy-pick an LSP symbol in the current
-  buffer or across the workspace (Snacks picker). mini.operators' sort operator,
-  which defaults to `gs`, is disabled to make room.
+- **`gs` sorts** (mini.operators): `gsip` sorts the paragraph's lines, and
+  `gsi(` sorts the comma-separated items inside the parentheses.
 - **Yanking keeps the cursor and the scroll position where they were**
   (sticky yank, so `ygg` no longer jumps to the top). `.` repeats without
   moving the cursor: it stays on the same text even when the change adds or
@@ -299,6 +298,7 @@ Operators and their prefixes:
 | `cx` `cxx` (`X` in visual) | exchange | mini.operators |
 | `gm` `gmm` | multiply (duplicate) | mini.operators |
 | `<leader>p` `<leader>pp` `<leader>P` | replace with register (motion / line / to end of line) | mini.operators |
+| `gs` `gss` | sort | mini.operators |
 | `gc` `gcc` | toggle comment | Neovim |
 | `ga` | align | vim-easy-align |
 | `gz` `gZ` | zoom / zen mode | snacks |
@@ -524,9 +524,9 @@ line.
 | `gm{motion}` / `gmm` | Multiply (duplicate) text (default) |
 | `<leader>p{motion}` / `<leader>pp` | Replace with the register contents (custom, default `gr`) |
 | `<leader>P` | Replace to the end of the line, like `D`/`C` (custom, `<leader>p$`) |
+| `gs{motion}` / `gss` | Sort: lines when linewise, otherwise the items split on `,`, `;` or whitespace (default) |
 
-The evaluate operator (`g=`) is disabled, and the sort operator (`gs`) is
-disabled because `gs`/`gS` are the Snacks symbol pickers.
+The evaluate operator (`g=`) is disabled.
 Exchanged and replaced text is reindented linewise.
 
 #### nvim-autopairs (`99-autopairs.lua`)
@@ -695,8 +695,8 @@ fuzzy-match their whole input.
 | `<leader>fj` / `<leader>f<C-o>` | n | Jump list |
 | `<leader>fm` | n | Marks |
 | `<leader>fq` | n | Quickfix list |
-| `gs` | n | Document symbols |
-| `gS` | n | Workspace symbols (live) |
+| `<leader>fs` | n | Document symbols |
+| `<leader>fS` | n | Workspace symbols (live) |
 | `<leader>fd` | n | Document diagnostics |
 | `<leader>fD` | n | Workspace diagnostics |
 | `<leader>ft` | n | TODO comments (todo-comments) |
@@ -956,7 +956,7 @@ in which-key with an `LSP:` prefix.
 | `grr` | n | References (picker) |
 | `gri` | n | Implementations (picker) |
 | `grt` | n | Type definitions (picker) |
-| `gO` | n | Document symbols (picker); `gs` from `99-snacks.lua` is the same picker, `gS` the workspace one |
+| `gO` | n | Document symbols (picker); `<leader>fs` from `99-snacks.lua` is the same picker, `<leader>fS` the workspace one |
 | `<leader>fi` / `<leader>fo` | n | Incoming / outgoing calls (picker) |
 | `<C-s>` | n | Signature help |
 | `<leader>cr` | n | Rename |

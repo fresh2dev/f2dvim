@@ -156,7 +156,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - Every mapping gets a `desc`; group letters are marked in the description with brackets (`"[G]oto [D]efinition"`).
 - Ownership of contested keys, so they are not re-declared elsewhere:
   - `<leader>gd` is Diffview (`99-diffview.lua`); fugitive single-file diffs use `:Gvdiffsplit` or `dt` in the status buffer.
-  - `gs` / `gS` are the Snacks document / workspace symbol pickers (`99-snacks.lua`, global, not under `<leader>f`). mini.operators' sort operator (default prefix `gs`) is disabled in `99-mini.operators.lua` for that reason; don't re-enable it.
+  - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.lua`).
   - gitsigns hunk actions live under `<leader>gh*` (buffer-local) so they never shadow the global fugitive `<leader>g*` maps.
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.
   - `s`/`S`: normal `s`/`S` and visual `s` are vim-sneak (`99-sneak.lua`); visual `S` is mini.surround's "surround selection" (`99-mini.surround.lua`). Neither is mapped in operator-pending mode, so `ys`/`ds`/`cs` keep working. cutlass maps `s`/`S` first and is deliberately overridden by these later files. The visual `S` mapping must stay a `:<C-u>lua MiniSurround.add("visual")<CR>` command mapping, not a Lua callback: leaving Visual mode via `:` is what refreshes the `'<`/`'>` marks the function reads, and a callback sees the previous selection's marks (wrong text, or an out-of-range cursor error).

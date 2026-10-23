@@ -46,7 +46,7 @@ operators.setup({
 
   -- Sort text
   sort = {
-    prefix = "", -- DISABLE
+    prefix = "gs",
 
     -- Function which does the sort
     func = nil,
