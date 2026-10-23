@@ -399,7 +399,8 @@ All custom. Inside zellij (`$ZELLIJ` is set), LazyGit, `just`, `bv` and
 when the command exits. The `` <leader>` `` shell is always a Snacks terminal.
 
 `nvim` with no file opens a dashboard: the Fresh2Dev glasses drawn in box
-characters, the keys in the table below, and the Neovim version with the plugin
+characters (only when the keys still fit; their temples appear as the height
+allows), the keys in the table below, and the Neovim version with the plugin
 count and startup time (from `init.lua` to the dashboard). Keys whose tool is
 missing are hidden. `<leader><Space>` opens it again later, as a float with a
 rounded border. Each Neovim session picks a random hue for the banner, keys and

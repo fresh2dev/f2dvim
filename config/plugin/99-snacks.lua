@@ -55,6 +55,23 @@ local function key(k, icon, desc, action, enabled)
   return { key = k, icon = icon, desc = desc, action = action, enabled = enabled }
 end
 
+-- The Fresh2Dev glasses.
+local frame = {
+  "╒═════════════════════════════════════════════════════╕",
+  "│◦                                                   ◦│",
+  "╘╤═════════════════════╤═══════╤═════════════════════╤╛",
+  " │                     │       │                   ✦ │",
+  " │      F R E S H      │       │        D E V        │",
+  " ╰╮                   ╭╯   2   ╰╮                   ╭╯",
+  "  ╰───────────────────╯         ╰───────────────────╯",
+}
+-- The temples, nearest the frame first; shown as the height allows.
+local temples = {
+  " ╱                                                   ╲",
+  "  ╱                                                 ╲",
+  "   ╭                                               ╮",
+}
+
 local dashboard = {
   enabled = true,
   width = 44,
@@ -108,22 +125,27 @@ local dashboard = {
         end
       end),
     },
-    header = block(
-      [[
-   ╭                                               ╮
-  ╱                                                 ╲
- ╱                                                   ╲
-╒═════════════════════════════════════════════════════╕
-│◦                                                   ◦│
-╘╤═════════════════════╤═══════╤═════════════════════╤╛
- │                     │       │                   ✦ │
- │      F R E S H      │       │        D E V        │
- ╰╮                   ╭╯   2   ╰╮                   ╭╯
-  ╰───────────────────╯         ╰───────────────────╯  ]]
-    ),
   },
   sections = {
-    { section = "header" },
+    -- The keys and the footer come first. The glasses get the rows left over:
+    -- the frame only if it fits whole, then the temples one row at a time.
+    function(self)
+      local keys = #vim.tbl_filter(function(item)
+        return not item.hidden and item.enabled ~= false
+      end, self.opts.preset.keys)
+      -- Keys with a blank row between them, the footer, and the 2 rows of padding
+      -- after each of those and after the glasses.
+      local spare = self._size.height - (2 * keys + 1) - 3 - 2
+      if spare < #frame then
+        return
+      end
+      local rows = {}
+      for i = math.min(spare - #frame, #temples), 1, -1 do
+        rows[#rows + 1] = temples[i]
+      end
+      vim.list_extend(rows, frame)
+      return { header = block(table.concat(rows, "\n")), padding = 2 }
+    end,
     { section = "keys", gap = 1, padding = 2 },
     function()
       local plugins = #vim.tbl_filter(function(path)
