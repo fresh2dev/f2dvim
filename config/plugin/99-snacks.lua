@@ -104,6 +104,12 @@ local dashboard = {
         sessions,
         vim.env.ZELLIJ ~= nil and vim.fn.executable("fzj") == 1
       ),
+      {
+        key = "0",
+        action = sessions,
+        hidden = true,
+        enabled = vim.env.ZELLIJ ~= nil and vim.fn.executable("fzj") == 1,
+      },
       -- The f2dvim package replaces vim.pack.update with a warning.
       key("u", " ", "Update plugins", function()
         vim.pack.update()

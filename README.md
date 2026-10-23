@@ -416,7 +416,7 @@ readable, which tells sessions apart.
 | `g` | LazyGit (with `lazygit` installed) |
 | `B` | `bv`, the beads viewer (with `bv` installed) |
 | `J` | `just` (with `just` installed), like `<leader>J` |
-| `s` | Sessions, `fzj` (inside zellij, with `fzj` installed) |
+| `s` / `0` | Sessions, `fzj` (inside zellij, with `fzj` installed; `0` is not listed) |
 | `u` | Update plugins (`vim.pack.update()`; hidden when run as the `f2dvim` package) |
 | `q` | Close the dashboard; quit Neovim if no other buffer is open |
 
