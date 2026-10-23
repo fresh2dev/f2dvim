@@ -4,6 +4,43 @@ vim.pack.add({
 
 Snacks = require("snacks")
 
+--- Run `cmd` in a floating zellij pane inside zellij, else in a Snacks terminal
+--- (or `fallback`, such as Snacks.lazygit). `opts.auto_close = false` keeps the
+--- pane or terminal open after the command exits.
+---@param cmd string[]
+---@param opts? snacks.terminal.Opts
+---@param fallback? fun()
+local function terminal(cmd, opts, fallback)
+  opts = opts or {}
+  if not vim.env.ZELLIJ then
+    if fallback then
+      fallback()
+    else
+      Snacks.terminal(cmd, opts)
+    end
+    return
+  end
+  local args = { "zellij", "run", "--floating", "--name", cmd[1] }
+  vim.list_extend(args, { "--cwd", vim.fn.getcwd(), "--x", "5%", "--y", "5%" })
+  vim.list_extend(args, { "--width", "90%", "--height", "90%" })
+  if opts.auto_close ~= false then
+    table.insert(args, "--close-on-exit")
+  end
+  table.insert(args, "--")
+  vim.system(vim.list_extend(args, cmd), {}, function(res)
+    if res.code ~= 0 then
+      vim.schedule(function()
+        vim.notify(vim.trim(res.stderr), vim.log.levels.ERROR)
+      end)
+    end
+  end)
+end
+
+-- In its own zellij pane, fzj needs `--here`; otherwise it opens a second one.
+local function sessions()
+  terminal(vim.env.ZELLIJ and { "fzj", "--here" } or { "fzj" })
+end
+
 -- Shared by the picker's input and list windows. The `<a-*>` defaults are
 -- unbound because this config maps no Alt keys; their actions are not rebound.
 local picker_keys = {
@@ -196,16 +233,14 @@ vim.keymap.set("n", "<leader>`", function()
 end, { desc = "Toggle Terminal" })
 
 vim.keymap.set("n", "<leader>gg", function()
-  Snacks.lazygit()
+  terminal({ "lazygit" }, nil, Snacks.lazygit)
 end, { desc = "LazyGit" })
 
-vim.keymap.set("n", "<leader>fp", function()
-  Snacks.terminal({ "fzj" })
-end, { desc = "[F]ind [P]roject" })
+vim.keymap.set("n", "<leader>fp", sessions, { desc = "[F]ind [P]roject" })
 
 -- TODO: add commands `:LazyGit [<args>]` `:Just [<args>]`, `:J [<args>]`
 
 -- TODO: *replace* this with a command named `:Just`
 vim.keymap.set("n", "<leader>J", function()
-  Snacks.terminal({ "just" }, { auto_close = false })
+  terminal({ "just" }, { auto_close = false })
 end, { desc = "[J]ust Command Runner" })

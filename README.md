@@ -393,8 +393,10 @@ under the cursor), and `zen`. Animations are off.
 | `` <leader>` `` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
-All custom. Scratch buffers are stored per working directory under
-`~/.scratch`; there is no mapping, use `:lua Snacks.scratch()`.
+All custom. Inside zellij (`$ZELLIJ` is set), LazyGit, `just` and `fzj` open
+in a floating zellij pane instead of a Snacks terminal; `just`'s pane stays
+open after it exits. The `` <leader>` `` shell is always a Snacks
+terminal.
 
 #### which-key.nvim (`99-which-key.lua`)
 
