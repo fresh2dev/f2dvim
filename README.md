@@ -395,9 +395,8 @@ under the cursor), and `zen`. Animations are off.
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
 All custom. Inside zellij (`$ZELLIJ` is set), LazyGit, `just`, `bv` and
-`fzj` open in a floating zellij pane instead of a Snacks terminal; `just`'s pane
-stays open after it exits. The `` <leader>` `` shell is always a Snacks
-terminal.
+`fzj` open in a floating zellij pane instead of a Snacks terminal; either closes
+when the command exits. The `` <leader>` `` shell is always a Snacks terminal.
 
 `nvim` with no file opens a dashboard: the Fresh2Dev glasses drawn in box
 characters, the keys in the table below, and the Neovim version with the plugin
