@@ -176,6 +176,10 @@ local servers = {
   bashls = {
     filetypes = { "sh", "bash", "zsh" },
   },
+  -- Lint only; its formatting is stripped like every other server's.
+  rumdl = {
+    filetypes = { "markdown" },
+  },
   -- Workspace library / runtime settings for Neovim config work are injected
   -- lazily by lazydev (ftplugin/lua_lazydev.lua); don't duplicate them here.
   lua_ls = {},
