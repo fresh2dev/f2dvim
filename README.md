@@ -390,6 +390,7 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>tz` / `gz` | Toggle zoom (current window full-size); also turns off line numbers in that window |
 | `<leader>tZ` / `gZ` | Toggle zen mode; also turns off line numbers in that window |
 | `<leader>lg` | Lazygit |
+| `<leader>fp` | [F]ind [P]rojects (TODO: document) |
 | `` <leader>` `` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
