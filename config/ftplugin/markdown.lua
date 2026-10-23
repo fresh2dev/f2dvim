@@ -8,8 +8,8 @@
 -- type toggling), inline formatting, headings and the TOC, links and images,
 -- tables, fenced code blocks, blockquotes and callouts, footnotes and thematic
 -- breaks. Its default keymaps are disabled: <localleader> is <Space> here, so the
--- upstream prefixes (<localleader>t, <localleader>lt, <localleader>h) and `]b`
--- would shadow the global Toggle and Lazygit groups and buffer navigation.
+-- upstream <localleader>t prefix and `]b` would shadow the global Toggle group and
+-- buffer navigation.
 -- Everything is mapped explicitly under <localleader>m via the plugin's <Plug>
 -- mappings instead; `gd` is left to the LSP and `<C-t>` keeps its insert-mode
 -- indent.

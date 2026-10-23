@@ -11,7 +11,6 @@ require("which-key").setup({
     { "<leader>f", group = "[F]ind" },
     { "<leader>g", group = "[G]it" },
     { "<leader>gh", group = "[G]it [H]unk" },
-    { "<leader>l", group = "[L]azygit" },
     { "<leader>p", group = "[P]aste (replace with register)" },
     { "<leader>q", group = "[Q]uit" },
     { "<leader>t", group = "[T]oggle" },

@@ -137,7 +137,7 @@ it, and language servers that aren't installed are skipped.
 | Tool | Used for | Install |
 |---|---|---|
 | `rg` | `:Grep`, file and grep pickers | your package manager |
-| `lazygit` | `<leader>lg` | `go install github.com/jesseduffield/lazygit@latest` |
+| `lazygit` | `<leader>gg` | `go install github.com/jesseduffield/lazygit@latest` |
 | `dprint` | format on save (`dprint lsp`) | `npm i -g dprint` |
 | `ruff`, `ty` | Python | `uv tool install ruff`, `uv tool install ty` |
 | `tombi` | TOML | `uv tool install tombi` |
@@ -259,9 +259,8 @@ Leader groups (which-key shows these):
 | Prefix | Group | Where |
 |---|---|---|
 | `<leader>f` | Find (pickers, find and replace) | snacks, lspconfig, grug-far |
-| `<leader>g` | Git | fugitive, flog, diffview |
+| `<leader>g` | Git | fugitive, flog, diffview, snacks (lazygit) |
 | `<leader>gh` | Git hunk | gitsigns |
-| `<leader>l` | Lazygit | snacks |
 | `<leader>p` | Paste with replacement (operator) | mini.operators |
 | `<leader>q` | Quit (windows, buffers, tabs) | mini.bufremove |
 | `<leader>t` | Toggle | snacks, colorizer, which-key, toggler |
@@ -389,7 +388,7 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>ti` | Toggle indent guides |
 | `<leader>tz` / `gz` | Toggle zoom (current window full-size); also turns off line numbers in that window |
 | `<leader>tZ` / `gZ` | Toggle zen mode; also turns off line numbers in that window |
-| `<leader>lg` | Lazygit |
+| `<leader>gg` | LazyGit |
 | `<leader>fp` | [F]ind [P]rojects (TODO: document) |
 | `` <leader>` `` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
@@ -842,8 +841,7 @@ startup the working directory becomes the repository root.
 
 | Key | Action |
 |---|---|
-| `<leader>gg` | Status buffer with the commit graph in a vertical split (then presses `i` to expand the first diff) |
-| `<leader>gt` | Same, in a new tab |
+| `<leader>gt` | Status buffer with the commit graph, in a new tab (then presses `i` to expand the first diff) |
 | `<leader>go` | Same, as the only window |
 | `<leader>gO` | Same, after deleting all buffers |
 | `<leader>gb` | Blame (`:Git blame -s`) |
@@ -935,7 +933,7 @@ and `:ConflictMarkerNone` resolve the conflict under the cursor.
 
 #### lazygit (snacks)
 
-`<leader>lg` opens lazygit in a floating terminal; see snacks above.
+`<leader>gg` opens lazygit in a floating terminal; see snacks above.
 
 ### LSP, completion, formatting, syntax
 
@@ -1048,7 +1046,7 @@ Pair it with zellij-autolock so Zellij keybindings do not intercept Neovim's.
 
 **markdown-plus.nvim** replaces vim-markdown-toc, markdown-toggle.nvim and the
 old hand-written link helper. Its default keymaps are off (they collide with
-the `<leader>t` and `<leader>l` groups and `]b`, since `<localleader>` is also
+the `<leader>t` group and `]b`, since `<localleader>` is also
 `<Space>`); everything is mapped buffer-locally under `<localleader>m`, which
 which-key shows as a group in markdown buffers.
 

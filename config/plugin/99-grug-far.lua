@@ -4,7 +4,7 @@ vim.pack.add({
 
 -- <localleader> is <Space> here, and a buffer-local map that fully matches fires
 -- without waiting, so a <localleader> key below must not equal a global <leader>
--- map or prefix (upstream's <localleader>l/q/t/f/p/w/x all would). <localleader>qq
+-- map or prefix (upstream's <localleader>q/t/f/p/w/x all would). <localleader>qq
 -- deliberately takes over the global "Quit smart". Editing result lines and syncing
 -- them back is disabled; replacements go through Replace or Apply Next/Prev.
 require("grug-far").setup({

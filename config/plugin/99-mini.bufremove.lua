@@ -106,7 +106,7 @@ end
 -- [[ Actions ]]
 
 --- Delete git buffers. Windows showing them are closed first (unless a window
---- is the last one in its tab), so the splits opened by `<leader>gg` go away
+--- is the last one in its tab), so the splits opened by `<leader>gt` go away
 --- instead of being swapped to some other buffer.
 ---@param force boolean|nil
 local function quit_git(force)

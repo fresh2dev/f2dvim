@@ -29,12 +29,6 @@ end
 
 vim.keymap.set(
   "n",
-  "<leader>gg",
-  git_status_with_graph({ status = "Git", graph = "vertical" }),
-  { desc = "Open [G]it" }
-)
-vim.keymap.set(
-  "n",
   "<leader>gt",
   git_status_with_graph({ before = "tabnew", status = "0Git", graph = "" }),
   { desc = "Open [G]it in new [T]ab" }
