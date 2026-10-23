@@ -1,6 +1,5 @@
 -- [[ LSP Configuration ]]
 
--- Useful status updates for LSP.
 vim.pack.add({
   {
     src = "https://github.com/neovim/nvim-lspconfig",
@@ -21,57 +20,33 @@ require("symbol-usage").setup({
   kinds = { SymbolKind.Class, SymbolKind.Method, SymbolKind.Function },
 })
 
---  This function gets run when an LSP attaches to a particular buffer.
---    That is to say, every time a new file is opened that is associated with
---    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
---    function will be executed to configure the current buffer
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
   callback = function(event)
-    -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-    -- to define small helper and utility functions so you don't have to repeat yourself.
-    --
-    -- In this case, we create a function that lets us more easily define mappings specific
-    -- for LSP related items. It sets the mode, buffer and description for us each time.
     local map = function(keys, func, desc, mode)
       mode = mode or "n"
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
     end
 
-    -- NOTE: Neovim >= 0.11 already maps `K`, `grn`, `gra`, `grr`, `gri`, `grt`
-    -- and `gO` in LSP buffers, and `[d`/`]d` everywhere (the float comes from
-    -- `jump.on_jump` in init.lua).
+    -- Neovim's own `K`, `grn`, `gra`, `grx` and insert-mode `<C-s>` are not
+    -- re-declared; nor is `[d`/`]d`, whose float comes from `jump.on_jump` in init.lua.
     local pick = function(keys, source, desc)
       map(keys, function()
         Snacks.picker[source]()
       end, desc)
     end
 
-    -- Jump to the definition of the word under your cursor.
-    --  This is where a variable was first declared, or where a function is defined, etc.
-    --  To jump back, press <C-t>.
     pick("gd", "lsp_definitions", "[G]oto [D]efinition")
 
     -- Open signature help (normal mode; insert-mode <C-s> is a Neovim default)
     map("<C-s>", vim.lsp.buf.signature_help, "Signature Help")
-    -- Find references for the word under your cursor.
     pick("grr", "lsp_references", "[G]oto [R]eferences")
-    -- Jump to the implementation of the word under your cursor.
-    --  Useful when your language has ways of declaring types without an actual implementation.
     pick("gri", "lsp_implementations", "[G]oto [I]mplementation")
-    -- Jump to the type of the word under your cursor.
-    --  Useful when you're not sure what type a variable is and you want to see
-    --  the definition of its *type*, not where it was *defined*.
     pick("grt", "lsp_type_definitions", "[G]oto [T]ype Definition")
-    -- Fuzzy find all the symbols in your current document.
-    --  Symbols are things like variables, functions, types, etc.
     pick("gO", "lsp_symbols", "[D]ocument [S]ymbols")
-    -- Call hierarchy: who calls the function under the cursor, and what it calls.
     pick("grI", "lsp_incoming_calls", "[G]oto [I]ncoming Calls")
     pick("grO", "lsp_outgoing_calls", "[G]oto [O]utgoing Calls")
 
-    -- This is not Goto Definition, this is Goto Declaration.
-    --  For example, in C this would take you to the header.
     map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
     -- NOTE: disabled in favor of `Snacks.toggle.diagnostics`
@@ -80,11 +55,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     --   vim.diagnostic[vim.diagnostic.is_enabled() and 'disable' or 'enable']()
     -- end, '[T]oggle [D]iagnostics')
 
-    -- The following two autocommands are used to highlight references of the
-    -- word under your cursor when your cursor rests there for a little while.
-    --    See `:help CursorHold` for information about when this is executed
-    --
-    -- When you move your cursor, the highlights will be cleared (the second autocommand).
     local client = vim.lsp.get_client_by_id(event.data.client_id)
 
     -- dprint is the only formatter: strip formatting from every other server
@@ -154,9 +124,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 -- Language servers. There is no Mason: every server must already be on $PATH.
--- Add a server by adding an entry here; the loop at the bottom applies it with
--- `vim.lsp.config()` + `vim.lsp.enable()`.
---  See `:help lsp-config` for information about keys and how to configure
 ---@type table<string, vim.lsp.Config>
 local servers = {
   ty = {

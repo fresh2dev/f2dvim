@@ -15,7 +15,6 @@ require("nvim-toggler").setup({
   -- autoselect_longest_match = false,
 })
 
--- "Toggle Alternative"
 vim.keymap.set(
   { "n", "v" },
   "<leader>ta",

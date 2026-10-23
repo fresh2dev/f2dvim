@@ -12,7 +12,7 @@ require("mini.basics").setup({
     basic = false,
     option_toggle_prefix = "",
     move_with_alt = false,
-    -- Create `<C-hjkl>` mappings for window navigation
+    -- `<C-hjkl>` window navigation and `<C-Arrow>` resizing
     windows = true,
   },
   autocommands = {

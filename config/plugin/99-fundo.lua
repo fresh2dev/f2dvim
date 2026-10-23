@@ -3,10 +3,11 @@ vim.pack.add({
   { src = "https://github.com/kevinhwang91/promise-async" },
 })
 
--- NOTE: 'undofile' is enabled in init.lua; fundo only makes it persistent.
+-- fundo needs 'undofile' (set in init.lua). It keeps the undo history usable after
+-- the file changes outside Neovim.
 local fundo = require("fundo")
 fundo.install()
 fundo.setup({
-  -- Limit the archives directory size, unit is MB(megabyte), elder files will be removed based on their modified time
+  -- In MB; the oldest archives are removed first.
   limit_archives_size = 512,
 })

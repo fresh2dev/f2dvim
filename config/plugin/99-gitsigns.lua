@@ -21,10 +21,10 @@ gitsigns.setup({
     row = -5,
     col = 1,
   },
-  signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-  numhl = true, -- Toggle with `:Gitsigns toggle_numhl`
-  linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
-  word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
+  signcolumn = true,
+  numhl = true,
+  linehl = false,
+  word_diff = false,
   on_attach = function(bufnr)
     local function map(mode, l, r, opts)
       opts = opts or {}
@@ -32,7 +32,6 @@ gitsigns.setup({
       vim.keymap.set(mode, l, r, opts)
     end
 
-    -- Navigation
     map("n", "]c", function()
       if vim.wo.diff then
         vim.cmd.normal({ "]c", bang = true })

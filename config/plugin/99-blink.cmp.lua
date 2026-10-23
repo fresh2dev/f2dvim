@@ -8,7 +8,6 @@ vim.pack.add({
 -- DOCS: https://cmp.saghen.dev
 require("blink.cmp").setup({
   keymap = {
-    -- https://cmp.saghen.dev/configuration/keymap.html#super-tab
     preset = "default",
     -- ['<C-e>'] = { 'hide', 'fallback' },
     -- ['<C-y>'] = { 'select_and_accept', 'fallback' },
@@ -17,10 +16,11 @@ require("blink.cmp").setup({
     -- ['<C-p>'] = { 'select_prev', 'fallback' },
     -- ['<C-n>'] = { 'select_next', 'fallback' },
     --
+    -- A variant of the super-tab recipe:
+    -- https://cmp.saghen.dev/configuration/keymap.html#super-tab
     ["<Tab>"] = {
       function(_cmp)
         if require("blink.cmp.completion.list").get_selected_item() then
-          -- Only accept on tab if an item is selected.
           return _cmp.accept()
         end
       end,
@@ -30,8 +30,6 @@ require("blink.cmp").setup({
     ["<CR>"] = { "accept", "fallback" },
   },
   appearance = {
-    -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-    -- Adjusts spacing to ensure icons are aligned
     nerd_font_variant = "mono",
   },
   cmdline = {
@@ -45,11 +43,9 @@ require("blink.cmp").setup({
     },
     sources = function()
       local type = vim.fn.getcmdtype()
-      -- Search forward and backward
       if type == "/" or type == "?" then
         return { "buffer" }
       end
-      -- Commands
       if type == ":" or type == "@" then
         return { "cmdline" }
       end
@@ -62,20 +58,15 @@ require("blink.cmp").setup({
       },
       list = {
         selection = {
-          -- When `true`, will automatically select the first item in the completion list
           preselect = false,
-          -- When `true`, inserts the completion item automatically when selecting it
           auto_insert = true,
         },
       },
-      -- Whether to automatically show the window when new completion items are available
       menu = { auto_show = false },
-      -- Displays a preview of the selected item on the current line
       ghost_text = { enabled = true },
     },
   },
   enabled = function()
-    -- Disable in prompt / explorer buffers
     local filetype = vim.bo[0].filetype
     if
       filetype == "minifiles"
@@ -89,23 +80,18 @@ require("blink.cmp").setup({
   completion = {
     keyword = { range = "full" },
 
-    -- When false, will not show the completion window automatically when in a snippet
     trigger = { show_in_snippet = false },
 
     list = {
-      -- Controls if completion items will be selected automatically,
-      -- and whether selection automatically inserts
       selection = { preselect = false, auto_insert = false },
     },
 
-    -- Disable auto brackets
-    -- NOTE: some LSPs may add auto brackets themselves anyway
+    -- Some LSPs still put brackets in their completion text.
     accept = { auto_brackets = { enabled = false } },
 
     menu = {
       enabled = true,
 
-      -- Whether to automatically show the window when new completion items are available
       auto_show = true,
 
       -- nvim-cmp style menu
@@ -118,16 +104,12 @@ require("blink.cmp").setup({
     },
 
     documentation = {
-      -- Controls whether the documentation window will automatically show when selecting a completion item
       auto_show = true,
-      -- Delay before showing the documentation window
       auto_show_delay_ms = 500,
     },
 
-    -- Displays a preview of the selected item on the current line
     ghost_text = { enabled = false },
   },
-  -- Shows a signature help window while you type arguments for a function
   signature = {
     enabled = true,
     window = {
@@ -135,8 +117,8 @@ require("blink.cmp").setup({
     },
   },
   sources = {
-    -- list of enabled providers. `lazydev` is only added for Lua buffers, where
-    -- ftplugin/lua_lazydev.lua has already installed and configured it.
+    -- `lazydev` only for Lua buffers, where ftplugin/lua_lazydev.lua has already
+    -- installed and configured it.
     default = function()
       local sources = { "lsp", "path", "buffer" }
       if vim.bo.filetype == "lua" then
@@ -145,7 +127,6 @@ require("blink.cmp").setup({
       return sources
     end,
 
-    -- table of providers to configure
     providers = {
       lazydev = {
         name = "LazyDev",

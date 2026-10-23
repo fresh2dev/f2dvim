@@ -1,4 +1,3 @@
--- Hides the colorcolumn when unneeded.
 vim.pack.add({
   { src = "https://github.com/m4xshen/smartcolumn.nvim" },
 })

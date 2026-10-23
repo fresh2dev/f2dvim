@@ -103,17 +103,15 @@ vim.keymap.set(
   { desc = "[G]it [P]ush (force)" }
 )
 
--- Automatically `cd` to the git root on startup.
--- NOTE: this is global behaviour that other plugins inherit: fzf-lua
--- (`oldfiles.cwd_only`), `:Grep`, blink's path source (`get_cwd`) and Snacks
--- scratch (`filekey.cwd`) all operate relative to this cwd.
+-- `cd` to the git root on startup. Everything that works relative to the cwd
+-- inherits it: the Snacks pickers, `:Grep` and blink's path source (`get_cwd`).
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     vim.cmd("silent! Gcd")
   end,
 })
 
--- " Quit fugitive with `q`:
+-- `gq` is fugitive's (and flog's) own "close".
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "fugitive,fugitiveblame,floggraph",
   callback = function()
@@ -128,8 +126,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- " always delete hidden buffers of these types,
--- " so git never waits for them to close.
+-- Delete these buffers once hidden, so git never waits for them to close.
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "gitcommit,gitrebase",
   callback = function()
@@ -137,7 +134,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- " `<CR>` opens blame in new split:
+-- In blame buffers, `<CR>` opens the commit in a split (fugitive's `o`).
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "fugitiveblame",
   callback = function()
@@ -145,7 +142,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- " `O` opens a vsplit in Fugitive (overrides opening in tab)
+-- `O` opens in a vertical split (fugitive's `gO`) instead of a new tab.
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "fugitive",
   callback = function()
@@ -169,6 +166,5 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Set `g`, `git` as an abbreviation for `Git` in command mode
 require("util").cabbrev("g", "Git")
 require("util").cabbrev("git", "Git")

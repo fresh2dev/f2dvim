@@ -27,26 +27,18 @@ require("mini.surround").setup({
   -- Number of lines within which surrounding is searched
   n_lines = 25,
 
-  -- Whether to respect selection type:
-  -- - Place surroundings on separate lines in linewise mode.
-  -- - Place surroundings on each line in blockwise mode.
   respect_selection_type = false,
 
-  -- How to search for surrounding (first inside current line, then inside
-  -- neighborhood). One of 'cover', 'cover_or_next', 'cover_or_prev',
-  -- 'cover_or_nearest', 'next', 'prev', 'nearest'. For more details,
-  -- see `:h MiniSurround.config`.
   search_method = "cover",
 
-  -- Whether to disable showing non-error feedback
   silent = false,
 })
 
--- Remap adding surrounding to Visual mode selection.
--- Must be a `:<C-u>` command mapping, not a Lua callback: the command leaves
--- Visual mode first, which is what updates the `'<`/`'>` marks that
--- `MiniSurround.add("visual")` reads. Calling it from a callback while still
--- in Visual mode reads the previous selection's marks (possibly out of range).
+-- Visual `S` replaces visual `ys`. It must be a `:<C-u>` command mapping, not a
+-- Lua callback: the command leaves Visual mode first, which is what updates the
+-- `'<`/`'>` marks that `MiniSurround.add("visual")` reads. Calling it from a
+-- callback while still in Visual mode reads the previous selection's marks
+-- (possibly out of range).
 vim.keymap.del("x", "ys")
 vim.keymap.set(
   "x",
@@ -55,5 +47,4 @@ vim.keymap.set(
   { silent = true, desc = "Surround selection" }
 )
 
--- Make special mapping for "add surrounding for line"
 vim.keymap.set("n", "yss", "ys_", { remap = true, desc = "Surround line" })

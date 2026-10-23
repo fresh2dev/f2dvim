@@ -33,16 +33,16 @@ Snacks.setup({
   input = { enabled = true },
   lazygit = {
     enabled = true,
-    -- automatically configure lazygit to use the current colorscheme
-    -- and integrate edit with the current neovim instance
+    -- Don't generate a lazygit config (theme, editing in this Neovim); lazygit's
+    -- own config applies.
     configure = false,
   },
   notifier = {
     enabled = true,
     timeout = 5000,
-    style = "minimal", -- 'compact', 'fancy', 'minimal'
+    style = "minimal",
   },
-  -- The picker for everything, and the `vim.ui.select` handler.
+  -- Also the `vim.ui.select` handler.
   picker = {
     enabled = true,
     layout = "vertical",
@@ -70,7 +70,7 @@ Snacks.setup({
   },
   quickfile = { enabled = false }, -- Doesn't make much of a difference.
   scratch = { enabled = false },
-  scroll = { enabled = false }, -- Still buggy.
+  scroll = { enabled = false }, -- Buggy.
   statuscolumn = { enabled = true },
   terminal = { enabled = true },
   words = { enabled = true },
@@ -101,7 +101,7 @@ Snacks.setup({
       win = {
         style = "zen",
         backdrop = { transparent = false, blend = 0 },
-        width = 0.8, -- full width
+        width = 0.8,
       },
     },
   },
@@ -109,7 +109,6 @@ Snacks.setup({
 
 vim.g.snacks_animate = false
 
--- Create some toggle mappings
 Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>ts")
 Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>tw")
 -- Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>tL'
@@ -166,7 +165,6 @@ pick("n", "U", "undo", "Undotree")
 pick("n", "<leader>fs", "lsp_symbols", "[F]ind [S]ymbols (buffer)")
 pick("n", "<leader>fS", "lsp_workspace_symbols", "[F]ind [S]ymbols (workspace)")
 
--- Make it easier to get out of terminal mode using Ctrl-w
 vim.keymap.set("t", "<C-w>", "<C-\\><C-n><C-w>", { desc = "Window Navigation" })
 
 vim.keymap.set("n", "<leader>tz", function()
@@ -205,7 +203,7 @@ vim.keymap.set("n", "<leader>fp", function()
   Snacks.terminal({ "fzj" })
 end, { desc = "[F]ind [P]roject" })
 
--- # TODO: add commands `:LazyGit [<args>]` `:Just [<args>]`, `:J [<args>]`
+-- TODO: add commands `:LazyGit [<args>]` `:Just [<args>]`, `:J [<args>]`
 
 -- TODO: *replace* this with a command named `:Just`
 vim.keymap.set("n", "<leader>J", function()

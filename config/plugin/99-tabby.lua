@@ -1,10 +1,8 @@
--- Simple tabline, customized to only show tab #.
 vim.pack.add({
   { src = "https://github.com/nanozuki/tabby.nvim" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
 })
 
--- Colours come from the active colorscheme's tabline groups.
 local theme = {
   current = "TabLineSel",
   not_current = "TabLine",

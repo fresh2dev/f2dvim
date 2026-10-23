@@ -45,7 +45,7 @@ vim.api.nvim_create_autocmd("WinClosed", {
   end,
 })
 
--- Auto-close minimap if cursor is near the edge
+-- Hide the map while the cursor is near the right edge, where the map covers text.
 vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
   callback = function()
     local _, col = unpack(vim.api.nvim_win_get_cursor(0))

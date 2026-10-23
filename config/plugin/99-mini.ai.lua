@@ -9,14 +9,10 @@ MiniExtra.setup({})
 local ai = require("mini.ai")
 
 ai.setup({
-  -- Table with textobject id as fields, textobject specification as values.
-  -- Also use this to disable builtin textobjects. See |MiniAi.config|.
   custom_textobjects = {
     -- Make `ae` / `ie` act on around/inside *e*ntire buffer
     e = MiniExtra.gen_ai_spec.buffer(),
-    -- For more complicated textobjects that require structural awareness,
-    -- use tree-sitter. This example makes `aF`/`iF` mean around/inside function
-    -- definition (not call). See `:h MiniAi.gen_spec.treesitter()` for details.
+    -- `aF`/`iF`: around/inside a function definition (not a call), via treesitter
     F = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }),
   },
 
@@ -25,10 +21,8 @@ ai.setup({
 
   -- Module mappings. Use `''` (empty string) to disable one.
   mappings = {
-    -- Main textobject prefixes
     around = "a",
     inside = "i",
-    -- Next/last variants
     around_next = "", -- 'an',
     inside_next = "", -- 'in',
     around_last = "", -- 'al',

@@ -14,7 +14,6 @@ require("which-key").setup({
     { "<leader>p", group = "[P]aste (replace with register)" },
     { "<leader>q", group = "[Q]uit" },
     { "<leader>t", group = "[T]oggle" },
-    -- Fold mappings
     { "]z", desc = "Jump to end of current fold" },
     { "[z", desc = "Jump to beginning of current fold" },
     { "zj", desc = "Jump to next fold" },

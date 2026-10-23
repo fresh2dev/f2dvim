@@ -2,36 +2,24 @@
 -- SECTION 1: FOUNDATION
 -- Core Neovim settings, leaders, options, basic keymaps, basic autocmds
 -- ============================================================
--- Enable faster startup by caching compiled Lua modules
 vim.loader.enable()
 
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+-- Set before any plugin file runs: a mapping binds the leader in effect when made.
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- [[ Setting options ]]
---  See `:help vim.o`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
 
--- Make line numbers default
 vim.o.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
 -- vim.o.relativenumber = true
 
--- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = "a"
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
+-- Use the system clipboard. Deferred because loading the clipboard provider slows
+-- startup.
 vim.schedule(function()
   vim.o.clipboard = "unnamedplus"
 end)
@@ -94,52 +82,35 @@ then
   }
 end
 
--- Enable break indent
 vim.o.breakindent = true
 
--- Enable undo/redo changes even after closing and reopening a file
 vim.o.undofile = true
 
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
--- Keep signcolumn on by default
 vim.o.signcolumn = "yes"
 
--- Decrease update time
+-- Also the CursorHold delay (LSP reference highlights, mini.map).
 vim.o.updatetime = 250
 
 -- -- Decrease mapped sequence wait time
 -- vim.o.timeoutlen = 300
 
--- Configure how new splits should be opened
 vim.o.splitright = true
 vim.o.splitbelow = true
 
--- Sets how neovim will display certain whitespace characters in the editor.
---  See `:help 'list'`
---  and `:help 'listchars'`
---
---  Notice listchars is set using `vim.opt` instead of `vim.o`.
---  It is very similar to `vim.o` but offers an interface for conveniently interacting with tables.
---   See `:help lua-options`
---   and `:help lua-guide-options`
 vim.o.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
--- Preview substitutions live, as you type!
+-- Preview `:s` live; matches off screen show in a split.
 vim.o.inccommand = "split"
 
--- Show which line your cursor is on
 vim.o.cursorline = true
 
--- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
 
--- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
--- instead raise a dialog asking if you wish to save the current file(s)
--- See `:help 'confirm'`
 vim.o.confirm = true
 
 -- Reload file when changed externally (autoread is on by default; this triggers the check)
@@ -170,7 +141,6 @@ vim.opt.foldopen:remove({ "hor", "block" })
 vim.o.writebackup = false
 vim.o.swapfile = false
 
--- Tabs insert spaces; default indent width is 4
 vim.o.expandtab = true
 vim.o.shiftwidth = 4
 vim.o.tabstop = 4
@@ -178,19 +148,15 @@ vim.o.tabstop = 4
 -- When wrap is on, break lines at word boundaries rather than mid-word
 vim.o.linebreak = true
 
--- Disable line wrapping by default
 vim.o.wrap = false
 
--- Use a dark background
 vim.o.background = "dark"
 
--- 24-bit RGB colors, required by many fancy UI plugins
 vim.o.termguicolors = true
 
--- Single global statusline shared across windows
+-- Global statusline: lualine's `globalstatus` and snacks zen expect it.
 vim.o.laststatus = 3
 
--- Rounded borders for floating windows (Neovim >= 0.11)
 vim.o.winborder = "rounded"
 
 -- Don't shift `#`-prefixed lines to column 0 (preserves comment indent)
@@ -238,7 +204,6 @@ vim.api.nvim_create_autocmd("QuickFixCmdPost", {
   command = "lwindow",
 })
 
--- Route plain `:grep` / `:lgrep` through `:Grep` / `:LGrep`
 require("util").cabbrev("grep", "Grep")
 require("util").cabbrev("lgrep", "LGrep")
 
@@ -261,13 +226,11 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Auto-balance splits when the host window is resized
 vim.api.nvim_create_autocmd("VimResized", {
   desc = "Auto-resize splits when the host window changes size",
   command = "wincmd =",
 })
 
--- Restore last cursor position when reopening a file
 vim.api.nvim_create_autocmd("BufReadPost", {
   desc = "Jump to the last edit position when opening a file",
   callback = function()
@@ -296,7 +259,6 @@ vim.api.nvim_create_autocmd({ "InsertEnter", "WinLeave" }, {
   end,
 })
 
--- Start terminal buffers in insert mode
 vim.api.nvim_create_autocmd("TermOpen", {
   desc = "Start terminal buffers in insert mode",
   group = vim.api.nvim_create_augroup("TermOpenInsert", { clear = true }),
@@ -309,7 +271,6 @@ vim.api.nvim_create_autocmd("TermOpen", {
 })
 
 -- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
 
 -- Better up/down for wrapped lines: with no count, move by visual line (`gj`/`gk`),
 -- but with a count, jump by logical lines so relative jumps still hit the right target
@@ -324,13 +285,11 @@ for _, lhs in ipairs({ "k", "<Up>" }) do
   end, { expr = true, silent = true })
 end
 
--- Search inside the current visual selection
 vim.keymap.set("x", "g/", [[<esc>/\%V]], { desc = "Search inside selection" })
 
 -- Exit terminal-insert mode with <C-u> for easier scrollback
 vim.keymap.set("t", "<C-u>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 
--- :ls then prompt for a buffer number
 vim.keymap.set("n", "gb", ":ls<CR>:b<Space>", { desc = "List buffers and switch" })
 
 -- Wrap a mapping so `.` replays the whole mapping (register and count included).
@@ -447,10 +406,8 @@ vim.keymap.set("c", "<C-p>", function()
   return vim.fn.wildmenumode() == 1 and "<C-p>" or "<Up>"
 end, { expr = true, desc = "Previous in history (or wildmenu)" })
 
--- Paste over a selection without the replaced text taking over the register
 vim.keymap.set("x", "p", "pgvy", { desc = "Paste over selection (keep register)" })
 
--- Visual select the last pasted text
 vim.keymap.set("n", "gp", "`[v`]", { desc = "Select last pasted text" })
 
 -- Dot-repeat that keeps the cursor on the text it was on. A [count] is passed
@@ -570,19 +527,15 @@ vim.keymap.set(
   { desc = "Add comment line above" }
 )
 
--- Clear highlights on search when pressing <Esc> in normal mode
---  See `:help hlsearch`
 vim.keymap.set("n", "<Esc>", "<Cmd>nohlsearch<CR>", { desc = "Clear search highlight" })
 
--- Diagnostic Config & Keymaps
---  See `:help vim.diagnostic.Opts`
+-- Diagnostics; see `:help vim.diagnostic.Opts`.
 vim.diagnostic.config({
   update_in_insert = false,
   severity_sort = true,
   float = { border = "rounded", source = "if_many" },
   underline = { severity = { min = vim.diagnostic.severity.WARN } },
 
-  -- Can switch between these as you prefer
   virtual_text = true, -- Text shows up at the end of the line
   virtual_lines = false, -- Text shows up underneath the line, with virtual lines
 
@@ -605,11 +558,7 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" }
 -- by mini.basics (plugin/99-mini.basics.lua).
 
 -- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
 
--- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.hl.on_yank()`
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
   group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
@@ -623,20 +572,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- vim.pack build hooks
 -- ============================================================
 do
-  -- [[ Intro to `vim.pack` ]]
-  -- `vim.pack` is a new plugin manager built into Neovim,
-  --  which provides a Lua interface for installing and managing plugins.
-  --
-  --  See `:help vim.pack`, `:help vim.pack-examples` or the
-  --  excellent blog post from the creator of vim.pack and mini.nvim:
-  --  https://echasnovski.com/blog/2026-03-13-a-guide-to-vim-pack
-  --
-  --  To inspect plugin state and pending updates, run
-  --    :lua vim.pack.update(nil, { offline = true })
-  --
-  --  To update plugins, run
-  --    :lua vim.pack.update()
-
   local function run_build(name, cmd, cwd)
     local result = vim.system(cmd, { cwd = cwd }):wait()
     if result.code ~= 0 then
@@ -653,10 +588,7 @@ do
     end
   end
 
-  -- This autocommand runs after a plugin is installed or updated and
-  --  runs the appropriate build command for that plugin if necessary.
-  --
-  -- See `:help vim.pack-events`
+  -- Build steps after a plugin is installed or updated (`:help vim.pack-events`).
   vim.api.nvim_create_autocmd("PackChanged", {
     callback = function(ev)
       local name = ev.data.spec.name

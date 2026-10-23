@@ -223,7 +223,7 @@ for name, spec in pairs({
 end
 
 -- [[ Keymaps ]]
--- Every rhs is an Ex command so `:FzfLua keymaps` shows what the key runs.
+-- Every rhs is an Ex command so the keymaps picker (`<leader>fk`) shows what it runs.
 for _, m in ipairs({
   { "w", "w", "Write" },
   { "W", "wa", "Write all" },

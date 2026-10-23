@@ -5,16 +5,13 @@ vim.pack.add({
 local operators = require("mini.operators")
 
 operators.setup({
-  -- No need to copy this inside `setup()`. Will be used automatically.
-  -- Each entry configures one operator.
-  -- `prefix` defines keys mapped during `setup()`: in Normal mode
-  -- to operate on textobject and line, in Visual - on selection.
+  -- `prefix` maps the operator in Normal mode (textobject and line) and in Visual
+  -- mode (selection); `""` maps nothing.
 
   -- Evaluate text and replace with output
   evaluate = {
-    prefix = "", -- DISABLE
+    prefix = "",
 
-    -- Function which does the evaluation
     func = nil,
   },
 
@@ -23,7 +20,6 @@ operators.setup({
   exchange = {
     prefix = "",
 
-    -- Whether to reindent new text to match previous indent
     reindent_linewise = true,
   },
 
@@ -31,16 +27,14 @@ operators.setup({
   multiply = {
     prefix = "gm",
 
-    -- Function which can modify text before multiplying
     func = nil,
   },
 
   -- Replace text with register
   replace = {
-    -- NOTE: Default `gr*` LSP mappings are removed
+    -- Not the default `gr`: that is Neovim's LSP prefix.
     prefix = "<leader>p",
 
-    -- Whether to reindent new text to match previous indent
     reindent_linewise = true,
   },
 
@@ -48,7 +42,6 @@ operators.setup({
   sort = {
     prefix = "gs",
 
-    -- Function which does the sort
     func = nil,
   },
 })

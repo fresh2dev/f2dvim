@@ -9,7 +9,6 @@ vim.cmd.runtime("plugin/zellij-agent-pane.lua")
 
 -- Visual maps must be `:` command mappings, not `<cmd>`: leaving Visual mode via `:`
 -- passes the selection as the range and refreshes the `'<`/`'>` marks.
--- Each asks for an Instruction and Submits on <Enter>; <Esc> cancels.
 local maps = {
   { "n", "a", "ZapSend", "Send prompt to Agent Pane" },
   { "x", "a", "ZapSend", "Send selection to Agent Pane" },
