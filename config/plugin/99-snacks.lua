@@ -41,6 +41,112 @@ local function sessions()
   terminal(vim.env.ZELLIJ and { "fzj", "--here" } or { "fzj" })
 end
 
+--- Pad every line of `text` to the widest. Snacks centres each line of the
+--- header on its own width, and the commit hooks strip trailing spaces.
+local function block(text)
+  local lines = vim.split(text, "\n")
+  local width = 0
+  for _, line in ipairs(lines) do
+    width = math.max(width, vim.api.nvim_strwidth(line))
+  end
+  for i, line in ipairs(lines) do
+    lines[i] = line .. (" "):rep(width - vim.api.nvim_strwidth(line))
+  end
+  return table.concat(lines, "\n")
+end
+
+local function key(k, icon, desc, action, enabled)
+  return { key = k, icon = icon, desc = desc, action = action, enabled = enabled }
+end
+
+local dashboard = {
+  enabled = true,
+  width = 44,
+  preset = {
+    keys = {
+      key("f", " ", "Find files", function()
+        Snacks.picker.smart()
+      end),
+      key("g", " ", "Grep", function()
+        Snacks.picker.grep()
+      end),
+      key("\\", " ", "Explore", function()
+        require("mini.files").open(nil, false)
+      end),
+      key("e", " ", "Empty buffer", "<Cmd>enew | startinsert<CR>"),
+      key("G", " ", "LazyGit", function()
+        terminal({ "lazygit" }, nil, Snacks.lazygit)
+      end, vim.fn.executable("lazygit") == 1),
+      key("B", " ", "Beads", function()
+        terminal({ "bv" })
+      end, vim.fn.executable("bv") == 1),
+      key("J", " ", "Just", function()
+        terminal({ "just" }, { auto_close = false })
+      end, vim.fn.executable("just") == 1),
+      key(
+        "s",
+        " ",
+        "Sessions",
+        sessions,
+        vim.env.ZELLIJ ~= nil and vim.fn.executable("fzj") == 1
+      ),
+      -- The f2dvim package replaces vim.pack.update with a warning.
+      key("u", " ", "Update plugins", function()
+        vim.pack.update()
+      end, vim.env.NVIM_APPNAME ~= "f2dvim"),
+      -- Snacks has already closed a floating dashboard before running an action.
+      -- One that owns its window (at startup) quits Neovim when no listed buffer
+      -- is left, else mini.bufremove deletes it and keeps the window.
+      key("q", " ", "Close", function(self)
+        if not vim.api.nvim_buf_is_valid(self.buf) then
+          return
+        end
+        local listed = vim.tbl_filter(function(buf)
+          return vim.bo[buf].buflisted
+        end, vim.api.nvim_list_bufs())
+        if #listed == 0 then
+          vim.cmd.quitall()
+        else
+          MiniBufremove.delete(self.buf)
+        end
+      end),
+    },
+    header = block(
+      [[
+   ╭                                               ╮
+  ╱                                                 ╲
+ ╱                                                   ╲
+╒═════════════════════════════════════════════════════╕
+│◦                                                   ◦│
+╘╤═════════════════════╤═══════╤═════════════════════╤╛
+ │                     │       │                   ✦ │
+ │      F R E S H      │       │        D E V        │
+ ╰╮                   ╭╯   2   ╰╮                   ╭╯
+  ╰───────────────────╯         ╰───────────────────╯  ]]
+    ),
+  },
+  sections = {
+    { section = "header" },
+    { section = "keys", gap = 1, padding = 2 },
+    function()
+      local plugins = #vim.tbl_filter(function(path)
+        return path:find("/pack/[^/]+/opt/") ~= nil
+      end, vim.api.nvim_list_runtime_paths())
+      local v = vim.version()
+      local ms = math.floor((vim.uv.hrtime() - vim.g.start_hrtime) / 1e6 + 0.5)
+      return {
+        align = "center",
+        padding = 2,
+        text = {
+          { ("Neovim %d.%d.%d"):format(v.major, v.minor, v.patch), hl = "footer" },
+          { "  ·  ", hl = "footer" },
+          { ("%d plugins in %d ms"):format(plugins, ms), hl = "footer" },
+        },
+      }
+    end,
+  },
+}
+
 -- Shared by the picker's input and list windows. The `<a-*>` defaults are
 -- unbound because this config maps no Alt keys; their actions are not rebound.
 local picker_keys = {
@@ -62,9 +168,19 @@ local picker_keys = {
 }
 
 Snacks.setup({
+  styles = {
+    -- Only the floating dashboard (`<leader><Space>`) can have a border.
+    dashboard = {
+      border = "rounded",
+      wo = {
+        winhighlight = "Normal:SnacksDashboardNormal,NormalFloat:SnacksDashboardNormal,"
+          .. "FloatBorder:SnacksDashboardBorder",
+      },
+    },
+  },
   animate = { enabled = false },
   bigfile = { enabled = true },
-  dashboard = { enabled = false },
+  dashboard = dashboard,
   -- Guides only: mini.indentscope draws the current scope.
   indent = { enabled = true, scope = { enabled = false } },
   input = { enabled = true },
@@ -223,6 +339,44 @@ vim.keymap.set("n", "gZ", function()
   Snacks.zen.zen()
   vim.cmd("setlocal nonumber")
 end, { desc = "[G]o [Z]en" })
+
+--- An sRGB hex colour for OKLCH lightness `l`, chroma `c` and hue `h` (degrees).
+--- OKLCH is perceptually uniform: every hue at the same `l` and `c` looks equally
+--- bright. Out-of-gamut channels are clipped.
+local function oklch(l, c, h)
+  local a, b = c * math.cos(math.rad(h)), c * math.sin(math.rad(h))
+  local l_ = (l + 0.3963377774 * a + 0.2158037573 * b) ^ 3
+  local m_ = (l - 0.1055613458 * a - 0.0638541728 * b) ^ 3
+  local s_ = (l - 0.0894841775 * a - 1.2914855480 * b) ^ 3
+  local hex = "#"
+  for _, x in ipairs({
+    4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_,
+    -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_,
+    -0.0041960863 * l_ - 0.7034186147 * m_ + 1.7076147010 * s_,
+  }) do
+    x = x <= 0.0031308 and 12.92 * x or 1.055 * x ^ (1 / 2.4) - 0.055
+    hex = hex .. ("%02x"):format(math.floor(255 * math.min(math.max(x, 0), 1) + 0.5))
+  end
+  return hex
+end
+
+-- One accent per session, a random hue at fixed lightness and chroma, for the
+-- dashboard's banner, icons, keys and border: it tells sessions apart. Set on
+-- every open because a colorscheme change resets the groups.
+local accent = oklch(0.8, 0.12, vim.uv.random(1):byte() * 360 / 256)
+
+vim.api.nvim_create_autocmd("User", {
+  pattern = "SnacksDashboardOpened",
+  callback = function()
+    for _, group in ipairs({ "Header", "Icon", "Key", "Border" }) do
+      vim.api.nvim_set_hl(0, "SnacksDashboard" .. group, { fg = accent })
+    end
+  end,
+})
+
+vim.keymap.set("n", "<leader><Space>", function()
+  Snacks.dashboard()
+end, { desc = "Dashboard" })
 
 --------------------------------------------------------------------------------
 --- Terminals

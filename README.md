@@ -372,10 +372,10 @@ the mouse by default.
 #### snacks.nvim (`99-snacks.lua`)
 
 A collection of small features from folke. Enabled modules: `bigfile`
-(disables heavy features for huge files), `indent` (indent guides, also on
-blank lines; the current scope is mini.indentscope's), `input`
-(nicer `vim.ui.input`), `lazygit`, `notifier` (notifications, 8 s timeout),
-`picker` (see [Snacks picker](#snacks-picker-99-snackslua) below), `scratch`,
+(disables heavy features for huge files), `dashboard` (see below), `indent`
+(indent guides, also on blank lines; the current scope is mini.indentscope's),
+`input` (nicer `vim.ui.input`), `lazygit`, `notifier` (notifications, 5 s
+timeout), `picker` (see [Snacks picker](#snacks-picker-99-snackslua) below),
 `statuscolumn`, `terminal`, `words` (highlights other references of the symbol
 under the cursor), and `zen`. Animations are off.
 
@@ -389,14 +389,36 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>tz` / `gz` | Toggle zoom (current window full-size); also turns off line numbers in that window |
 | `<leader>tZ` / `gZ` | Toggle zen mode; also turns off line numbers in that window |
 | `<leader>gg` | LazyGit |
+| `<leader><Space>` | Dashboard (`q` closes it) |
 | `<leader>fp` | [F]ind [P]rojects (TODO: document) |
 | `` <leader>` `` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
-All custom. Inside zellij (`$ZELLIJ` is set), LazyGit, `just` and `fzj` open
-in a floating zellij pane instead of a Snacks terminal; `just`'s pane stays
-open after it exits. The `` <leader>` `` shell is always a Snacks
+All custom. Inside zellij (`$ZELLIJ` is set), LazyGit, `just`, `bv` and
+`fzj` open in a floating zellij pane instead of a Snacks terminal; `just`'s pane
+stays open after it exits. The `` <leader>` `` shell is always a Snacks
 terminal.
+
+`nvim` with no file opens a dashboard: the Fresh2Dev glasses drawn in box
+characters, the keys in the table below, and the Neovim version with the plugin
+count and startup time (from `init.lua` to the dashboard). Keys whose tool is
+missing are hidden. `<leader><Space>` opens it again later, as a float with a
+rounded border. Each Neovim session picks a random hue for the banner, keys and
+border, at a fixed lightness and chroma in OKLCH so every hue is equally
+readable, which tells sessions apart.
+
+| Key | Action |
+|---|---|
+| `f` | Find files, recent first (`smart`, like `<leader>ff`) |
+| `g` | Grep |
+| `\` | mini.files, like the global `\` |
+| `e` | Empty buffer |
+| `G` | LazyGit (with `lazygit` installed) |
+| `B` | `bv`, the beads viewer (with `bv` installed) |
+| `J` | `just` (with `just` installed), like `<leader>J` |
+| `s` | Sessions, `fzj` (inside zellij, with `fzj` installed) |
+| `u` | Update plugins (`vim.pack.update()`; hidden when run as the `f2dvim` package) |
+| `q` | Close the dashboard; quit Neovim if no other buffer is open |
 
 #### which-key.nvim (`99-which-key.lua`)
 

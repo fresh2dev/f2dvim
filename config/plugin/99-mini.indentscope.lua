@@ -35,3 +35,13 @@ MiniIndentscope.setup({
   },
   symbol = "╎",
 })
+
+-- Snacks sets the dashboard's filetype with events ignored, so no FileType
+-- autocmd sees it; its own event does.
+vim.api.nvim_create_autocmd("User", {
+  pattern = "SnacksDashboardOpened",
+  callback = function()
+    vim.b.miniindentscope_disable = true
+    MiniIndentscope.undraw()
+  end,
+})
