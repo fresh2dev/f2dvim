@@ -707,9 +707,6 @@ fuzzy-match their whole input.
 | `<leader>fh` | n | Help tags |
 | `<leader>fk` | n | Keymaps |
 
-`<leader>fi` / `<leader>fo` (incoming / outgoing calls) are LSP buffer maps; see
-[nvim-lspconfig](#nvim-lspconfig-90-lspconfiglua).
-
 Inside a picker (Snacks defaults, with these changes; none of its `<A-…>`
 defaults are mapped):
 
@@ -955,7 +952,7 @@ through the Snacks picker. All are buffer-local and appear in which-key with an
 | `gri` | n | Implementations (picker) |
 | `grt` | n | Type definitions (picker) |
 | `gO` | n | Document symbols (picker); `<leader>fs` from `99-snacks.lua` is the same picker, `<leader>fS` the workspace one |
-| `<leader>fi` / `<leader>fo` | n | Incoming / outgoing calls (picker) |
+| `grI` / `grO` | n | Incoming / outgoing calls (picker) |
 | `<C-s>` | n | Signature help |
 | `[d` / `]d` | n | Previous / next diagnostic, opening a float (unless `virtual_lines` is on; it is off) |
 | `K` `grn` `gra` | n | Neovim defaults (hover, rename, code action) |

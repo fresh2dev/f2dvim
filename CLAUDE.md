@@ -118,7 +118,7 @@ No plugin is loaded from `init.lua`.
 - **There is no Mason.** Language servers must be on `$PATH` already.
 - Python uses `ty` (type checking) and `ruff`; ruff's formatting is stripped like every other server's (see Formatting below).
 - Workspace-library settings for Neovim config work come from lazydev, not from `lua_ls.on_init`.
-- All LSP keymaps are set inside the `LspAttach` autocmd, buffer-local, prefixed `LSP:` in their `desc`. Neovim's own defaults (`K`, `grn`, `gra`, `grr`, `gri`, `grt`, `gO`) are not re-declared; only the maps routed through the Snacks picker (`gd`, `grr`, `gri`, `grt`, `gO`, plus `<leader>fi`/`<leader>fo` for incoming/outgoing calls) are. They call `Snacks.picker.*` from callbacks, so the file does not declare snacks. `symbol-usage` is set up once at file top level, not per attach.
+- All LSP keymaps are set inside the `LspAttach` autocmd, buffer-local, prefixed `LSP:` in their `desc`. Neovim's own defaults (`K`, `grn`, `gra`, `grr`, `gri`, `grt`, `gO`) are not re-declared; only the maps routed through the Snacks picker (`gd`, `grr`, `gri`, `grt`, `gO`, plus `grI`/`grO` for incoming/outgoing calls) are. They call `Snacks.picker.*` from callbacks, so the file does not declare snacks. `symbol-usage` is set up once at file top level, not per attach.
 
 ### Formatting (`dprint lsp`, in `plugin/90-lspconfig.lua`)
 

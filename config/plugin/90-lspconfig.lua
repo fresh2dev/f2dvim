@@ -67,8 +67,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
     --  Symbols are things like variables, functions, types, etc.
     pick("gO", "lsp_symbols", "[D]ocument [S]ymbols")
     -- Call hierarchy: who calls the function under the cursor, and what it calls.
-    pick("<leader>fi", "lsp_incoming_calls", "[F]ind [I]ncoming Calls")
-    pick("<leader>fo", "lsp_outgoing_calls", "[F]ind [O]utgoing Calls")
+    pick("grI", "lsp_incoming_calls", "[G]oto [I]ncoming Calls")
+    pick("grO", "lsp_outgoing_calls", "[G]oto [O]utgoing Calls")
 
     -- This is not Goto Definition, this is Goto Declaration.
     --  For example, in C this would take you to the header.
