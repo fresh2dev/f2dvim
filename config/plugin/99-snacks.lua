@@ -5,10 +5,12 @@ vim.pack.add({
 Snacks = require("snacks")
 
 --- Run `cmd` in a floating zellij pane inside zellij, else in a Snacks terminal
---- (or `fallback`, such as Snacks.lazygit). Either closes when `cmd` exits.
+--- (or `fallback`, such as Snacks.lazygit). Either closes when `cmd` exits. The
+--- zellij pane is titled `name`, else `cmd[1]`.
 ---@param cmd string[]
 ---@param fallback? fun()
-local function terminal(cmd, fallback)
+---@param name? string
+local function terminal(cmd, fallback, name)
   if not vim.env.ZELLIJ then
     if fallback then
       fallback()
@@ -19,7 +21,7 @@ local function terminal(cmd, fallback)
   end
   -- stylua: ignore
   local args = {
-    "zellij", "run", "--floating", "--close-on-exit", "--name", cmd[1],
+    "zellij", "run", "--floating", "--close-on-exit", "--name", name or cmd[1],
     "--cwd", vim.fn.getcwd(), "--x", "5%", "--y", "5%", "--width", "90%", "--height", "90%",
     "--",
   }
@@ -91,12 +93,17 @@ local dashboard = {
       key("g", " ", "LazyGit", function()
         terminal({ "lazygit" }, Snacks.lazygit)
       end, vim.fn.executable("lazygit") == 1),
-      key("B", " ", "Beads", function()
-        terminal({ "bv" })
-      end, vim.fn.executable("bv") == 1),
-      key("J", " ", "Just", function()
-        terminal({ "just" })
-      end, vim.fn.executable("just") == 1),
+      key("!", " ", "Exec", function()
+        vim.ui.input({
+          prompt = "Exec",
+          icon = " ",
+          completion = "shellcmdline",
+        }, function(cmd)
+          if cmd and vim.trim(cmd) ~= "" then
+            terminal({ vim.o.shell, vim.o.shellcmdflag, cmd }, nil, cmd)
+          end
+        end)
+      end),
       key(
         "s",
         " ",
