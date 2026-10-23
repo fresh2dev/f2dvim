@@ -157,6 +157,9 @@ vim.o.termguicolors = true
 -- Global statusline: lualine's `globalstatus` and snacks zen expect it.
 vim.o.laststatus = 3
 
+vim.o.title = true
+vim.o.titlestring = "NVIM: %f"
+
 vim.o.winborder = "rounded"
 
 -- Don't shift `#`-prefixed lines to column 0 (preserves comment indent)
