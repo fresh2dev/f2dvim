@@ -408,11 +408,11 @@ readable, which tells sessions apart.
 
 | Key | Action |
 |---|---|
+| `n` / `e` | New file (`e` is not listed) |
 | `f` | Find files, recent first (`smart`, like `<leader>ff`) |
-| `g` | Grep |
+| `/` | Grep |
 | `\` | mini.files, like the global `\` |
-| `e` | Empty buffer |
-| `G` | LazyGit (with `lazygit` installed) |
+| `g` | LazyGit (with `lazygit` installed) |
 | `B` | `bv`, the beads viewer (with `bv` installed) |
 | `J` | `just` (with `just` installed), like `<leader>J` |
 | `s` | Sessions, `fzj` (inside zellij, with `fzj` installed) |

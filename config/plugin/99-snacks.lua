@@ -60,17 +60,18 @@ local dashboard = {
   width = 44,
   preset = {
     keys = {
+      key("n", " ", "New file", "<Cmd>enew | startinsert<CR>"),
+      { key = "e", action = "<Cmd>enew | startinsert<CR>", hidden = true },
       key("f", " ", "Find files", function()
         Snacks.picker.smart()
       end),
-      key("g", " ", "Grep", function()
+      key("/", " ", "Search", function()
         Snacks.picker.grep()
       end),
       key("\\", " ", "Explore", function()
         require("mini.files").open(nil, false)
       end),
-      key("e", " ", "Empty buffer", "<Cmd>enew | startinsert<CR>"),
-      key("G", " ", "LazyGit", function()
+      key("g", " ", "LazyGit", function()
         terminal({ "lazygit" }, Snacks.lazygit)
       end, vim.fn.executable("lazygit") == 1),
       key("B", " ", "Beads", function()
