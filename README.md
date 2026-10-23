@@ -456,10 +456,9 @@ Highlights the plugin's usual keywords in comments (`TODO`, `FIX`/`FIXME`/`BUG`,
 
 A minimap on the right edge showing search matches and git diff marks. It
 opens automatically in normal file windows and closes when you enter a help,
-quickfix or other special buffer. A `CursorHold` autocmd hides it while the
-cursor is within 20 columns of the right edge and reopens it otherwise (this
-reopening is not filtered by buffer type, so it can bring the map back in a
-special buffer once the cursor rests). No mappings.
+quickfix, terminal or other special buffer, including the dashboard. A
+`CursorHold` autocmd hides it while the cursor is within 20 columns of the right
+edge and reopens it otherwise, in file buffers only. No mappings.
 
 #### nvim-hlslens (`99-hlslens.lua`) and vim-asterisk
 

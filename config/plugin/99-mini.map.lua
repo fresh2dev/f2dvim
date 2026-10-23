@@ -23,15 +23,14 @@ local function set_map_open(want)
   end
 end
 
-vim.api.nvim_create_autocmd({ "WinEnter", "FileType" }, {
-  pattern = "*",
-  callback = function()
-    local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
-    local filetype = vim.api.nvim_get_option_value("filetype", { buf = 0 })
-    local excluded_filetypes =
-      { "help", "quickfix", "nofile", "terminal", "ministarter" }
+-- Only in file buffers: help, quickfix, terminals and the dashboard all set 'buftype'.
+local function file_buffer()
+  return vim.bo.buftype == ""
+end
 
-    set_map_open(buftype == "" and not vim.tbl_contains(excluded_filetypes, filetype))
+vim.api.nvim_create_autocmd({ "WinEnter", "FileType" }, {
+  callback = function()
+    set_map_open(file_buffer())
   end,
 })
 
@@ -50,6 +49,6 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
   callback = function()
     local _, col = unpack(vim.api.nvim_win_get_cursor(0))
     local width = vim.api.nvim_win_get_width(0)
-    set_map_open(width - col >= 20)
+    set_map_open(file_buffer() and width - col >= 20)
   end,
 })
