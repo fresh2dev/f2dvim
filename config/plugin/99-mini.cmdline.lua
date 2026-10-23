@@ -15,17 +15,6 @@ require("mini.cmdline").setup({
 
   -- Autopeek: show command's target range in a floating window
   autopeek = {
-    enable = true,
-
-    -- Number of lines to show above and below range lines
-    n_context = 6,
-
-    predicate = nil,
-
-    window = {
-      config = {},
-
-      statuscolumn = nil,
-    },
+    enable = false,
   },
 })
