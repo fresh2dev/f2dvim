@@ -21,69 +21,8 @@ vim.o.mouse = "a"
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
--- Use the system clipboard. Deferred because loading the clipboard provider slows
--- startup.
-vim.schedule(function()
-  vim.o.clipboard = "unnamedplus"
-end)
-
--- Clipboard over SSH: OSC 52.
---
--- In an SSH session there is no X11/Wayland display, so Neovim finds no
--- clipboard tool (`:checkhealth vim.provider` warns) and yanks stay inside the
--- one instance. OSC 52 fixes that: the yank is sent to the terminal emulator as
--- an escape sequence and the terminal (Ghostty, kitty, WezTerm, foot, ...) puts
--- it on the *client's* system clipboard, through zellij/tmux, so it can be
--- pasted anywhere with the terminal's own paste (Cmd+V / Ctrl+Shift+V),
--- including into another Neovim instance. Neovim's own OSC 52 auto-detection
--- does not kick in here: multiplexers swallow its DA1/XTGETTCAP probe and it
--- refuses to enable itself while 'clipboard' is set (`:help clipboard-osc52`).
---
--- The clipboard is deliberately not read back through OSC 52: terminals and
--- multiplexers decline that by default and Neovim would stall on every `p`.
--- Instead every yank is also recorded in a per-user file on this host
--- (`stdpath("run")`, a private tmpfs), and `p` pastes the latest yank of any
--- Neovim instance here, so it works across SSH sessions and zellij panes. The
--- provider has to hand that back itself because Neovim empties the register
--- before asking it. Text copied on the client side comes in with Cmd+V.
---
--- Guarded so local sessions are untouched: only when nothing else would be
--- found (no display, not inside tmux, which has its own provider) and only if
--- `g:clipboard` has not been set already.
-if
-  vim.g.clipboard == nil
-  and vim.env.SSH_TTY
-  and not (vim.env.DISPLAY or vim.env.WAYLAND_DISPLAY or vim.env.TMUX)
-then
-  local osc52 = require("vim.ui.clipboard.osc52")
-  local last = {} -- reg -> { lines, regtype } of this instance's latest yank
-  local store = vim.fs.joinpath(vim.fn.stdpath("run"), "clipboard.json")
-
-  local function copy(reg)
-    local send = osc52.copy(reg)
-    return function(lines, regtype)
-      -- Neovim accepts a one-character regtype back; blockwise carries a width.
-      last[reg] = { lines, regtype:sub(1, 1) }
-      pcall(vim.fn.writefile, { vim.json.encode(last[reg]) }, store)
-      send(lines, regtype)
-    end
-  end
-
-  local function paste(reg)
-    return function()
-      local ok, shared = pcall(function()
-        return vim.json.decode(vim.fn.readfile(store)[1])
-      end)
-      return ok and shared or last[reg] or {}
-    end
-  end
-
-  vim.g.clipboard = {
-    name = "OSC 52 (ssh)",
-    copy = { ["+"] = copy("+"), ["*"] = copy("*") },
-    paste = { ["+"] = paste("+"), ["*"] = paste("*") },
-  }
-end
+-- Use the system clipboard.
+vim.o.clipboard = "unnamedplus"
 
 vim.o.breakindent = true
 
