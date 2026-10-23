@@ -690,7 +690,6 @@ fuzzy-match their whole input.
 | `<leader>fg` / `<leader>fw` | x | Grep the selection |
 | `<leader>fw` | n | Grep the word under the cursor |
 | `gl` | n | Lines in the current buffer |
-| `<leader>fL` | n | Grep the open buffers |
 | `<leader>fb` | n | Buffers |
 | `<leader>f"` | n | Registers |
 | `<leader>fj` / `<leader>f<C-o>` | n | Jump list |
