@@ -138,6 +138,7 @@ it, and language servers that aren't installed are skipped.
 |---|---|---|
 | `rg` | `:Grep`, file and grep pickers | your package manager |
 | `lazygit` | `<leader>gg` | `go install github.com/jesseduffield/lazygit@latest` |
+| `gh` (authenticated) | `<leader>gh*` GitHub pickers | your package manager |
 | `dprint` | format on save (`dprint lsp`) | `npm i -g dprint` |
 | `ruff`, `ty` | Python | `uv tool install ruff`, `uv tool install ty` |
 | `tombi` | TOML | `uv tool install tombi` |
@@ -259,7 +260,7 @@ Leader groups (which-key shows these):
 | Prefix | Group | Where |
 |---|---|---|
 | `<leader>f` | Find (pickers, find and replace) | snacks, lspconfig, grug-far |
-| `<leader>g` | Git | fugitive, flog, diffview, snacks (lazygit) |
+| `<leader>g` | Git (`<leader>gh` GitHub) | fugitive, flog, diffview, snacks (lazygit, gh) |
 | `<leader>p` | Paste with replacement (operator) | mini.operators |
 | `<leader>q` | Quit (windows, buffers, tabs) | mini.bufremove |
 | `<leader>t` | Toggle | snacks, colorizer, which-key, toggler |
@@ -375,7 +376,7 @@ A collection of small features from folke. Enabled modules: `bigfile`
 (indent guides, also on blank lines; the current scope is mini.indentscope's),
 `input` (nicer `vim.ui.input`), `lazygit`, `notifier` (notifications, 5 s
 timeout), `picker` (see [Snacks picker](#snacks-picker-99-snackspickerlua) below),
-`statuscolumn`, `terminal`, `words` (highlights other references of the symbol
+`statuscolumn`, `terminal`, `gh` (see below), `words` (highlights other references of the symbol
 under the cursor), and `zen`. Animations are off.
 
 | Key | Action |
@@ -940,6 +941,16 @@ and `:ConflictMarkerNone` resolve the conflict under the cursor.
 #### lazygit (snacks)
 
 `<leader>gg` opens lazygit in a floating terminal; see snacks above.
+
+#### GitHub (snacks, `99-snacks.gh.lua`)
+
+Issue and pull request pickers through the `gh` CLI; `<CR>` on an item lists its
+actions (open, comment, review, checkout, merge, ...).
+
+| Key | Action |
+|---|---|
+| `<leader>ghi` / `<leader>ghI` | GitHub issues (open / all) |
+| `<leader>ghp` / `<leader>ghP` | GitHub pull requests (open / all) |
 
 ### LSP, completion, formatting, syntax
 
