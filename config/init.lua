@@ -96,7 +96,7 @@ vim.o.background = "dark"
 
 vim.o.termguicolors = true
 
--- Global statusline: lualine's `globalstatus` and snacks zen expect it.
+-- Global statusline: mini.statusline and snacks zen expect it.
 vim.o.laststatus = 3
 
 vim.o.title = true
