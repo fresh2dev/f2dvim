@@ -347,7 +347,7 @@ default is in effect; "custom" means this config sets it.
 Colorscheme. The `carbonfox` variant is active (`background = "dark"` and
 `termguicolors` are set in `init.lua`). No mappings.
 
-#### lualine.nvim (`99-lualine.lua`)
+#### mini.statusline (`99-mini.statusline.lua`)
 
 Statusline. A single global statusline (`laststatus = 3`) showing mode,
 relative file path, filetype, progress and location. In markdown and asciidoc
@@ -1104,7 +1104,7 @@ lazydev, see above.
 ### Libraries
 
 Installed because another plugin requires them; no user-facing behaviour:
-**mini.icons** (icons for the Snacks picker, lualine, mini.files, tabby; mocks nvim-web-devicons for the rest),
+**mini.icons** (icons for the Snacks picker, mini.statusline, mini.files, tabby; mocks nvim-web-devicons for the rest),
 **plenary.nvim** (todo-comments), **promise-async** (ufo, fundo),
 **mini.extra** (mini.ai's `ae`/`ie`).
 
