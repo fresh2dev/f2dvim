@@ -149,40 +149,6 @@ Snacks.config.dashboard = {
   },
 }
 
---- An sRGB hex colour for OKLCH lightness `l`, chroma `c` and hue `h` (degrees).
---- OKLCH is perceptually uniform: every hue at the same `l` and `c` looks equally
---- bright. Out-of-gamut channels are clipped.
-local function oklch(l, c, h)
-  local a, b = c * math.cos(math.rad(h)), c * math.sin(math.rad(h))
-  local l_ = (l + 0.3963377774 * a + 0.2158037573 * b) ^ 3
-  local m_ = (l - 0.1055613458 * a - 0.0638541728 * b) ^ 3
-  local s_ = (l - 0.0894841775 * a - 1.2914855480 * b) ^ 3
-  local hex = "#"
-  for _, x in ipairs({
-    4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_,
-    -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_,
-    -0.0041960863 * l_ - 0.7034186147 * m_ + 1.7076147010 * s_,
-  }) do
-    x = x <= 0.0031308 and 12.92 * x or 1.055 * x ^ (1 / 2.4) - 0.055
-    hex = hex .. ("%02x"):format(math.floor(255 * math.min(math.max(x, 0), 1) + 0.5))
-  end
-  return hex
-end
-
--- One accent per session, a random hue at fixed lightness and chroma, for the
--- dashboard's banner, icons and keys: it tells sessions apart. Set on
--- every open because a colorscheme change resets the groups.
-local accent = oklch(0.8, 0.12, vim.uv.random(1):byte() * 360 / 256)
-
-vim.api.nvim_create_autocmd("User", {
-  pattern = "SnacksDashboardOpened",
-  callback = function()
-    for _, group in ipairs({ "Header", "Icon", "Key" }) do
-      vim.api.nvim_set_hl(0, "SnacksDashboard" .. group, { fg = accent })
-    end
-  end,
-})
-
 vim.keymap.set("n", "<leader><Space>", function()
   Snacks.dashboard()
 end, { desc = "Dashboard" })
