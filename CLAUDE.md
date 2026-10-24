@@ -89,10 +89,10 @@ there. Instead:
 - Every plugin lives in its own `plugin/NN-<name>.lua`, which calls `vim.pack.add({ { src = "https://github.com/..." } })` and then immediately configures the plugin (`require(...).setup{}`, keymaps, autocmds, user commands).
 - Neovim auto-sources `plugin/*.lua` **alphabetically, after `init.lua`**. The numeric prefix is the only load-order mechanism:
   - `00-` — must run first (`00-colorscheme.lua`)
-  - `90-` — infrastructure other configs depend on (`90-lspconfig.lua`, `90-treesitter.lua`)
+  - `90-` — infrastructure other configs depend on (`90-lspconfig.lua`, `90-treesitter.lua`, `90-mini.icons.lua`)
   - `99-` — everything else, order-independent
 - **Everything is eager.** There is no lazy-loading layer. `vim.pack.add` installs missing plugins synchronously on first start, so the first `nvim` on a fresh machine is slow.
-- **Each file declares every plugin it needs**, even if another file also lists it (`vim.pack.add` is idempotent). `nvim-web-devicons` appears in three files, `snacks.nvim` and `promise-async` in two each; that is deliberate so each file is self-contained. There is no shared "deps" file.
+- **Each file declares every plugin it needs**, even if another file also lists it (`vim.pack.add` is idempotent). `mini.icons` appears in four files (set up and devicons-mocked in `90-mini.icons.lua`), `snacks.nvim` and `promise-async` in two each; that is deliberate so each file is self-contained. There is no shared "deps" file.
 - Deferring load to a filetype is done with **`ftplugin/`**, not with plugin specs: `ftplugin/lua_lazydev.lua` and `ftplugin/markdown.lua` call `vim.pack.add` at first use of that filetype. Because ftplugin files run for *every* buffer of that filetype, the install/`setup()` part is guarded by a `vim.g.loaded_<name>_config` flag; only buffer-local mappings sit outside the guard. Use the `<filetype>_<suffix>.lua` form to add a second file for a filetype without clobbering the first. `lazydev` is owned entirely by its ftplugin; blink adds the `lazydev` completion source only for Lua buffers.
 
 Adding a plugin means adding one new `plugin/99-*.lua` file — do not thread it
@@ -156,6 +156,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - Every mapping gets a `desc`; group letters are marked in the description with brackets (`"[G]oto [D]efinition"`).
 - Ownership of contested keys, so they are not re-declared elsewhere:
   - `<leader>gd` is Diffview (`99-diffview.lua`); fugitive single-file diffs use `:Gvdiffsplit` or `dt` in the status buffer.
+  - `gS` is mini.splitjoin's split/join toggle (`99-mini.splitjoin.lua`).
   - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.lua`).
   - gitsigns hunk actions live under `<leader>gh*` (buffer-local) so they never shadow the global fugitive `<leader>g*` maps.
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.
@@ -170,7 +171,6 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 
 ### Deliberate deviations — do not "fix" these
 
-- `vim.g.editorconfig = false` — Neovim's EditorConfig integration conflicts with `vim-symlink` (upstream issue linked in `init.lua`).
 - `vim.o.modeline = false` — mitigates editor-config injection from untrusted files.
 - `swapfile` and `writebackup` are off (files are assumed to be in version control); `undofile` is on, with `fundo` for persistence.
 - Over SSH, `init.lua` sets `vim.g.clipboard` to an OSC 52 provider: copy via `vim.ui.clipboard.osc52` plus a JSON write of `{ lines, regtype }` to a shared per-user file under `stdpath("run")`; paste returns that file's entry (the latest yank of any instance on the host, which is what makes cross-pane `p` work) or, if unreadable, the instance's own last yank from a Lua table. The block is gated on `$SSH_TTY` with no `$DISPLAY`/`$WAYLAND_DISPLAY`/`$TMUX` and an unset `g:clipboard`, so local sessions keep Neovim's normal tool detection — keep it that way for portability. Neovim's own OSC 52 auto-detection cannot be relied on: multiplexers swallow its DA1/XTGETTCAP probe and it disables itself when `'clipboard'` is set. The clipboard is deliberately *not* read back through OSC 52 (terminals decline it by default and Neovim would stall on every `p`); Neovim empties the register *before* calling the provider's paste, so paste must always return `{ lines, regtype }` — never `0`, which wipes the register — and regtype must be trimmed to one character (blockwise carries a width).

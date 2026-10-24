@@ -845,12 +845,6 @@ mappings (`g:eunuch_no_maps`) are disabled.
 Makes persistent undo reliable across external changes to a file (it archives
 undo files, capped at 512 MB). No mappings.
 
-#### mini.cmdline (`99-mini.cmdline.lua`)
-
-Only the "autopeek" feature is enabled: while typing a range on the command
-line (`:42`, `:'<,'>`), a floating window shows the target lines with six lines
-of context. Autocomplete and autocorrect are off. No mappings.
-
 ### Git
 
 #### vim-fugitive (`99-fugitive.lua`) with vim-flog
@@ -1103,7 +1097,7 @@ lazydev, see above.
 ### Libraries
 
 Installed because another plugin requires them; no user-facing behaviour:
-**nvim-web-devicons** (icons for the Snacks picker, lualine, mini.files, tabby),
+**mini.icons** (icons for the Snacks picker, lualine, mini.files, tabby; mocks nvim-web-devicons for the rest),
 **plenary.nvim** (todo-comments), **promise-async** (ufo, fundo),
 **mini.extra** (mini.ai's `ae`/`ie`).
 

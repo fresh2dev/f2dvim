@@ -1,6 +1,6 @@
 vim.pack.add({
   { src = "https://github.com/nvim-mini/mini.files" },
-  { src = "https://github.com/nvim-tree/nvim-web-devicons" },
+  { src = "https://github.com/nvim-mini/mini.icons" },
   { src = "https://github.com/folke/snacks.nvim" },
 })
 
