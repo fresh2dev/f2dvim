@@ -83,8 +83,8 @@ language server finds the file from its root marker, searching up from the edite
 
 This config uses Neovim's **built-in `vim.pack`**, not lazy.nvim/packer/paq. There
 is no central plugin spec table. The only module under `lua/` is `lua/util.lua`
-(cross-file helpers: `cabbrev`, `keep_cursor`); plugin configuration never goes
-there. Instead:
+(cross-file helpers: `cabbrev`, `keep_cursor`, `terminal`, `sessions`); plugin
+configuration never goes there. Instead:
 
 - Every plugin lives in its own `plugin/NN-<name>.lua`, which calls `vim.pack.add({ { src = "https://github.com/..." } })` and then immediately configures the plugin (`require(...).setup{}`, keymaps, autocmds, user commands).
 - Neovim auto-sources `plugin/*.lua` **alphabetically, after `init.lua`**. The numeric prefix is the only load-order mechanism:
@@ -92,8 +92,16 @@ there. Instead:
   - `90-` — infrastructure other configs depend on (`90-lspconfig.lua`, `90-treesitter.lua`, `90-mini.icons.lua`)
   - `99-` — everything else, order-independent
 - **Everything is eager.** There is no lazy-loading layer. `vim.pack.add` installs missing plugins synchronously on first start, so the first `nvim` on a fresh machine is slow.
-- **Each file declares every plugin it needs**, even if another file also lists it (`vim.pack.add` is idempotent). `mini.icons` appears in four files (set up and devicons-mocked in `90-mini.icons.lua`), `snacks.nvim` and `promise-async` in two each; that is deliberate so each file is self-contained. There is no shared "deps" file.
+- **Each file declares every plugin it needs**, even if another file also lists it (`vim.pack.add` is idempotent). `mini.icons` appears in four files (set up and devicons-mocked in `90-mini.icons.lua`), `snacks.nvim` in six, `promise-async` in two; that is deliberate so each file is self-contained. There is no shared "deps" file.
 - Deferring load to a filetype is done with **`ftplugin/`**, not with plugin specs: `ftplugin/lua_lazydev.lua` and `ftplugin/markdown.lua` call `vim.pack.add` at first use of that filetype. Because ftplugin files run for *every* buffer of that filetype, the install/`setup()` part is guarded by a `vim.g.loaded_<name>_config` flag; only buffer-local mappings sit outside the guard. Use the `<filetype>_<suffix>.lua` form to add a second file for a filetype without clobbering the first. `lazydev` is owned entirely by its ftplugin; blink adds the `lazydev` completion source only for Lua buffers.
+
+snacks.nvim is split like mini, one file per module, but has a single setup:
+`99-snacks.lua` makes the only `Snacks.setup` call (small modules, toggles), and
+each `99-snacks.<module>.lua` assigns `Snacks.config.<module>` (with
+`enabled = true`) instead. Snacks reads a module's config on `UIEnter` or first
+use, so file order doesn't matter; a module that `Snacks.setup` itself reads
+(`notifier`, `statuscolumn`) must stay in the setup call. The zellij-aware
+`terminal` and `sessions` helpers they share are in `lua/util.lua`.
 
 Adding a plugin means adding one new `plugin/99-*.lua` file — do not thread it
 into an existing file unless the two are genuinely coupled.
@@ -157,7 +165,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - Ownership of contested keys, so they are not re-declared elsewhere:
   - `<leader>gd` is Diffview (`99-diffview.lua`); fugitive single-file diffs use `:Gvdiffsplit` or `dt` in the status buffer.
   - `gS` is mini.splitjoin's split/join toggle (`99-mini.splitjoin.lua`).
-  - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.lua`).
+  - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.picker.lua`).
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.
   - `s`/`S`: normal `s`/`S` and visual `s` are vim-sneak (`99-sneak.lua`); visual `S` is mini.surround's "surround selection" (`99-mini.surround.lua`). Neither is mapped in operator-pending mode, so `ys`/`ds`/`cs` keep working. cutlass maps `s`/`S` first and is deliberately overridden by these later files. The visual `S` mapping must stay a `:<C-u>lua MiniSurround.add("visual")<CR>` command mapping, not a Lua callback: leaving Visual mode via `:` is what refreshes the `'<`/`'>` marks the function reads, and a callback sees the previous selection's marks (wrong text, or an out-of-range cursor error).
   - `<C-hjkl>` window navigation and `<C-Arrow>` resize come from mini.basics (`99-mini.basics.lua`); `zellij.vim` then overrides `<C-hjkl>` with its navigator (falls back to `wincmd`). `init.lua` only un-maps them in netrw.
@@ -174,7 +182,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - `swapfile` and `writebackup` are off (files are assumed to be in version control); `undofile` is on, with `fundo` for persistence.
 - Over SSH, `init.lua` sets `vim.g.clipboard` to an OSC 52 provider: copy via `vim.ui.clipboard.osc52` plus a JSON write of `{ lines, regtype }` to a shared per-user file under `stdpath("run")`; paste returns that file's entry (the latest yank of any instance on the host, which is what makes cross-pane `p` work) or, if unreadable, the instance's own last yank from a Lua table. The block is gated on `$SSH_TTY` with no `$DISPLAY`/`$WAYLAND_DISPLAY`/`$TMUX` and an unset `g:clipboard`, so local sessions keep Neovim's normal tool detection — keep it that way for portability. Neovim's own OSC 52 auto-detection cannot be relied on: multiplexers swallow its DA1/XTGETTCAP probe and it disables itself when `'clipboard'` is set. The clipboard is deliberately *not* read back through OSC 52 (terminals decline it by default and Neovim would stall on every `p`); Neovim empties the register *before* calling the provider's paste, so paste must always return `{ lines, regtype }` — never `0`, which wipes the register — and regtype must be trimmed to one character (blockwise carries a width).
 - `laststatus = 3` (global statusline) is assumed by the snacks `zen` config.
-- Snacks' `quickfile` is disabled on purpose. `Snacks.picker` is the only picker and the `vim.ui.select` handler (ADR 0002); its defaults live in `Snacks.setup` (`files`/`grep`/`grep_word`: `rg`, hidden, follow; `layout = "vertical"`), so keymaps pass only what differs (`ignored = true` for `<leader>fF`/`<leader>fG`). Inside a picker, `<c-o>` is split below (`<c-s>` is unbound), `<c-/>` toggles the preview and every `<a-*>` default is set to `false`; Snacks sets up the picker on `UIEnter`, which headless `nvim` never fires.
+- Snacks' `quickfile` is disabled on purpose. `Snacks.picker` is the only picker and the `vim.ui.select` handler (ADR 0002); its defaults live in `Snacks.config.picker` in `99-snacks.picker.lua` (`files`/`grep`/`grep_word`: `rg`, hidden, follow; `layout = "vertical"`), so keymaps pass only what differs (`ignored = true` for `<leader>fF`/`<leader>fG`). Inside a picker, `<c-o>` is split below (`<c-s>` is unbound), `<c-/>` toggles the preview and every `<a-*>` default is set to `false`; Snacks sets up the picker on `UIEnter`, which headless `nvim` never fires.
 
 ### Packaging constraints
 
