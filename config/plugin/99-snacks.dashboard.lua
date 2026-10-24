@@ -61,7 +61,7 @@ Snacks.config.dashboard = {
         require("mini.files").open(nil, false)
       end),
       key("g", " ", "LazyGit", function()
-        util.terminal({ "lazygit" }, Snacks.lazygit)
+        Snacks.lazygit()
       end, vim.fn.executable("lazygit") == 1),
       key("!", " ", "Exec", function()
         vim.ui.input({
@@ -70,7 +70,7 @@ Snacks.config.dashboard = {
           completion = "shellcmdline",
         }, function(cmd)
           if cmd and vim.trim(cmd) ~= "" then
-            util.terminal({ vim.o.shell, vim.o.shellcmdflag, cmd }, nil, cmd)
+            Snacks.terminal(cmd)
           end
         end)
       end),

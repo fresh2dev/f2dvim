@@ -394,10 +394,8 @@ under the cursor), and `zen`. Animations are off.
 | `` <leader>` `` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
-All custom. Inside zellij (`$ZELLIJ` is set), LazyGit, `just`, `fzj` and the
-dashboard's `$` commands open in a floating zellij pane instead of a Snacks
-terminal; either closes when the command exits. The `` <leader>` `` shell is
-always a Snacks terminal.
+All custom. LazyGit, `just`, `fzj` and the dashboard's `!` commands open in a
+floating Snacks terminal that closes when the command exits.
 
 `nvim` with no file opens a dashboard: the Fresh2Dev glasses drawn in box
 characters (only when the keys still fit; their temples appear as the height
@@ -413,7 +411,6 @@ border.
 | `/` | Grep |
 | `\` | mini.files, like the global `\` |
 | `g` | LazyGit (with `lazygit` installed) |
-| `$` | Exec: prompt for a shell command and run it (`$SHELL -c`); the pane or terminal closes when it exits |
 | `s` / `0` | Sessions, `fzj` (inside zellij, with `fzj` installed; `0` is not listed) |
 | `u` | Update plugins (`vim.pack.update()`; hidden when run as the `f2dvim` package) |
 | `q` | Close the dashboard; quit Neovim if no other buffer is open |
