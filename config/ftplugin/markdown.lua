@@ -50,7 +50,7 @@ end
 
 -- Context-aware editing keys. Each one acts only inside a list (or a table for
 -- the navigation keys) and otherwise hands the key back to whatever mapping it
--- displaced (blink, autopairs) or to the native behaviour.
+-- displaced (blink, mini.pairs) or to the native behaviour.
 map("i", "<CR>", "ListEnter", "Continue list")
 map("i", "<A-CR>", "ListShiftEnter", "Continue list content on next line") -- TODO: remove `alt` mapping
 map("i", "<Tab>", "ListIndent", "Indent list item")
@@ -58,29 +58,22 @@ map("i", "<S-Tab>", "ListOutdent", "Outdent list item")
 map("n", "o", "NewListItemBelow", "New list item below")
 map("n", "O", "NewListItemAbove", "New list item above")
 
--- <BS> is owned here rather than by the plugin: nvim-autopairs (re)maps it
--- buffer-locally from its own FileType/BufEnter autocmds, which run after this
--- file and would replace a plain <Plug> mapping. Apply ours once those have
--- finished: remove the marker of an empty list item, otherwise defer to
--- autopairs (upstream recipe, see :help markdown-plus-interop).
+-- <BS> is owned here rather than by the plugin: remove the marker of an empty
+-- list item, otherwise defer to mini.pairs (upstream recipe, see :help
+-- markdown-plus-interop).
 local bs_plug =
   vim.api.nvim_replace_termcodes("<Plug>(MarkdownPlusListBackspace)", true, true, true)
-vim.schedule(function()
-  if not vim.api.nvim_buf_is_valid(buf) then
-    return
+vim.keymap.set("i", "<BS>", function()
+  if mp.in_list_context("backspace") then
+    return bs_plug
   end
-  vim.keymap.set("i", "<BS>", function()
-    if mp.in_list_context("backspace") then
-      return bs_plug
-    end
-    return require("nvim-autopairs").autopairs_bs()
-  end, {
-    buffer = buf,
-    expr = true,
-    replace_keycodes = false,
-    desc = "Remove empty list marker, else autopairs delete",
-  })
-end)
+  return MiniPairs.bs()
+end, {
+  buffer = buf,
+  expr = true,
+  replace_keycodes = false,
+  desc = "Remove empty list marker, else mini.pairs delete",
+})
 
 -- Navigation (bracket pairs; `]b`/`[b` stay buffer navigation)
 map("n", "]]", "NextHeader", "Next heading")
