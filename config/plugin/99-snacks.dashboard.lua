@@ -41,14 +41,8 @@ local temples = {
   "   ╭                                               ╮",
 }
 
--- Only the floating dashboard (`<leader><Space>`) can have a border.
-Snacks.config.styles.dashboard = {
-  border = "rounded",
-  wo = {
-    winhighlight = "Normal:SnacksDashboardNormal,NormalFloat:SnacksDashboardNormal,"
-      .. "FloatBorder:SnacksDashboardBorder",
-  },
-}
+-- Overrides the global `winborder` for the floating dashboard (`<leader><Space>`).
+Snacks.config.styles.dashboard = { border = "none" }
 
 Snacks.config.dashboard = {
   enabled = true,
@@ -176,14 +170,14 @@ local function oklch(l, c, h)
 end
 
 -- One accent per session, a random hue at fixed lightness and chroma, for the
--- dashboard's banner, icons, keys and border: it tells sessions apart. Set on
+-- dashboard's banner, icons and keys: it tells sessions apart. Set on
 -- every open because a colorscheme change resets the groups.
 local accent = oklch(0.8, 0.12, vim.uv.random(1):byte() * 360 / 256)
 
 vim.api.nvim_create_autocmd("User", {
   pattern = "SnacksDashboardOpened",
   callback = function()
-    for _, group in ipairs({ "Header", "Icon", "Key", "Border" }) do
+    for _, group in ipairs({ "Header", "Icon", "Key" }) do
       vim.api.nvim_set_hl(0, "SnacksDashboard" .. group, { fg = accent })
     end
   end,

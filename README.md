@@ -402,9 +402,9 @@ always a Snacks terminal.
 characters (only when the keys still fit; their temples appear as the height
 allows), the keys in the table below, and the Neovim version with the plugin
 count and startup time (from `init.lua` to the dashboard). Keys whose tool is
-missing are hidden. `<leader><Space>` opens it again later, as a float with a
-rounded border. Each Neovim session picks a random hue for the banner, keys and
-border, at a fixed lightness and chroma in OKLCH so every hue is equally
+missing are hidden. `<leader><Space>` opens it again later, as a float without a
+border. Each Neovim session picks a random hue for the banner and keys, at a
+fixed lightness and chroma in OKLCH so every hue is equally
 readable, which tells sessions apart.
 
 | Key | Action |
