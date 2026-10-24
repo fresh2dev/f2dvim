@@ -549,10 +549,14 @@ line.
 The evaluate operator (`g=`) is disabled.
 Exchanged and replaced text is reindented linewise.
 
-#### nvim-autopairs (`99-autopairs.lua`)
+#### mini.pairs (`99-mini.pairs.lua`)
 
-Inserts the closing bracket or quote when you type the opening one. Defaults.
-Note that blink's own auto-brackets are disabled so only autopairs does this.
+Inserts the closing bracket or quote when you type the opening one, and `<BS>` /
+`<CR>` between a pair delete it / split it over three lines. Tuned like
+nvim-autopairs: no pair right before a word or one of `%'["`.$`, no `'` after a
+letter, and `<CR>` also splits quotes. Unlike nvim-autopairs there is no bracket
+balancing and no filetype rules (Python `"""`, Markdown fences, Rust lifetimes).
+Note that blink's own auto-brackets are disabled so only mini.pairs does this.
 
 #### vim-easy-align (`99-easy-align.lua`)
 
@@ -1000,7 +1004,7 @@ project's `dprint.json` or, outside one, the global
 Completion. Sources: LSP, file paths (relative to the working directory),
 buffer words, and lazydev in Lua buffers. Nothing is preselected; the
 documentation window appears after half a second; auto-brackets are off
-(autopairs handles them); signature help shows while typing arguments.
+(mini.pairs handles them); signature help shows while typing arguments.
 Disabled in mini.files, Snacks picker prompts and fugitive buffers.
 
 Insert mode (`default` preset plus custom `<Tab>` / `<CR>`):
@@ -1068,7 +1072,7 @@ the `<leader>t` group and `]b`, since `<localleader>` is also
 which-key shows as a group in markdown buffers.
 
 Editing keys that act only in context and otherwise hand the key back to blink,
-autopairs or the native behaviour: `<CR>` continues a list, `<Tab>`/`<S-Tab>`
+mini.pairs or the native behaviour: `<CR>` continues a list, `<Tab>`/`<S-Tab>`
 indent and outdent an item, `<BS>` removes an empty marker, `<A-CR>` continues
 the item's content on a new line, `o`/`O` open a new item, `<A-h/j/k/l>` move
 between table cells in insert mode. `<C-t>` keeps its
