@@ -10,6 +10,7 @@ require("which-key").setup({
     { "<leader>a", group = "[A]gent" },
     { "<leader>f", group = "[F]ind" },
     { "<leader>g", group = "[G]it" },
+    { "<leader>gh", group = "[G]it[H]ub" },
     { "<leader>p", group = "[P]aste (replace with register)" },
     { "<leader>q", group = "[Q]uit" },
     { "<leader>t", group = "[T]oggle" },

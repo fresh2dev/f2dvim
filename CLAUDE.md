@@ -159,7 +159,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 ### Keymap conventions
 
 - Leader and localleader are both `<Space>`.
-- Leader groups are registered in the `which-key` spec in `plugin/99-which-key.lua`: `<leader>f` Find, `<leader>g` Git (`<leader>gg` is Snacks lazygit), `<leader>p` replace-with-register operator (mini.operators), `<leader>q` Quit, `<leader>t` Toggle. **When adding a mapping under a new leader group, add the group to that spec.** `<localleader>m` (Markdown) is the exception: it is buffer-local, registered with `which-key.add({ buffer = ... })` in `ftplugin/markdown.lua`. A buffer-local map that fully matches fires without waiting, so a plugin's buffer-local `<localleader>` keys must not equal a global `<leader>` map or prefix; grug-far's are remapped in `99-grug-far.lua` for that reason.
+- Leader groups are registered in the `which-key` spec in `plugin/99-which-key.lua`: `<leader>f` Find, `<leader>g` Git (`<leader>gg` is Snacks lazygit; `<leader>gh` GitHub is Snacks gh), `<leader>p` replace-with-register operator (mini.operators), `<leader>q` Quit, `<leader>t` Toggle. **When adding a mapping under a new leader group, add the group to that spec.** `<localleader>m` (Markdown) is the exception: it is buffer-local, registered with `which-key.add({ buffer = ... })` in `ftplugin/markdown.lua`. A buffer-local map that fully matches fires without waiting, so a plugin's buffer-local `<localleader>` keys must not equal a global `<leader>` map or prefix; grug-far's are remapped in `99-grug-far.lua` for that reason.
 - Never use `Alt`/`Meta` (`<A-…>`, `<M-…>`, `<a-…>`) as a modifier in any mapping this config defines, including plugin-internal keymap tables.
 - Every mapping gets a `desc`; group letters are marked in the description with brackets (`"[G]oto [D]efinition"`).
 - Ownership of contested keys, so they are not re-declared elsewhere:
@@ -198,6 +198,6 @@ adding or removing a plugin.
 Beyond the language servers, the config shells out to: `rg` (`grepprg`, the Snacks
 file and grep pickers), `dprint` (`dprint lsp`, the only formatter; its global
 config runs stylua, ruff, rumdl, tombi, shfmt, gofmt, rustfmt and just), `tombi`
-(TOML language server), and `lazygit`. Missing binaries fail at use time, not at
-startup. All of them, and the language servers, are pinned in fresh2dev's dotfiles'
+(TOML language server), `lazygit`, and `gh` (Snacks gh). Missing binaries fail at
+use time, not at startup. All of them, and the language servers, are pinned in fresh2dev's dotfiles'
 global mise config; a new dependency gets a pinned entry there too.
