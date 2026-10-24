@@ -260,7 +260,6 @@ Leader groups (which-key shows these):
 |---|---|---|
 | `<leader>f` | Find (pickers, find and replace) | snacks, lspconfig, grug-far |
 | `<leader>g` | Git | fugitive, flog, diffview, snacks (lazygit) |
-| `<leader>gh` | Git hunk | gitsigns |
 | `<leader>p` | Paste with replacement (operator) | mini.operators |
 | `<leader>q` | Quit (windows, buffers, tabs) | mini.bufremove |
 | `<leader>t` | Toggle | snacks, colorizer, which-key, toggler |
@@ -882,15 +881,11 @@ all branches, `u` refreshes, `y<C-g>` yanks the hash, `gq` quits, `g?` help.
 
 #### gitsigns.nvim (`99-gitsigns.lua`)
 
-Change marks in the sign column and line numbers, hunk navigation and staging.
+Change marks in the sign column and line numbers, and hunk navigation.
 
 | Key | Mode | Action |
 |---|---|---|
 | `]c` / `[c` | n | Next / previous hunk with a preview (falls back to diff-mode `]c` in diffs) |
-| `<leader>ghs` | n, x | Stage the hunk / selection |
-| `<leader>ghr` | n, x | Reset the hunk / selection |
-| `<leader>ghu` | n | Undo stage hunk |
-| `<leader>ghp` | n | Preview the hunk |
 
 All custom; gitsigns ships no mappings.
 

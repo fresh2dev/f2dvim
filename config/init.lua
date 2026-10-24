@@ -108,69 +108,6 @@ vim.o.winborder = "rounded"
 vim.o.cindent = true
 vim.opt.cinkeys:remove("0#")
 
--- Disable Neovim's editorconfig integration; it conflicts with vim-symlink
--- ref: https://github.com/aymericbeaumet/vim-symlink/issues/14
-vim.g.editorconfig = false
-
--- [[ Better grep via ripgrep ]]
--- Populates the quickfix / loclist from `:Grep` / `:LGrep`
--- https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3
-vim.o.grepprg = "rg --vimgrep --no-heading"
-
-local function make_grep_cmd(list_letter)
-  return function(opts)
-    -- cgetexpr / lgetexpr evaluate a vimscript expression, so stash output on g: first
-    vim.g._grep_output =
-      vim.fn.system(vim.o.grepprg .. " " .. vim.fn.expandcmd(opts.args))
-    vim.cmd(list_letter .. "getexpr g:_grep_output")
-  end
-end
-vim.api.nvim_create_user_command(
-  "Grep",
-  make_grep_cmd("c"),
-  { nargs = "+", complete = "file_in_path", bar = true }
-)
-vim.api.nvim_create_user_command(
-  "LGrep",
-  make_grep_cmd("l"),
-  { nargs = "+", complete = "file_in_path", bar = true }
-)
-
--- Auto-open quickfix after it is populated
-local grep_qf = vim.api.nvim_create_augroup("grep-quickfix", { clear = true })
-vim.api.nvim_create_autocmd("QuickFixCmdPost", {
-  group = grep_qf,
-  pattern = "cgetexpr",
-  command = "cwindow",
-})
-vim.api.nvim_create_autocmd("QuickFixCmdPost", {
-  group = grep_qf,
-  pattern = "lgetexpr",
-  command = "lwindow",
-})
-
-require("util").cabbrev("grep", "Grep")
-require("util").cabbrev("lgrep", "LGrep")
-
--- [[ netrw ]]
-vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 10
-vim.g.netrw_liststyle = 3
-vim.g.netrw_browse_split = 0
-vim.g.netrw_keepdir = 0
-
--- Free <C-hjkl> inside netrw so the window-navigation mappings (defined by
--- mini.basics in plugin/99-mini.basics.lua) still work there
-vim.api.nvim_create_autocmd("FileType", {
-  desc = "Remove netrw <C-hjkl> mappings to free them for window navigation",
-  pattern = "netrw",
-  callback = function()
-    for _, key in ipairs({ "<C-h>", "<C-j>", "<C-k>", "<C-l>" }) do
-      pcall(vim.keymap.del, "n", key, { buffer = true })
-    end
-  end,
-})
-
 vim.api.nvim_create_autocmd("VimResized", {
   desc = "Auto-resize splits when the host window changes size",
   command = "wincmd =",
@@ -201,17 +138,6 @@ vim.api.nvim_create_autocmd({ "InsertEnter", "WinLeave" }, {
   group = cursorline_group,
   callback = function()
     vim.wo.cursorline = false
-  end,
-})
-
-vim.api.nvim_create_autocmd("TermOpen", {
-  desc = "Start terminal buffers in insert mode",
-  group = vim.api.nvim_create_augroup("TermOpenInsert", { clear = true }),
-  pattern = "term://*",
-  callback = function()
-    if vim.bo.buftype == "terminal" then
-      vim.cmd.startinsert()
-    end
   end,
 })
 

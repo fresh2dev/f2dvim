@@ -65,10 +65,6 @@
       "rev": "281bb1a2c60c3618c854bef2c0933276eb2362c2",
       "src": "https://github.com/nvim-mini/mini.bufremove"
     },
-    "mini.cmdline": {
-      "rev": "3dcca5e11c819718d250f9a3a61605698ea1f756",
-      "src": "https://github.com/nvim-mini/mini.cmdline"
-    },
     "mini.extra": {
       "rev": "9c6affac2b176142f48b185bd7abc5db7ec20ac8",
       "src": "https://github.com/nvim-mini/mini.extra"
@@ -76,6 +72,10 @@
     "mini.files": {
       "rev": "a249438d15fa6f64085ba83a9d1794d726aaf5ad",
       "src": "https://github.com/nvim-mini/mini.files"
+    },
+    "mini.icons": {
+      "rev": "eab3e692d796d78ea6ffc978d8a380ff26fcf4e3",
+      "src": "https://github.com/nvim-mini/mini.icons"
     },
     "mini.indentscope": {
       "rev": "92fbaf895f83c59575ec599df532b297ebf62b14",
@@ -88,6 +88,10 @@
     "mini.operators": {
       "rev": "9e0aa164b097c6cb45e59b9371c9347ac06eb822",
       "src": "https://github.com/nvim-mini/mini.operators"
+    },
+    "mini.splitjoin": {
+      "rev": "be4536a1b8608a482dfac7aec5ce91b1c2f9bdab",
+      "src": "https://github.com/nvim-mini/mini.splitjoin"
     },
     "mini.surround": {
       "rev": "8d5d0c5aa92449368ac251e85451d79d8f69d296",
@@ -137,10 +141,6 @@
     "nvim-various-textobjs": {
       "rev": "dfbf0e9ccab4bad3c87961e1de3c8dc09d8f337a",
       "src": "https://github.com/chrisgrieser/nvim-various-textobjs"
-    },
-    "nvim-web-devicons": {
-      "rev": "5f032a85be210cd1c6ac98861eb3b187ff3bd5eb",
-      "src": "https://github.com/nvim-tree/nvim-web-devicons"
     },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
@@ -217,11 +217,6 @@
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
       "src": "https://github.com/folke/which-key.nvim"
-    },
-    "zellij-claude": {
-      "rev": "700d8d06b87170d49bfd774d2ed02c96062a8b96",
-      "src": "https://github.com/fresh2dev/zellij-claude",
-      "version": "'feat/v0.44'"
     },
     "zellij.vim": {
       "rev": "6b80425dc93963a65aef7e9518deaa4dadf6865e",
