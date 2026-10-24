@@ -4,7 +4,7 @@
 -- ============================================================
 vim.loader.enable()
 
--- Read by the dashboard footer (plugin/99-snacks.lua).
+-- Read by the dashboard footer (plugin/99-snacks.dashboard.lua).
 vim.g.start_hrtime = vim.uv.hrtime()
 
 -- Set before any plugin file runs: a mapping binds the leader in effect when made.

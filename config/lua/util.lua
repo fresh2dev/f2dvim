@@ -48,4 +48,40 @@ function M.keep_cursor(fn)
   end
 end
 
+--- Run `cmd` in a floating zellij pane inside zellij, else in a Snacks terminal
+--- (or `fallback`, such as Snacks.lazygit). Either closes when `cmd` exits. The
+--- zellij pane is titled `name`, else `cmd[1]`.
+---@param cmd string[]
+---@param fallback? fun()
+---@param name? string
+function M.terminal(cmd, fallback, name)
+  if not vim.env.ZELLIJ then
+    if fallback then
+      fallback()
+    else
+      Snacks.terminal(cmd)
+    end
+    return
+  end
+  -- stylua: ignore
+  local args = {
+    "zellij", "run", "--floating", "--close-on-exit", "--name", name or cmd[1],
+    "--cwd", vim.fn.getcwd(), "--x", "5%", "--y", "5%", "--width", "90%", "--height", "90%",
+    "--",
+  }
+  vim.system(vim.list_extend(args, cmd), {}, function(res)
+    if res.code ~= 0 then
+      vim.schedule(function()
+        vim.notify(vim.trim(res.stderr), vim.log.levels.ERROR)
+      end)
+    end
+  end)
+end
+
+--- Open the fzj session picker with `M.terminal`. In its own zellij pane, fzj
+--- needs `--here`; otherwise it opens a second one.
+function M.sessions()
+  M.terminal(vim.env.ZELLIJ and { "fzj", "--here" } or { "fzj" })
+end
+
 return M

@@ -368,13 +368,13 @@ the mouse by default.
 | `[;` | Go to the start of the current context (custom) |
 | `];` | Select the next context (custom) |
 
-#### snacks.nvim (`99-snacks.lua`)
+#### snacks.nvim (`99-snacks*.lua`)
 
 A collection of small features from folke. Enabled modules: `bigfile`
 (disables heavy features for huge files), `dashboard` (see below), `indent`
 (indent guides, also on blank lines; the current scope is mini.indentscope's),
 `input` (nicer `vim.ui.input`), `lazygit`, `notifier` (notifications, 5 s
-timeout), `picker` (see [Snacks picker](#snacks-picker-99-snackslua) below),
+timeout), `picker` (see [Snacks picker](#snacks-picker-99-snackspickerlua) below),
 `statuscolumn`, `terminal`, `words` (highlights other references of the symbol
 under the cursor), and `zen`. Animations are off.
 
@@ -686,7 +686,7 @@ unfolded; a one-character fold column with custom fold glyphs is always shown
 
 ### Search and navigation
 
-#### Snacks picker (`99-snacks.lua`)
+#### Snacks picker (`99-snacks.picker.lua`)
 
 The picker for files, grep, buffers, LSP locations, git objects and more. Also
 provides `vim.ui.select`. The preview sits below the list (the `vertical`
@@ -708,8 +708,7 @@ fuzzy-match their whole input.
 | `<leader>fF` | n | Files, including ignored ones |
 | `<leader>fg` | n | Live grep |
 | `<leader>fG` | n | Live grep, including ignored files |
-| `<leader>fg` / `<leader>fw` | x | Grep the selection |
-| `<leader>fw` | n | Grep the word under the cursor |
+| `<leader>fg` | x | Grep the selection |
 | `gl` | n | Lines in the current buffer |
 | `<leader>fb` | n | Buffers |
 | `<leader>f"` | n | Registers |
@@ -963,7 +962,7 @@ through the Snacks picker. All are buffer-local and appear in which-key with an
 | `grr` | n | References (picker) |
 | `gri` | n | Implementations (picker) |
 | `grt` | n | Type definitions (picker) |
-| `gO` | n | Document symbols (picker); `<leader>fs` from `99-snacks.lua` is the same picker, `<leader>fS` the workspace one |
+| `gO` | n | Document symbols (picker); `<leader>fs` from `99-snacks.picker.lua` is the same picker, `<leader>fS` the workspace one |
 | `grI` / `grO` | n | Incoming / outgoing calls (picker) |
 | `<C-s>` | n | Signature help |
 | `[d` / `]d` | n | Previous / next diagnostic, opening a float (unless `virtual_lines` is on; it is off) |
