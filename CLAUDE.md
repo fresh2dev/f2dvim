@@ -83,7 +83,7 @@ language server finds the file from its root marker, searching up from the edite
 
 This config uses Neovim's **built-in `vim.pack`**, not lazy.nvim/packer/paq. There
 is no central plugin spec table. The only module under `lua/` is `lua/util.lua`
-(cross-file helpers: `cabbrev`, `keep_cursor`, `terminal`, `sessions`); plugin
+(cross-file helpers: `cabbrev`, `keep_cursor`, `sessions`); plugin
 configuration never goes there. Instead:
 
 - Every plugin lives in its own `plugin/NN-<name>.lua`, which calls `vim.pack.add({ { src = "https://github.com/..." } })` and then immediately configures the plugin (`require(...).setup{}`, keymaps, autocmds, user commands).
@@ -100,8 +100,8 @@ snacks.nvim is split like mini, one file per module, but has a single setup:
 each `99-snacks.<module>.lua` assigns `Snacks.config.<module>` (with
 `enabled = true`) instead. Snacks reads a module's config on `UIEnter` or first
 use, so file order doesn't matter; a module that `Snacks.setup` itself reads
-(`notifier`, `statuscolumn`) must stay in the setup call. The zellij-aware
-`terminal` and `sessions` helpers they share are in `lua/util.lua`.
+(`notifier`, `statuscolumn`) must stay in the setup call. The fzj `sessions`
+helper they share is in `lua/util.lua`.
 
 Adding a plugin means adding one new `plugin/99-*.lua` file — do not thread it
 into an existing file unless the two are genuinely coupled.

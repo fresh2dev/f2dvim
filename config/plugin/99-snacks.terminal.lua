@@ -1,6 +1,5 @@
 -- Snacks terminal and lazygit, and the keymaps that run commands in a floating
--- terminal or zellij pane (`util.terminal`). `Snacks.setup` is in 99-snacks.lua;
--- see there.
+-- terminal. `Snacks.setup` is in 99-snacks.lua; see there.
 vim.pack.add({
   { src = "https://github.com/folke/snacks.nvim" },
 })
@@ -23,7 +22,7 @@ vim.keymap.set("n", "<leader>`", function()
 end, { desc = "Toggle Terminal" })
 
 vim.keymap.set("n", "<leader>gg", function()
-  util.terminal({ "lazygit" }, Snacks.lazygit)
+  Snacks.lazygit()
 end, { desc = "LazyGit" })
 
 vim.keymap.set("n", "<leader>fp", util.sessions, { desc = "[F]ind [P]roject" })
@@ -32,5 +31,5 @@ vim.keymap.set("n", "<leader>fp", util.sessions, { desc = "[F]ind [P]roject" })
 
 -- TODO: *replace* this with a command named `:Just`
 vim.keymap.set("n", "<leader>J", function()
-  util.terminal({ "just" })
+  Snacks.terminal({ "just" })
 end, { desc = "[J]ust Command Runner" })
