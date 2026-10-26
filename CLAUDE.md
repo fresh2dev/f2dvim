@@ -83,7 +83,7 @@ language server finds the file from its root marker, searching up from the edite
 
 This config uses Neovim's **built-in `vim.pack`**, not lazy.nvim/packer/paq. There
 is no central plugin spec table. The only module under `lua/` is `lua/util.lua`
-(cross-file helpers: `cabbrev`, `keep_cursor`, `sessions`); plugin
+(cross-file helpers: `cabbrev`, `keep_cursor`, `sessions`, `tabline`); plugin
 configuration never goes there. Instead:
 
 - Every plugin lives in its own `plugin/NN-<name>.lua`, which calls `vim.pack.add({ { src = "https://github.com/..." } })` and then immediately configures the plugin (`require(...).setup{}`, keymaps, autocmds, user commands).
@@ -115,7 +115,7 @@ plugin's own file.
 
 Two labelled sections, ~730 lines and ~65 lines:
 
-1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, core keymaps (including a `vim-unimpaired`-style `[p` linewise-paste family; the list pairs `[a`/`[b`/`[q`/`[l`, `[d` and `[<Space>` are Neovim defaults and are not re-declared), basic autocmds, netrw settings, ripgrep-backed `:Grep`/`:LGrep` user commands with cabbrev routing from `:grep`.
+1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, core keymaps (including a `vim-unimpaired`-style `[p` linewise-paste family; the list pairs `[a`/`[b`/`[q`/`[l`, `[d` and `[<Space>` are Neovim defaults and are not re-declared; and `x`/`X`/`c`/`C` writing to registers `d`/`c`, so small deletes and changes leave the yank alone), the `'tabline'` (`util.tabline`), basic autocmds (including the colour column that shows only while a line exceeds `'textwidth'`, which editorconfig's `max_line_length` sets), netrw settings, ripgrep-backed `:Grep`/`:LGrep` user commands with cabbrev routing from `:grep`.
 2. **SECTION 2: PLUGIN MANAGER HOOKS** — the `PackChanged` build dispatcher described above.
 
 No plugin is loaded from `init.lua`.
@@ -167,7 +167,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
   - `gS` is mini.splitjoin's split/join toggle (`99-mini.splitjoin.lua`).
   - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.picker.lua`).
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.
-  - `s`/`S`: normal `s`/`S` and visual `s` are vim-sneak (`99-sneak.lua`); visual `S` is mini.surround's "surround selection" (`99-mini.surround.lua`). Neither is mapped in operator-pending mode, so `ys`/`ds`/`cs` keep working. cutlass maps `s`/`S` first and is deliberately overridden by these later files. The visual `S` mapping must stay a `:<C-u>lua MiniSurround.add("visual")<CR>` command mapping, not a Lua callback: leaving Visual mode via `:` is what refreshes the `'<`/`'>` marks the function reads, and a callback sees the previous selection's marks (wrong text, or an out-of-range cursor error).
+  - `s`/`S`: normal `s`/`S` and visual `s` are vim-sneak (`99-sneak.lua`); visual `S` is mini.surround's "surround selection" (`99-mini.surround.lua`). Neither is mapped in operator-pending mode, so `ys`/`ds`/`cs` keep working. The visual `S` mapping must stay a `:<C-u>lua MiniSurround.add("visual")<CR>` command mapping, not a Lua callback: leaving Visual mode via `:` is what refreshes the `'<`/`'>` marks the function reads, and a callback sees the previous selection's marks (wrong text, or an out-of-range cursor error).
   - `<C-hjkl>` window navigation and `<C-Arrow>` resize come from mini.basics (`99-mini.basics.lua`); `zellij.vim` then overrides `<C-hjkl>` with its navigator (falls back to `wincmd`). `init.lua` only un-maps them in netrw.
   - The core buffer/window keymaps (`<leader>w`, `<leader>x`, `<leader>q*`) and the `:Quit*` / `:Bdelete` commands live in `99-mini.bufremove.lua`. Bulk deletes (`:QuitHidden`, `:QuitOther`, `:QuitAll`) only touch listed buffers with an empty `buftype`, skip modified buffers unless given `!`, and report what they kept.
   - The Diffview keymap table is intentionally exhaustive (`disable_defaults = true`); don't shrink it to overrides.

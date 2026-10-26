@@ -48,6 +48,19 @@ function M.keep_cursor(fn)
   end
 end
 
+--- The 'tabline': each tab's number between plain spaces, centred. The number is
+--- highlighted as the current or a background tab; `%{n}T` makes it clickable.
+---@return string
+function M.tabline()
+  local current = vim.fn.tabpagenr()
+  local line = "%#TabLineFill#%="
+  for tab = 1, vim.fn.tabpagenr("$") do
+    local hl = tab == current and "TabLineSel" or "TabLine"
+    line = ("%s %%%dT%%#%s#%d%%#TabLineFill# "):format(line, tab, hl, tab)
+  end
+  return line .. "%T%="
+end
+
 --- Open the fzj session picker in a Snacks terminal. Inside zellij, fzj needs
 --- `--here`; otherwise it opens its own floating pane.
 function M.sessions()
