@@ -391,7 +391,8 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>gg` | LazyGit |
 | `<leader><Space>` | Dashboard (`q` closes it) |
 | `<leader>fp` | [F]ind [P]rojects (TODO: document) |
-| `` <leader>` `` / `<C-/>` | Toggle a floating terminal |
+| `` <leader>` `` | Toggle a terminal below |
+| `<leader>tt` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
 All custom. LazyGit, `just`, `fzj` and the dashboard's `!` commands open in a

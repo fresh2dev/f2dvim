@@ -18,8 +18,12 @@ Snacks.config.lazygit = {
 vim.keymap.set("t", "<C-w>", "<C-\\><C-n><C-w>", { desc = "Window Navigation" })
 
 vim.keymap.set("n", "<leader>`", function()
-  Snacks.terminal()
-end, { desc = "Toggle Terminal" })
+  Snacks.terminal(nil, { win = { position = "bottom" } })
+end, { desc = "Toggle terminal (below)" })
+
+vim.keymap.set("n", "<leader>tt", util.float_terminal, {
+  desc = "[T]oggle [F]loating terminal",
+})
 
 vim.keymap.set("n", "<leader>gg", function()
   Snacks.lazygit()
