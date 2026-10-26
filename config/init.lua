@@ -99,6 +99,9 @@ vim.o.termguicolors = true
 -- Global statusline: mini.statusline and snacks zen expect it.
 vim.o.laststatus = 3
 
+-- Numbered tabs, centred; shown once there is a second tab.
+vim.o.tabline = "%!v:lua.require'util'.tabline()"
+
 vim.o.title = true
 vim.o.titlestring = "NVIM: %f"
 
@@ -162,6 +165,37 @@ vim.keymap.set("x", "g/", [[<esc>/\%V]], { desc = "Search inside selection" })
 vim.keymap.set("t", "<C-u>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 
 vim.keymap.set("n", "gb", ":ls<CR>:b<Space>", { desc = "List buffers and switch" })
+
+-- Small deletes and changes go to their own registers instead of the unnamed one
+-- (and the clipboard), so they never clobber a yank. `"dp` pastes the last `x`,
+-- `"cp` the last change. `d`/`D` still cut as usual.
+for _, mode in ipairs({ "n", "x" }) do
+  for lhs, reg in pairs({ x = "d", X = "d", c = "c", C = "c" }) do
+    vim.keymap.set(
+      mode,
+      lhs,
+      '"' .. reg .. lhs,
+      { desc = ('%s into register "%s"'):format(lhs, reg) }
+    )
+  end
+end
+-- Typing over a Select-mode selection (snippet placeholders) does the same, into "s.
+for code = 33, 126 do
+  local char = vim.fn.nr2char(code)
+  vim.keymap.set(
+    "s",
+    char,
+    '<C-o>"sc' .. char,
+    { desc = 'Replace selection, old text into register "s"' }
+  )
+end
+vim.keymap.set(
+  "s",
+  "<Space>",
+  '<C-o>"sc<Space>',
+  { desc = 'Replace selection, old text into register "s"' }
+)
+vim.keymap.set("s", "<BS>", '<C-o>"sc', { desc = 'Delete selection into register "s"' })
 
 -- Wrap a mapping so `.` replays the whole mapping (register and count included).
 local function repeatable(lhs, fn)
@@ -435,6 +469,22 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
   callback = function()
     vim.hl.on_yank()
+  end,
+})
+
+-- Colour the column after 'textwidth' (editorconfig's max_line_length sets it, e.g.
+-- 88 for Python) only while some line runs past it.
+-- shortcut: scans the whole buffer on every change, add a line-count cap if large
+-- files lag.
+vim.api.nvim_create_autocmd({ "BufWinEnter", "TextChanged", "TextChangedI" }, {
+  desc = "Show the column after 'textwidth' only when a line exceeds it",
+  group = vim.api.nvim_create_augroup("smart-colorcolumn", { clear = true }),
+  callback = function()
+    local tw = vim.bo.textwidth
+    local exceeded = vim.bo.buftype == ""
+      and tw > 0
+      and vim.fn.search([[\%>]] .. tw .. "v.", "nw") > 0
+    vim.wo.colorcolumn = exceeded and "+1" or ""
   end,
 })
 

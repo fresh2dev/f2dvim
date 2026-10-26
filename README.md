@@ -9,7 +9,7 @@
   <hr>
 </div>
 
-*f2dvim* is a complete Neovim setup: fresh2dev's config plus the ~60 plugins it uses,
+*f2dvim* is a complete Neovim setup: fresh2dev's config plus the ~50 plugins it uses,
 pinned and packed into one pure-Python wheel. If you have `uv`, you can run it without
 installing anything:
 
@@ -202,7 +202,7 @@ another distribution.
   Neovim instance on that host, across zellij panes included. Text copied on
   your own machine comes in with Cmd+V. Local sessions are unaffected. See the
   comment in `init.lua`.
-- **Small deletes and changes do not clobber your yank** (cutlass). `x`, `X`,
+- **Small deletes and changes do not clobber your yank** (`init.lua`). `x`, `X`,
   `c` and `C` (and visual `x` / `c`) leave the unnamed register alone: the
   deleted text goes to register `d` and the changed text to register `c`, so
   `"cp` recovers what you just changed. `d` and `D` are deliberately left stock
@@ -263,7 +263,7 @@ Leader groups (which-key shows these):
 | `<leader>g` | Git (`<leader>gh` GitHub) | fugitive, flog, diffview, snacks (lazygit, gh) |
 | `<leader>p` | Paste with replacement (operator) | mini.operators |
 | `<leader>q` | Quit (windows, buffers, tabs) | mini.bufremove |
-| `<leader>t` | Toggle | snacks, colorizer, which-key, toggler |
+| `<leader>t` | Toggle | snacks, colorizer, which-key |
 | `<localleader>m` | Markdown (markdown buffers only) | markdown-plus |
 
 Bracket pairs (unimpaired-style, `[` previous / `]` next):
@@ -353,10 +353,10 @@ Statusline. A single global statusline (`laststatus = 3`) showing mode,
 relative file path, filetype, progress and location. In markdown and asciidoc
 buffers it also shows a word count and estimated reading time. No mappings.
 
-#### tabby.nvim (`99-tabby.lua`)
+#### Tabline (`init.lua`, `util.tabline`)
 
-Tabline. Deliberately minimal: it shows only tab numbers, styled from the
-colorscheme's `TabLine` groups. No mappings.
+Deliberately minimal: it shows only tab numbers, centred and styled from the
+colorscheme's `TabLine` groups. Clickable. No mappings.
 
 #### dropbar.nvim (`99-dropbar.lua`)
 
@@ -455,10 +455,13 @@ Shows colour codes in their colour, in `css`, `javascript` and `html` buffers.
 |---|---|
 | `<leader>tc` | Toggle colorizer in the current buffer (custom) |
 
-#### smartcolumn.nvim (`99-smartcolumn.lua`)
+#### Colour column (`init.lua`)
 
-Shows a colour column only when a line actually exceeds it. Off for all
-filetypes except Python (column 88). No mappings.
+Shows the column after `'textwidth'` only while a line exceeds it. Nothing is
+hard-coded: Neovim's built-in editorconfig support sets `'textwidth'` from
+`max_line_length` (88 for `*.py` in the global `~/.editorconfig`), so files
+without one (and special buffers) never show a column. Git commit messages show
+it at their own 72. No mappings.
 
 #### visual-whitespace.nvim (`99-visual-whitespace.lua`)
 
@@ -502,16 +505,14 @@ and functions. No mappings.
 
 ### Editing
 
-#### cutlass.nvim (`99-cutlass.lua`)
+#### Delete and change registers (`init.lua`)
 
 Makes small delete and change operations stop overwriting the unnamed
-register. `d` and `D` are excluded in normal, visual and select mode, so they
-keep cutting into the unnamed register (and the clipboard). What remains:
-`x`, `X` and visual `x` write to register `d`; `c`, `C` and visual `c` write
-to register `c`; text typed over a select-mode selection goes to register `s`.
-`"dp` pastes the last `x`-deletion, `"cp` the last change. (cutlass also maps
-`s`/`S` in normal and visual mode and visual `X`, but vim-sneak, mini.surround
-and mini.operators load later and take those keys back.)
+register. `d` and `D` are left alone in every mode, so they keep cutting into
+the unnamed register (and the clipboard). What is mapped: `x`, `X` (normal) and
+`x` (visual) write to register `d`; `c`, `C` (normal) and `c`, `C` (visual) write to
+register `c`; text typed over a select-mode selection (snippet placeholders)
+goes to register `s`. `"dp` pastes the last `x`-deletion, `"cp` the last change.
 
 #### mini.surround (`99-mini.surround.lua`)
 
@@ -538,7 +539,7 @@ line.
 | Key | Action |
 |---|---|
 | `cx{motion}` / `cxx` | Exchange two regions: apply once on each (custom, default `gx`) |
-| `X` (visual) | Exchange the selection (custom). Not `cx`: cutlass maps visual `c`, and a visual `cx` would make `c` wait for `timeoutlen`. This shadows cutlass's visual `X` (linewise delete); use `d` or `D` |
+| `X` (visual) | Exchange the selection (custom). Not `cx`: `init.lua` maps visual `c`, and a visual `cx` would make `c` wait for `timeoutlen`. This shadows `init.lua`'s visual `X` (linewise delete into register `d`); use `d` or `D` |
 | `gm{motion}` / `gmm` | Multiply (duplicate) text (default) |
 | `<leader>p{motion}` / `<leader>pp` | Replace with the register contents (custom, default `gr`) |
 | `<leader>P` | Replace to the end of the line, like `D`/`C` (custom, `<leader>p$`) |
@@ -567,16 +568,6 @@ Interactive alignment of tables, assignments, comments.
 
 Inside the prompt: a delimiter character, `*` for all occurrences, `<C-x>` for
 a regex, `<Enter>` to cycle alignment.
-
-#### nvim-toggler (`99-toggler.lua`)
-
-Toggles the word under the cursor to its inverse, using the plugin's default
-set: `true`/`false`, `True`/`False`, `yes`/`no`, `on`/`off`, `left`/`right`,
-`up`/`down`, `enable`/`disable`, `==`/`!=`.
-
-| Key | Mode | Action |
-|---|---|---|
-| `<leader>ta` | n, v | Toggle alternative (custom, default `<leader>i` removed) |
 
 #### guess-indent.nvim (`99-guess-indent.lua`)
 
@@ -616,14 +607,16 @@ Two-character jumps.
 mini.surround. Neither key is mapped in operator-pending mode, so `ds`/`cs`
 and `ys` are never mistaken for an operator plus sneak motion.
 
-#### vim-edgemotion (`99-edgemotion.lua`)
+#### Edge motion (`99-edgemotion.lua`)
+
+A Lua port of haya14busa/vim-edgemotion.
 
 | Key | Mode | Action |
 |---|---|---|
 | `gj` | n, x, o | Jump down to the next edge (indent change or blank-line boundary) |
 | `gk` | n, x, o | Jump up to the previous edge |
 
-#### mini.ai (`99-mini.ai.lua`) with mini.extra
+#### mini.ai (`99-mini.ai.lua`)
 
 Better `a`/`i` text objects, with treesitter support. Search radius is 500
 lines. `an`/`in`/`al`/`il` (next / last variants) are disabled.
@@ -638,16 +631,9 @@ lines. `an`/`in`/`al`/`il` (next / last variants) are disabled.
 | `at` `it` | HTML/XML tag (default) |
 | `a?` `i?` | Prompted pair (default) |
 | `aF` `iF` | Function **definition**, via treesitter (custom) |
-| `ae` `ie` | Entire buffer (custom, from mini.extra) |
+| `ae` `ie` | Entire buffer; `ie` skips blank lines at both ends (custom) |
+| `av` `iv` | A subword: one part of camelCase, snake_case, kebab-case or UPPER_CASE on the cursor line. `av` takes the separator after it, or before it for the last part (custom). On a separator it picks the next subword |
 | `g[` `g]` | Move to the left / right edge of the `a` text object (default) |
-
-#### nvim-various-textobjs (`99-various-textobjs.lua`)
-
-Default mappings are disabled; only one text object is mapped.
-
-| Key | Mode | Action |
-|---|---|---|
-| `av` / `iv` | o, x | Around / inside a subword (camelCase or snake_case part) |
 
 #### vim-matchup (`99-matchup.lua`)
 
@@ -834,10 +820,14 @@ buffers and closes their windows.
 
 #### vim-eunuch (`99-eunuch.lua`)
 
-Filesystem commands: `:Remove`/`:Delete`, `:Unlink`, `:Move`, `:Rename`,
-`:Copy`, `:Duplicate`, `:Chmod`, `:Mkdir`, `:SudoWrite`, `:SudoEdit`, `:Wall`,
-`:Cfind`, `:Lfind` and the rest of vim-eunuch's set. All of the plugin's own
-mappings (`g:eunuch_no_maps`) are disabled.
+Filesystem commands: `:Remove`/`:Delete`, `:Unlink`, `:Move`, `:Copy`,
+`:Duplicate`, `:Chmod`, `:Mkdir`, `:SudoWrite`, `:SudoEdit`, `:Wall`, `:Cfind`,
+`:Lfind` and the rest of vim-eunuch's set. All of the plugin's own mappings
+(`g:eunuch_no_maps`) are disabled.
+
+`:Rename` is replaced by a Snacks one, so language servers see the rename and
+update imports. It takes a name relative to the file's directory, or prompts when
+given none.
 
 #### nvim-fundo (`99-fundo.lua`) with promise-async
 
@@ -929,16 +919,13 @@ The default multi-select (`w`, `C`, `H`), staging (`s`, `S`, `U`), listing
 style (`i`, `f`) and layout-cycling (`g<C-x>`) keys are intentionally not
 bound.
 
-#### conflict-marker.vim (`99-conflict-marker.lua`)
-
-Highlights merge conflict markers. Its default mappings are disabled.
+#### Conflict hunks (`99-conflict-marker.lua`)
 
 | Key | Action |
 |---|---|
-| `]x` / `[x` | Next / previous conflict (custom) |
+| `]x` / `[x` | Next / previous conflict hunk; a hunk needs all of its `<<<<<<<`, `=======` and `>>>>>>>` lines. From inside a hunk, `[x` goes to the hunk before it |
 
-`:ConflictMarkerOurselves`, `:ConflictMarkerThemselves`, `:ConflictMarkerBoth`
-and `:ConflictMarkerNone` resolve the conflict under the cursor.
+Resolving conflicts is Diffview's job (`<leader>gd`).
 
 #### lazygit (snacks)
 
@@ -1102,9 +1089,8 @@ lazydev, see above.
 ### Libraries
 
 Installed because another plugin requires them; no user-facing behaviour:
-**mini.icons** (icons for the Snacks picker, mini.statusline, mini.files, tabby; mocks nvim-web-devicons for the rest),
-**plenary.nvim** (todo-comments), **promise-async** (ufo, fundo),
-**mini.extra** (mini.ai's `ae`/`ie`).
+**mini.icons** (icons for the Snacks picker, mini.statusline, mini.files; mocks nvim-web-devicons for the rest),
+**plenary.nvim** (todo-comments), **promise-async** (ufo, fundo).
 
 ## User commands
 
@@ -1121,10 +1107,9 @@ Installed because another plugin requires them; no user-facing behaviour:
 | `:GrugFar` `:GrugFarWithin` | grug-far | Find and replace across files / within the visual range |
 | `:Toc` `:Toch` `:Toct` | markdown-plus (markdown buffers) | Navigable table of contents in a split / tab |
 | `:ColorizerToggle` | colorizer | Colour preview |
-| `:Remove` `:Move` `:Rename` `:Chmod` `:Mkdir` `:SudoWrite` … | eunuch | Filesystem |
+| `:Remove` `:Move` `:Rename` `:Chmod` `:Mkdir` `:SudoWrite` … | eunuch | Filesystem (`:Rename` is Snacks) |
 | `:ZellijNewPane` `:ZellijNewTab` … | zellij.vim | Zellij panes |
 | `:TSUpdate` `:TSInstall` | treesitter | Parsers |
-| `:ConflictMarker*` | conflict-marker | Resolve conflicts |
 
 Command-line abbreviations: `grep`, `lgrep`, `g`, `git`.
 

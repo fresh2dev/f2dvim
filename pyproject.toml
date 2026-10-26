@@ -50,7 +50,6 @@ exclude = [
 
 # SPDX ids for Plugins that state their license only in their README or docs.
 [tool.f2dvim.licenses]
-"conflict-marker.vim" = "MIT"
 "vim-easy-align" = "MIT"
 "vim-eunuch" = "Vim"
 "vim-flog" = "Vim"
