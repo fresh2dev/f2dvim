@@ -1,5 +1,6 @@
 vim.pack.add({
   { src = "https://github.com/tpope/vim-fugitive" },
+  -- Optional: without Flog, the status view falls back to `git log --graph`.
   { src = "https://github.com/rbong/vim-flog" },
 })
 
@@ -11,17 +12,22 @@ vim.g.flog_permanent_default_opts = {
   format = "[%h]%d %s",
 }
 
--- Open the fugitive status buffer with a Flog commit graph beside it, then
+-- Open the fugitive status buffer with a commit graph beside it, then
 -- press fugitive's `i` in the status window to expand the first inline diff.
 -- `layout.before` runs first; `layout.status` is `Git` (split) or `0Git` (take
--- over the window); `layout.graph` is the Flogsplit modifier.
+-- over the window); `layout.graph` is the split modifier for the graph. The graph is
+-- Flog's, or `git log --graph` when Flog is not installed.
 local function git_status_with_graph(layout)
   return function()
     if layout.before then
       vim.cmd(layout.before)
     end
     vim.cmd(layout.status)
-    vim.cmd(layout.graph .. " Flogsplit")
+    if vim.fn.exists(":Flogsplit") == 2 then
+      vim.cmd(layout.graph .. " Flogsplit")
+    else
+      vim.cmd(layout.graph .. " Git log --graph --oneline --decorate")
+    end
     vim.cmd.wincmd("p")
     vim.cmd.normal({ "i", bang = false }) -- fugitive buffer-local mapping
   end
@@ -150,18 +156,21 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- `dt` opens a diff in vsplit in a new tab. The file under the cursor is
--- resolved by evaluating fugitive's `<Plug><cfile>` command-line mapping (the
--- same thing fugitive does internally); a `<Cmd>` mapping cannot expand it
--- because command-line mappings only apply to typed text.
+-- `dt` is fugitive's `dv` (vertical diff of the file under the cursor) in a new tab.
+-- `dv` knows the section the cursor is in: Staged diffs the index against HEAD,
+-- Unstaged diffs the worktree against the index, and renames diff both paths.
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "fugitive",
   callback = function()
     vim.keymap.set("n", "dt", function()
-      local cfile = vim.fn.eval(vim.fn.maparg("<Plug><cfile>", "c"))
-      vim.cmd("Gtabedit " .. cfile)
-      vim.cmd("Gvdiffsplit")
-      vim.cmd("wincmd l")
+      local status = vim.api.nvim_get_current_buf()
+      vim.cmd("tab split")
+      vim.cmd.normal("dv")
+      -- Safety net: if `dv` left the status buffer current (opened nothing), drop the
+      -- new tab. Off a file line `dv` shows the section's `git diff`, which stays.
+      if vim.api.nvim_get_current_buf() == status then
+        vim.cmd.tabclose()
+      end
     end, { buffer = true, silent = true, desc = "Diff in new tab" })
   end,
 })
