@@ -839,7 +839,8 @@ undo files, capped at 512 MB). No mappings.
 #### vim-fugitive (`99-fugitive.lua`) with vim-flog
 
 Git inside Neovim. `:Git` (abbreviated `:g` / `:git`) runs any git command;
-`:Git` alone opens the status buffer. vim-flog draws the commit graph. On
+`:Git` alone opens the status buffer. vim-flog draws the commit graph; without
+it, the status views fall back to `git log --graph --oneline --decorate`. On
 startup the working directory becomes the repository root.
 
 | Key | Action |
