@@ -54,4 +54,14 @@ function M.sessions()
   Snacks.terminal(vim.env.ZELLIJ and { "fzj", "--here" } or { "fzj" })
 end
 
+--- Toggle the floating shell terminal. A separate count gives it its
+--- own instance; Snacks ignores `position` for an existing terminal, so the
+--- bottom terminal would otherwise be reused.
+function M.float_terminal()
+  Snacks.terminal(nil, {
+    count = 2,
+    win = { position = "float", width = 0.85, height = 0.85, border = "rounded" },
+  })
+end
+
 return M

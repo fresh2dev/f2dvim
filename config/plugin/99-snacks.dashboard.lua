@@ -63,17 +63,7 @@ Snacks.config.dashboard = {
       key("g", " ", "LazyGit", function()
         Snacks.lazygit()
       end, vim.fn.executable("lazygit") == 1),
-      key("!", " ", "Exec", function()
-        vim.ui.input({
-          prompt = "Exec",
-          icon = " ",
-          completion = "shellcmdline",
-        }, function(cmd)
-          if cmd and vim.trim(cmd) ~= "" then
-            Snacks.terminal(cmd)
-          end
-        end)
-      end),
+      key("t", "", "Terminal", util.float_terminal),
       key(
         "s",
         " ",
