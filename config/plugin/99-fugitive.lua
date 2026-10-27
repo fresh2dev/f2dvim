@@ -84,6 +84,53 @@ vim.keymap.set(
 -- NOTE: `<leader>gd` is owned by diffview (99-diffview.lua). For a fugitive
 -- single-file diff use `:Gvdiffsplit` or `dt` inside the `:Git` status buffer.
 
+-- Merge conflicts, named like diffview's (99-diffview.lua). In the 3-way diff
+-- (`:Gvdiffsplit!`, or `dv` on an Unmerged file in the status buffer) fugitive names
+-- the buffers `fugitive://…//2/…` (ours) and `…//3/…` (theirs). Showing one of them
+-- sets these maps buffer-locally on the working copy; they stay until it is wiped.
+-- `:` rather than `<Cmd>` so a visual selection becomes the range.
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  pattern = "fugitive://*//[23]/*",
+  callback = function()
+    -- Deferred: the working-copy window is not in diff mode yet when this fires.
+    vim.schedule(function()
+      for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        if
+          vim.wo[win].diff
+          and not vim.startswith(vim.api.nvim_buf_get_name(buf), "fugitive:")
+        then
+          for _, m in ipairs({
+            { "o", "2", "[O]urs" },
+            { "t", "3", "[T]heirs" },
+          }) do
+            vim.keymap.set(
+              { "n", "x" },
+              "<leader>c" .. m[1],
+              ":diffget //" .. m[2] .. "<CR>",
+              {
+                buffer = buf,
+                silent = true,
+                desc = "[C]hoose " .. m[3] .. " (conflict hunk)",
+              }
+            )
+            vim.keymap.set(
+              "n",
+              "<leader>c" .. m[1]:upper(),
+              ":%diffget //" .. m[2] .. "<CR>",
+              {
+                buffer = buf,
+                silent = true,
+                desc = "[C]hoose " .. m[3] .. " (whole file)",
+              }
+            )
+          end
+        end
+      end
+    end)
+  end,
+})
+
 vim.keymap.set(
   "n",
   "<leader>gr",
