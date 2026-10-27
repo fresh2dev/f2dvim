@@ -32,7 +32,8 @@ end
 local maps = {
   { "i", "ZapSend", "send an [I]nstruction" },
   { "q", "ZapSendQuickFix", "send [Q]uickfix list" },
-  { "p", "ZapSendClipboard", "send clipboard ([P]aste)" },
+  { "sp", "ZapSendClipboard", "[S]end the clipboard ([P]aste)" },
+  { "ap", "ZapAddClipboard", "[A]dd the clipboard ([P]aste)" },
   { "f", "Zap -f", "[F]ocus the Agent pane" },
   { "x", "Zap --recreate", "replace the Agent pane with a fresh one" },
 }
