@@ -166,37 +166,6 @@ vim.keymap.set("t", "<C-u>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 
 vim.keymap.set("n", "gb", ":ls<CR>:b<Space>", { desc = "List buffers and switch" })
 
--- Small deletes and changes go to their own registers instead of the unnamed one
--- (and the clipboard), so they never clobber a yank. `"dp` pastes the last `x`,
--- `"cp` the last change. `d`/`D` still cut as usual.
-for _, mode in ipairs({ "n", "x" }) do
-  for lhs, reg in pairs({ x = "d", X = "d", c = "c", C = "c" }) do
-    vim.keymap.set(
-      mode,
-      lhs,
-      '"' .. reg .. lhs,
-      { desc = ('%s into register "%s"'):format(lhs, reg) }
-    )
-  end
-end
--- Typing over a Select-mode selection (snippet placeholders) does the same, into "s.
-for code = 33, 126 do
-  local char = vim.fn.nr2char(code)
-  vim.keymap.set(
-    "s",
-    char,
-    '<C-o>"sc' .. char,
-    { desc = 'Replace selection, old text into register "s"' }
-  )
-end
-vim.keymap.set(
-  "s",
-  "<Space>",
-  '<C-o>"sc<Space>',
-  { desc = 'Replace selection, old text into register "s"' }
-)
-vim.keymap.set("s", "<BS>", '<C-o>"sc', { desc = 'Delete selection into register "s"' })
-
 -- Wrap a mapping so `.` replays the whole mapping (register and count included).
 local function repeatable(lhs, fn)
   lhs = vim.keycode(lhs)
