@@ -202,11 +202,10 @@ another distribution.
   Neovim instance on that host, across zellij panes included. Text copied on
   your own machine comes in with Cmd+V. Local sessions are unaffected. See the
   comment in `init.lua`.
-- **Small deletes and changes do not clobber your yank** (`init.lua`). `x`, `X`,
-  `c` and `C` (and visual `x` / `c`) leave the unnamed register alone: the
-  deleted text goes to register `d` and the changed text to register `c`, so
-  `"cp` recovers what you just changed. `d` and `D` are deliberately left stock
-  in both normal and visual mode, so `dd`, `diw` and a visual `d` still cut.
+- **Small deletes and changes do not clobber your yank** (`99-cutlass.lua`). `x`, `X`,
+  `c` and `C` (and visual `x` / `c`) go to the blackhole register, so the unnamed
+  register and the clipboard keep your last yank. `d` still cuts, except when it
+  removes only blank text (empty lines, spaces): that goes to the blackhole too.
 - **`s` and `S` are vim-sneak**, not "substitute character". Type `s` plus two
   characters to jump forward, `S` to jump backward, `;`/`,` to repeat. `f`/`t`
   are sneak-enhanced too. Visual `s` extends the selection with a sneak jump;
@@ -505,14 +504,13 @@ and functions. No mappings.
 
 ### Editing
 
-#### Delete and change registers (`init.lua`)
+#### Delete and change registers (`99-cutlass.lua`)
 
 Makes small delete and change operations stop overwriting the unnamed
-register. `d` and `D` are left alone in every mode, so they keep cutting into
-the unnamed register (and the clipboard). What is mapped: `x`, `X` (normal) and
-`x` (visual) write to register `d`; `c`, `C` (normal) and `c`, `C` (visual) write to
-register `c`; text typed over a select-mode selection (snippet placeholders)
-goes to register `s`. `"dp` pastes the last `x`-deletion, `"cp` the last change.
+register. `x`, `X`, `c`, `C` (normal and visual) and text typed over a
+select-mode selection (snippet placeholders) go to the blackhole register. `d`,
+`dd` and `D` cut as usual unless the deleted text is only whitespace, in which
+case it goes to the blackhole register too.
 
 #### mini.surround (`99-mini.surround.lua`)
 
@@ -539,7 +537,7 @@ line.
 | Key | Action |
 |---|---|
 | `cx{motion}` / `cxx` | Exchange two regions: apply once on each (custom, default `gx`) |
-| `X` (visual) | Exchange the selection (custom). Not `cx`: `init.lua` maps visual `c`, and a visual `cx` would make `c` wait for `timeoutlen`. This shadows `init.lua`'s visual `X` (linewise delete into register `d`); use `d` or `D` |
+| `X` (visual) | Exchange the selection (custom). Not `cx`: `99-cutlass.lua` maps visual `c`, and a visual `cx` would make `c` wait for `timeoutlen`. This shadows `99-cutlass.lua`'s visual `X` (linewise delete into the blackhole register); use `d` or `D` |
 | `gm{motion}` / `gmm` | Multiply (duplicate) text (default) |
 | `<leader>p{motion}` / `<leader>pp` | Replace with the register contents (custom, default `gr`) |
 | `<leader>P` | Replace to the end of the line, like `D`/`C` (custom, `<leader>p$`) |
