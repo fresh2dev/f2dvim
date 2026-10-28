@@ -106,6 +106,14 @@ helper they share is in `lua/util.lua`.
 Adding a plugin means adding one new `plugin/99-*.lua` file — do not thread it
 into an existing file unless the two are genuinely coupled.
 
+Custom functionality modelled on a plugin goes in a `plugin/99-*.lua` named after
+that plugin, whose first line says so and that no plugin is installed:
+`99-cutlass.lua`, `99-unimpaired.lua` (`[p` family, `[e`/`]e`), `99-sticky-yank.lua`,
+`99-comment.lua` (`gco`/`gcO`, after Comment.nvim), `99-smartcolumn.lua` (the colour
+column that shows only while a line exceeds `'textwidth'`, which editorconfig's
+`max_line_length` sets). The list pairs `[a`/`[b`/`[q`/`[l`, `[d` and `[<Space>` are
+Neovim defaults and are not re-declared.
+
 Build steps after install/update are centralised in `init.lua` SECTION 2, in a
 single `PackChanged` autocmd that dispatches on `ev.data.spec.name` (currently
 only `nvim-treesitter` → `:TSUpdate`). Add new build hooks there, not in the
@@ -113,9 +121,9 @@ plugin's own file.
 
 ### `init.lua`
 
-Two labelled sections, ~690 lines and ~65 lines:
+Two labelled sections, ~235 lines and ~45 lines:
 
-1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, core keymaps (including a `vim-unimpaired`-style `[p` linewise-paste family; the list pairs `[a`/`[b`/`[q`/`[l`, `[d` and `[<Space>` are Neovim defaults and are not re-declared), the `'tabline'` (`util.tabline`), basic autocmds (including the colour column that shows only while a line exceeds `'textwidth'`, which editorconfig's `max_line_length` sets), netrw settings, ripgrep-backed `:Grep`/`:LGrep` user commands with cabbrev routing from `:grep`.
+1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, small core keymaps, the `'tabline'` (`util.tabline`), diagnostics config and basic autocmds. Custom functionality modelled on a plugin lives in a `plugin/99-*.lua` named after that plugin instead (see below).
 2. **SECTION 2: PLUGIN MANAGER HOOKS** — the `PackChanged` build dispatcher described above.
 
 No plugin is loaded from `init.lua`.
@@ -175,7 +183,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
   - Markdown buffers (`ftplugin/markdown.lua`) map `<CR>`, `<Tab>`, `<S-Tab>`, `<BS>`, `<A-CR>`, `o`, `O`, `[[`/`]]` and `[f`/`]f` buffer-locally to markdown-plus `<Plug>` mappings. The plugin's own defaults are disabled (`keymaps.enabled = false`) because `<localleader>` is `<Space>` and its `<localleader>t`/`]b` defaults would shadow the Toggle group and buffer navigation; the context-aware keys hand the key back to blink/mini.pairs/native outside lists and tables. `<BS>` is the one key not mapped straight to a `<Plug>`: it is an expression mapping that removes an empty list marker and otherwise returns `MiniPairs.bs()`, so pairs still delete as a whole. `gd` and `<C-t>` are deliberately not mapped.
 - `plugin/99-cutlass.lua` installs no plugin (it replaced cutlass.nvim): `x`/`X`/`c`/`C` and Select-mode typing write to the blackhole register, and `d`/`dd`/`D` do so when they delete only blank text (a `g@` operator, since the content is unknown until the motion is read), so small deletes and changes leave the yank alone.
 - Command-line abbreviations go through `require("util").cabbrev(lhs, rhs)` (only fires when `lhs` is the whole command line) — used for `grep`→`Grep`, `lgrep`→`LGrep`, `g`/`git`→`Git`.
-- Mappings that must leave the cursor where it was wrap the edit in `require("util").keep_cursor(fn)` (`.` in `init.lua`). It tracks the cursor with an extmark, so the cursor stays on the same text when `fn` adds or removes lines, and it cannot end up past the end of the buffer. Sticky yank (`y`/`Y`) cannot use it: the operator runs after the expr mapping returns, and `g@` moves the cursor before calling `operatorfunc`. Instead it saves the window view (`winsaveview`) in the mapping and restores it from `TextYankPost`, only in the same window and buffer. A deferred `ModeChanged` (`*:n*`) clears the saved view, so a cancelled `y<Esc>` never makes a later `:yank` jump back to an old position. Mappings that must repeat as a whole (the `[p` family, `[e`/`]e`) are wrapped in `repeatable(lhs, fn)` in `init.lua` (vim-repeat); `.` calls `repeat#run` when `g:repeat_tick == b:changedtick`, else `keep_cursor` around `normal! .`.
+- Mappings that must leave the cursor where it was wrap the edit in `require("util").keep_cursor(fn)` (`.` in `99-repeat.lua`). It tracks the cursor with an extmark, so the cursor stays on the same text when `fn` adds or removes lines, and it cannot end up past the end of the buffer. Sticky yank (`y`/`Y`, `99-sticky-yank.lua`) cannot use it: the operator runs after the expr mapping returns, and `g@` moves the cursor before calling `operatorfunc`. Instead it saves the window view (`winsaveview`) in the mapping and restores it from `TextYankPost`, only in the same window and buffer. A deferred `ModeChanged` (`*:n*`) clears the saved view, so a cancelled `y<Esc>` never makes a later `:yank` jump back to an old position. Mappings that must repeat as a whole (the `[p` family, `[e`/`]e`) are wrapped in `repeatable(lhs, fn)` in `99-unimpaired.lua` (vim-repeat); `.` calls `repeat#run` when `g:repeat_tick == b:changedtick`, else `keep_cursor` around `normal! .`.
 - Fugitive runs `:Gcd` on `VimEnter`, so the cwd is the git root for the whole session; the Snacks pickers (`smart` filters to it), `:Grep` and blink's path source all inherit that.
 
 ### Deliberate deviations — do not "fix" these

@@ -174,7 +174,7 @@ init.lua            options, core keymaps, autocmds, :Grep, vim.pack build hooks
 lua/util.lua        cross-file helpers (`cabbrev`, `keep_cursor`)
 plugin/00-*.lua     must run first (colorscheme)
 plugin/90-*.lua     infrastructure others depend on (LSP, treesitter)
-plugin/99-*.lua     one plugin per file, order-independent
+plugin/99-*.lua     one plugin (or a port of one) per file, order-independent
 ftplugin/           filetype-scoped plugins (markdown, Lua)
 nvim-pack-lock.json pinned plugin revisions
 ```
@@ -303,7 +303,9 @@ Operators and their prefixes:
 
 ## Core mappings (no plugin)
 
-Everything in this section lives in `init.lua`.
+These live in `init.lua`, except the ones modelled on a plugin, which live in a
+file named after it: `[p` and `[e` (`99-unimpaired.lua`), `.` (`99-repeat.lua`),
+`y` / `Y` (`99-sticky-yank.lua`) and `gco` / `gcO` (`99-comment.lua`).
 
 | Key | Mode | Action |
 |---|---|---|
@@ -455,7 +457,7 @@ Shows colour codes in their colour, in `css`, `javascript` and `html` buffers.
 |---|---|
 | `<leader>tc` | Toggle colorizer in the current buffer (custom) |
 
-#### Colour column (`init.lua`)
+#### Colour column (`99-smartcolumn.lua`)
 
 Shows the column after `'textwidth'` only while a line exceeds it. Nothing is
 hard-coded: Neovim's built-in editorconfig support sets `'textwidth'` from
