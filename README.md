@@ -258,6 +258,7 @@ Leader groups (which-key shows these):
 
 | Prefix | Group | Where |
 |---|---|---|
+| `<leader>c` | Conflict (choose a side) | conflict-marker |
 | `<leader>f` | Find (pickers, find and replace) | snacks, lspconfig, grug-far |
 | `<leader>g` | Git (`<leader>gh` GitHub) | fugitive, flog, diffview, snacks (lazygit, gh) |
 | `<leader>p` | Paste with replacement (operator) | mini.operators |
@@ -923,8 +924,21 @@ bound.
 | Key | Action |
 |---|---|
 | `]x` / `[x` | Next / previous conflict hunk; a hunk needs all of its `<<<<<<<`, `=======` and `>>>>>>>` lines. From inside a hunk, `[x` goes to the hunk before it |
+| `<leader>co` `ct` `cb` `ca` | Replace the conflict under the cursor, markers included, with ours / theirs / base / all three |
+| `<leader>cO` `cT` `cB` `cA` | Same, for every conflict in the file |
 
-Resolving conflicts is Diffview's job (`<leader>gd`).
+The choose maps read the markers, so they need no diff: they work in fugitive's
+3-way diff, in a plain buffer, and in diffview (whose own maps of the same name
+do the same). Base needs git's `merge.conflictStyle` set to `diff3` or `zdiff3`;
+without it `cb` / `cB` report an error and change nothing. To take a diff hunk
+instead of a marker block, use fugitive's `d2o` / `d3o` in its 3-way diff, or
+diffview's `2do` / `3do`.
+
+Resolving conflicts with fugitive: `:Git mergetool` loads the conflicts into the
+quickfix list. On each file, open the 3-way diff with `:Gvdiffsplit!` if you want
+it, go to a conflict with `]x`, choose with `<leader>co` / `ct`, then `:w` and
+`<leader>gw` (`:Gwrite`) to mark the file resolved. `]q` goes to the next
+conflict.
 
 #### lazygit (snacks)
 
