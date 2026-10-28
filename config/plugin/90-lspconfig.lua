@@ -64,9 +64,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
       client.server_capabilities.documentFormattingProvider = false
       client.server_capabilities.documentRangeFormattingProvider = false
     elseif client then
+      -- Cleared per buffer first, so a re-attach (`:LspRestart`) doesn't format twice.
+      local group =
+        vim.api.nvim_create_augroup("dprint-format-on-save", { clear = false })
+      vim.api.nvim_clear_autocmds({ group = group, buffer = event.buf })
       vim.api.nvim_create_autocmd("BufWritePre", {
         buffer = event.buf,
-        group = vim.api.nvim_create_augroup("dprint-format-on-save", { clear = false }),
+        group = group,
         callback = function(ev)
           if not vim.b[ev.buf].disable_autoformat then
             vim.lsp.buf.format({ bufnr = ev.buf, name = "dprint", timeout_ms = 1000 })
