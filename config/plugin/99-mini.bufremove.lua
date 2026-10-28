@@ -107,11 +107,14 @@ end
 
 --- Delete git buffers. Windows showing them are closed first (unless a window
 --- is the last one in its tab), so the splits opened by `<leader>gt` go away
---- instead of being swapped to some other buffer.
+--- instead of being swapped to some other buffer. A modified buffer's window
+--- stays open unless `force`: closing it would delete a commit message, whose
+--- 'bufhidden' is "delete" (99-fugitive.lua).
 ---@param force boolean|nil
 local function quit_git(force)
   for _, win in ipairs(vim.api.nvim_list_wins()) do
-    if vim.api.nvim_win_is_valid(win) and is_git(vim.api.nvim_win_get_buf(win)) then
+    local buf = vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win)
+    if buf and is_git(buf) and (force or not vim.bo[buf].modified) then
       local tab = vim.api.nvim_win_get_tabpage(win)
       if #vim.api.nvim_tabpage_list_wins(tab) > 1 then
         vim.api.nvim_win_close(win, true)
