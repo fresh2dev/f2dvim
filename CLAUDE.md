@@ -159,11 +159,12 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 ### Keymap conventions
 
 - Leader and localleader are both `<Space>`.
-- Leader groups are registered in the `which-key` spec in `plugin/99-which-key.lua`: `<leader>f` Find, `<leader>g` Git (`<leader>gg` is Snacks lazygit; `<leader>gh` GitHub is Snacks gh), `<leader>p` replace-with-register operator (mini.operators), `<leader>q` Quit, `<leader>t` Toggle. **When adding a mapping under a new leader group, add the group to that spec.** `<localleader>m` (Markdown) is the exception: it is buffer-local, registered with `which-key.add({ buffer = ... })` in `ftplugin/markdown.lua`. A buffer-local map that fully matches fires without waiting, so a plugin's buffer-local `<localleader>` keys must not equal a global `<leader>` map or prefix; grug-far's are remapped in `99-grug-far.lua` for that reason.
+- Leader groups are registered in the `which-key` spec in `plugin/99-which-key.lua`: `<leader>c` Conflict, `<leader>f` Find, `<leader>g` Git (`<leader>gg` is Snacks lazygit; `<leader>gh` GitHub is Snacks gh), `<leader>p` replace-with-register operator (mini.operators), `<leader>q` Quit, `<leader>t` Toggle. **When adding a mapping under a new leader group, add the group to that spec.** `<localleader>m` (Markdown) is the exception: it is buffer-local, registered with `which-key.add({ buffer = ... })` in `ftplugin/markdown.lua`. A buffer-local map that fully matches fires without waiting, so a plugin's buffer-local `<localleader>` keys must not equal a global `<leader>` map or prefix; grug-far's are remapped in `99-grug-far.lua` for that reason.
 - Never use `Alt`/`Meta` (`<A-…>`, `<M-…>`, `<a-…>`) as a modifier in any mapping this config defines, including plugin-internal keymap tables.
 - Every mapping gets a `desc`; group letters are marked in the description with brackets (`"[G]oto [D]efinition"`).
 - Ownership of contested keys, so they are not re-declared elsewhere:
   - `<leader>gd` is Diffview (`99-diffview.lua`); fugitive single-file diffs use `:Gvdiffsplit` or `dt` in the status buffer.
+  - `<leader>c{o,t,b,a}` (and uppercase for the whole file) choose a conflict side by its markers (`99-conflict-marker.lua`), so they work without a diff; diffview's buffer-local maps of the same name shadow them in its buffers and do the same. Hunk-based picks stay with fugitive's `d2o`/`d3o` and diffview's `2do`/`3do`.
   - `gS` is mini.splitjoin's split/join toggle (`99-mini.splitjoin.lua`).
   - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.picker.lua`).
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.

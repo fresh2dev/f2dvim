@@ -8,6 +8,7 @@ require("which-key").setup({
   end,
   spec = {
     { "<leader>a", group = "[A]gent" },
+    { "<leader>c", group = "[C]onflict" },
     { "<leader>f", group = "[F]ind" },
     { "<leader>g", group = "[G]it" },
     { "<leader>gh", group = "[G]it[H]ub" },
