@@ -1164,6 +1164,9 @@ NVIM_APPNAME=nvim-dev just link   # links ~/.config/nvim-dev
 NVIM_APPNAME=nvim-dev nvim
 ```
 
+`just update`, `just prune` and `just build` follow the same `NVIM_APPNAME`
+(`f2dvim`'s own, inherited by shells it starts, counts as unset).
+
 `just update` and `just prune` maintain the plugins (see
 [Building from source](#building-from-source)). Format Lua with `stylua config` from the
 project root, which picks up the root `.stylua.toml`. To check a change:
