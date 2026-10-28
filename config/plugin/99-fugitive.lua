@@ -110,7 +110,7 @@ vim.keymap.set(
 )
 
 -- `cd` to the git root on startup. Everything that works relative to the cwd
--- inherits it: the Snacks pickers, `:Grep` and blink's path source (`get_cwd`).
+-- inherits it: the Snacks pickers, `:grep` and blink's path source (`get_cwd`).
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     vim.cmd("silent! Gcd")

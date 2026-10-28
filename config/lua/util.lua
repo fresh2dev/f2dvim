@@ -3,8 +3,8 @@
 local M = {}
 
 --- Abbreviate `lhs` to `rhs` on the `:` command line, but only when `lhs` is
---- the whole line typed so far (so `:grep` becomes `:Grep` while `:vimgrep`
---- and `:'<,'>grep` are left alone).
+--- the whole line typed so far (so `:git` becomes `:Git` while `:'<,'>git` is
+--- left alone).
 ---@param lhs string
 ---@param rhs string
 function M.cabbrev(lhs, rhs)
