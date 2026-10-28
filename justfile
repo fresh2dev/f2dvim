@@ -1,4 +1,6 @@
-nvim_appname := env("NVIM_APPNAME", "nvim")
+# The Home machine's NVIM_APPNAME. f2dvim exports its own to the shells it starts,
+# so that one means "unset" (as in scripts/bundle.py).
+nvim_appname := if env("NVIM_APPNAME", "nvim") == "f2dvim" { "nvim" } else { env("NVIM_APPNAME", "nvim") }
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Tools
@@ -47,15 +49,15 @@ link _link_dest=(home_directory() / ".config" / nvim_appname):
 
 # Update every Plugin and the lockfile of the Home machine's config, without review
 update:
-    env -u NVIM_APPNAME nvim --headless -c 'lua vim.pack.update(nil, { force = true })' -c qa
+    NVIM_APPNAME={{ nvim_appname }} nvim --headless -c 'lua vim.pack.update(nil, { force = true })' -c qa
 
 # Delete Stale Plugins (locked or installed, declared by no Plugin file), after confirming
 prune:
     #!/usr/bin/env bash
     set -euo pipefail
-    stale=$(uv run -q python scripts/bundle.py stale)
+    stale=$(NVIM_APPNAME={{ nvim_appname }} uv run -q python scripts/bundle.py stale)
     [ -n "$stale" ] || { echo "No Stale Plugins."; exit 0; }
     echo "$stale"
     gum confirm "Delete these Stale Plugins?" || exit 0
     names=$(printf '"%s",' $stale)
-    env -u NVIM_APPNAME nvim --headless -c "lua vim.pack.del({ ${names%,} })" -c qa
+    NVIM_APPNAME={{ nvim_appname }} nvim --headless -c "lua vim.pack.del({ ${names%,} })" -c qa

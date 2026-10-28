@@ -23,7 +23,7 @@ Tasks run through `just` (bare `just` lists them). Most tools are pinned in the 
 - `just install`: sync `.venv` with `uv`.
 - `just test`, `just lint` (alias `check`), `just fix`, `just check-types`, `just check-docstrings`.
 - `just build`, `just publish-test`, `just publish`. Building needs the Plugins installed by `vim.pack` on this machine.
-- `just link`, `just update`, `just prune`: symlink `config/` to `~/.config/${NVIM_APPNAME:-nvim}`, update Plugins and the lockfile headlessly (no review buffer), delete Stale Plugins (declared by no `plugin/` or `ftplugin/` file).
+- `just link`, `just update`, `just prune`: symlink `config/` to `~/.config/${NVIM_APPNAME:-nvim}` (`update`, `prune` and `bundle.py` use the same appname; `f2dvim`, which the launcher exports, counts as unset), update Plugins and the lockfile headlessly (no review buffer), delete Stale Plugins (declared by no `plugin/` or `ftplugin/` file).
 - `stylua config src`: format the Lua; run it before committing Lua changes.
 - `just docs-serve`, `just docs-build`, `just docs-publish`.
 - `prek run --all-files`: run the git hooks (this project uses `prek`, not `pre-commit`).

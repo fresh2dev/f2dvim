@@ -124,7 +124,10 @@ class Settings:
 def home_pack_dir() -> Path:
     """Where `vim.pack` installs Plugins on the Home machine."""
     data = os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share"
-    return Path(data) / "nvim" / "site" / "pack" / "core" / "opt"
+    # f2dvim exports its own NVIM_APPNAME to the shells it starts; treat it as unset.
+    app = os.environ.get("NVIM_APPNAME", "")
+    app = "nvim" if app in {"", "f2dvim"} else app
+    return Path(data) / app / "site" / "pack" / "core" / "opt"
 
 
 def stage(settings: Settings, out: Path) -> list[str]:
