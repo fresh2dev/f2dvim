@@ -47,10 +47,10 @@ operators.setup({
 })
 
 -- Exchange: `cx{motion}` / `cxx` in normal mode, `X` on a visual selection.
--- Not `cx` in visual mode: init.lua maps visual `c`, so a visual `cx` would make
--- every visual `c` pause for 'timeoutlen' before changing the text. Visual `X`
--- shadows init.lua's linewise delete into register d (`"dX`); use `D` or `d` for
--- that instead.
+-- Not `cx` in visual mode: 99-cutlass.lua maps visual `c`, so a visual `cx` would
+-- make every visual `c` pause for 'timeoutlen' before changing the text. Visual `X`
+-- shadows 99-cutlass.lua's linewise delete into the blackhole register (`"_X`); use
+-- `D` or `d` for that instead.
 operators.make_mappings("exchange", {
   textobject = "cx",
   line = "cxx",
