@@ -196,7 +196,7 @@ another distribution.
 - **Small deletes and changes do not clobber your yank** (`99-cutlass.lua`). `x`, `X`,
   `c` and `C` (and visual `x` / `c`) go to the blackhole register, so the unnamed
   register and the clipboard keep your last yank. `d` still cuts, except when it
-  removes only blank text (empty lines, spaces): that goes to the blackhole too.
+  removes only blank text (empty lines, spaces): then the register keeps what it had.
 - **`s` and `S` are vim-sneak**, not "substitute character". Type `s` plus two
   characters to jump forward, `S` to jump backward, `;`/`,` to repeat. `f`/`t`
   are sneak-enhanced too. Visual `s` extends the selection with a sneak jump;
@@ -501,7 +501,9 @@ Makes small delete and change operations stop overwriting the unnamed
 register. `x`, `X`, `c`, `C` (normal and visual) and text typed over a
 select-mode selection (snippet placeholders) go to the blackhole register. `d`,
 `dd` and `D` cut as usual unless the deleted text is only whitespace, in which
-case it goes to the blackhole register too.
+case the register you deleted into is put back as it was (the numbered and
+small-delete registers still record it). `d` stays Neovim's own, so `do` / `dp`
+and `.` work as usual.
 
 #### mini.surround (`99-mini.surround.lua`)
 
