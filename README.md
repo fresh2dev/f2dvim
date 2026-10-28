@@ -136,7 +136,7 @@ it, and language servers that aren't installed are skipped.
 
 | Tool | Used for | Install |
 |---|---|---|
-| `rg` | `:Grep`, file and grep pickers | your package manager |
+| `rg` | `:grep`, file and grep pickers | your package manager |
 | `lazygit` | `<leader>gg` | `go install github.com/jesseduffield/lazygit@latest` |
 | `gh` (authenticated) | `<leader>gh*` GitHub pickers | your package manager |
 | `dprint` | format on save (`dprint lsp`) | `npm i -g dprint` |
@@ -170,7 +170,7 @@ they exist (`ys`/`ds`/`cs`, `[q`/`]q`, `[p`/`]p`).
 It lives in [`config/`](config); paths below are relative to it.
 
 ```text
-init.lua            options, core keymaps, autocmds, :Grep, vim.pack build hooks
+init.lua            options, core keymaps, autocmds, vim.pack build hooks
 lua/util.lua        cross-file helpers (`cabbrev`, `keep_cursor`)
 plugin/00-*.lua     must run first (colorscheme)
 plugin/90-*.lua     infrastructure others depend on (LSP, treesitter)
@@ -192,16 +192,7 @@ another distribution.
   seconds to get a which-key popup of everything under it. `<leader>tk` shows
   buffer-local keymaps, `<leader>tK` all of them, `<leader>fk` searches them.
 - **The clipboard is the system clipboard.** `'clipboard'` is `unnamedplus`, so
-  every yank and put goes through the OS clipboard. Over SSH (where no
-  `xclip`/`wl-copy` can work) yanks are sent to your terminal emulator with
-  OSC 52 instead, so they land on the *local* machine's clipboard and can be
-  pasted anywhere with the terminal's paste (Cmd+V / Ctrl+Shift+V), including
-  other SSH sessions, zellij panes and Neovim instances. Every yank is also
-  recorded in a per-user file on the server (`stdpath("run")`, e.g.
-  `/run/user/<uid>/clipboard.json`), so `p` pastes the latest yank of any
-  Neovim instance on that host, across zellij panes included. Text copied on
-  your own machine comes in with Cmd+V. Local sessions are unaffected. See the
-  comment in `init.lua`.
+  every yank and put goes through the OS clipboard.
 - **Small deletes and changes do not clobber your yank** (`99-cutlass.lua`). `x`, `X`,
   `c` and `C` (and visual `x` / `c`) go to the blackhole register, so the unnamed
   register and the clipboard keep your last yank. `d` still cuts, except when it
@@ -232,7 +223,7 @@ another distribution.
 - **`\` opens the file explorer** (mini.files) at the working directory and
   `|` opens it at the current file.
 - **The working directory jumps to the git root on startup** (fugitive
-  `:Gcd`). Fuzzy finding, `:Grep`, path completion and recent files are all
+  `:Gcd`). Fuzzy finding, `:grep`, path completion and recent files are all
   relative to that.
 - **Format on save is on** wherever `dprint lsp` attaches; dprint is the only
   formatter. `:FormatToggle` turns it off for the current buffer.
@@ -242,11 +233,10 @@ another distribution.
   is visible elsewhere (or if every other buffer is already on screen in this
   tab), otherwise it deletes the buffer without disturbing the split layout.
 - **No swap files, no backups; undo history is persistent** (`undofile` plus
-  fundo). `'modeline'` is off, and Neovim's EditorConfig support is off because
-  it conflicts with symlinked files.
+  fundo). `'modeline'` is off.
 - **Relative line numbers appear only in visual mode** (mini.basics).
-- **`:grep`, `:lgrep`, `:g`, `:git` are abbreviations** for `:Grep`, `:LGrep`,
-  `:Git`. They expand only when they are the whole command line.
+- **`:g` and `:git` are abbreviations** for `:Git`. They expand only when they
+  are the whole command line.
 - **In the terminal**, `<Esc><Esc>` or `<C-u>` leaves insert mode and `<C-w>`
   followed by a window key moves between windows without leaving first.
 - Indentation defaults to **4 spaces** and is auto-detected per file
@@ -330,8 +320,6 @@ cursor returns to its last position when a file is reopened, `cursorline` is
 shown only in the active window and not in insert mode, splits rebalance when
 the terminal is resized, terminals start in insert mode, and yanked text
 flashes briefly.
-
-`:Grep {args}` and `:LGrep {args}` run ripgrep, fill the quickfix or location list, and open it.
 
 ## Plugins
 
@@ -735,7 +723,7 @@ defaults are mapped):
 Find and replace across files, using `rg`. Opens at the bottom of the screen
 with search, replace, files-filter, flags and paths inputs; results update as
 you type. The paths input also accepts `<buflist>` and `<qflist>`, so it can
-target what `:Grep` or a picker's `<C-q>` found. The buffer is transient
+target what `:grep` or a picker's `<C-q>` found. The buffer is transient
 (unlisted, and deleted once its window closes). Editing result lines and
 syncing them back to the files is disabled (custom): changes go through
 Replace or Apply.
@@ -1111,7 +1099,6 @@ Installed because another plugin requires them; no user-facing behaviour:
 
 | Command | Defined in | Action |
 |---|---|---|
-| `:Grep` `:LGrep` | init.lua | ripgrep into the quickfix / location list |
 | `:Bdelete[!] [buf]` `:Bwipeout[!] [buf]` | mini.bufremove | Delete / wipe a buffer by number or name, keeping windows |
 | `:QuitSmart[!]` `:QuitHidden[!]` `:QuitOther[!]` `:QuitAll[!]` `:QuitGit[!]` | mini.bufremove | See the quit family above |
 | `:FormatEnable` `:FormatDisable` `:FormatToggle` | 90-lspconfig | dprint format on save for this buffer |
@@ -1126,7 +1113,7 @@ Installed because another plugin requires them; no user-facing behaviour:
 | `:ZellijNewPane` `:ZellijNewTab` … | zellij.vim | Zellij panes |
 | `:TSUpdate` `:TSInstall` | treesitter | Parsers |
 
-Command-line abbreviations: `grep`, `lgrep`, `g`, `git`.
+Command-line abbreviations: `g`, `git`.
 
 ## Extending the config
 
