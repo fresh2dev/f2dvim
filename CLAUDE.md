@@ -121,7 +121,7 @@ plugin's own file.
 
 ### `init.lua`
 
-Two labelled sections, ~235 lines and ~45 lines:
+Two labelled sections, ~250 lines and ~45 lines:
 
 1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, small core keymaps, the `'tabline'` (`util.tabline`), diagnostics config and basic autocmds. Custom functionality modelled on a plugin lives in a `plugin/99-*.lua` named after that plugin instead (see below).
 2. **SECTION 2: PLUGIN MANAGER HOOKS** — the `PackChanged` build dispatcher described above.
