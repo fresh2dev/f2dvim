@@ -61,6 +61,10 @@ vim.o.breakindent = true
 -- Input and timing
 vim.o.mouse = "a"
 
+-- No right-click popup menu; the rest of the mouse stays on (:h disable-mouse).
+vim.cmd.aunmenu("PopUp")
+vim.cmd("autocmd! nvim.popupmenu")
+
 -- Use the system clipboard.
 vim.o.clipboard = "unnamedplus"
 
