@@ -393,7 +393,7 @@ again later, as a float without a border.
 
 | Key | Action |
 |---|---|
-| `n` / `e` | New file (`e` is not listed) |
+| `i` | New file |
 | `f` | Find files, recent first (`smart`, like `<leader>ff`) |
 | `/` | Grep |
 | `\` | mini.files, like the global `\` |

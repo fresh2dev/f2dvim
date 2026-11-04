@@ -36,11 +36,10 @@ Snacks.config.dashboard = {
   width = 44,
   preset = {
     keys = {
-      key("n", " ", "New file", ":enew | startinsert"),
-      { key = "e", action = ":enew | startinsert", hidden = true },
       key("f", " ", "Find files", ":lua Snacks.picker.smart()"),
       key("/", " ", "Search", ":lua Snacks.picker.grep()"),
       key("\\", " ", "Explore", ":lua require('mini.files').open(nil, false)"),
+      key("i", " ", "New file", ":enew | startinsert"),
       key("g", " ", "LazyGit", function()
         Snacks.lazygit()
       end, vim.fn.executable("lazygit") == 1),
@@ -51,7 +50,7 @@ Snacks.config.dashboard = {
       -- Snacks has already closed a floating dashboard before running an action.
       -- One that owns its window (at startup) quits Neovim when no listed buffer
       -- is left, else mini.bufremove deletes it and keeps the window.
-      key("q", " ", "Close", function(self)
+      key("q", " ", "Close", function(self)
         if not vim.api.nvim_buf_is_valid(self.buf) then
           return
         elseif #vim.fn.getbufinfo({ buflisted = 1 }) == 0 then
