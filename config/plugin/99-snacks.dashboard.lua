@@ -44,7 +44,6 @@ Snacks.config.dashboard = {
       key("g", " ", "LazyGit", function()
         Snacks.lazygit()
       end, vim.fn.executable("lazygit") == 1),
-      key("t", "", "Terminal", require("util").float_terminal),
       -- The f2dvim package replaces vim.pack.update with a warning.
       key("u", " ", "Update plugins", function()
         vim.pack.update()

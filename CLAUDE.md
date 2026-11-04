@@ -83,7 +83,7 @@ language server finds the file from its root marker, searching up from the edite
 
 This config uses Neovim's **built-in `vim.pack`**, not lazy.nvim/packer/paq. There
 is no central plugin spec table. The only module under `lua/` is `lua/util.lua`
-(cross-file helpers: `cabbrev`, `keep_cursor`, `tabline`, `float_terminal`); plugin
+(cross-file helpers: `cabbrev`, `keep_cursor`, `tabline`); plugin
 configuration never goes there. Instead:
 
 - Every plugin lives in its own `plugin/NN-<name>.lua`, which calls `vim.pack.add({ { src = "https://github.com/..." } })` and then immediately configures the plugin (`require(...).setup{}`, keymaps, autocmds, user commands).

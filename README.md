@@ -380,11 +380,10 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>gg` | LazyGit |
 | `<leader><Space>` | Dashboard (`q` closes it) |
 | `` <leader>` `` | Toggle a terminal below |
-| `<leader>tt` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
-All custom. LazyGit, `just` and the dashboard's `!` commands open in a floating
-Snacks terminal that closes when the command exits.
+All custom. LazyGit and `just` open in a floating Snacks terminal that closes
+when the command exits.
 
 `nvim` with no file opens a dashboard: the Fresh2Dev glasses drawn in box
 characters (only when the keys still fit), the keys in the table below, and the
