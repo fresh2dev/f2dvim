@@ -63,8 +63,7 @@ local GIT_FILETYPES = {
   floggraph = true,
 }
 
---- fugitive / flog / git buffers. Diffview is intentionally not included; it
---- has its own :DiffviewClose and owns its tab layout.
+--- fugitive / flog / git buffers.
 ---@param buf integer
 local function is_git(buf)
   local ft = vim.bo[buf].filetype

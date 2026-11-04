@@ -9,10 +9,6 @@
       "rev": "6134b5cd4a38990c7b720adc90973ed32f726179",
       "src": "https://github.com/nvim-zh/colorful-winsep.nvim"
     },
-    "diffview.nvim": {
-      "rev": "43e60bca414e4991ed10118e59f809fb03bbeddd",
-      "src": "https://github.com/dlyongemallo/diffview.nvim"
-    },
     "dropbar.nvim": {
       "rev": "808ba31cde89aec8833e9789f5e04557cd31c9e1",
       "src": "https://github.com/Bekaboo/dropbar.nvim"

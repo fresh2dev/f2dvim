@@ -81,8 +81,12 @@ vim.keymap.set(
   "<Cmd>Gwrite!<CR>",
   { desc = "[G]it [W]rite (force)" }
 )
--- NOTE: `<leader>gd` is owned by diffview (99-diffview.lua). For a fugitive
--- single-file diff use `:Gvdiffsplit` or `dt` inside the `:Git` status buffer.
+vim.keymap.set(
+  "n",
+  "<leader>gd",
+  "<Cmd>Gvdiffsplit<CR>",
+  { desc = "[G]it [D]iff (vertical split)" }
+)
 
 vim.keymap.set(
   "n",

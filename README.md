@@ -72,7 +72,7 @@ uvx f2dvim
 
 - Neovim 0.12 or newer, on `PATH`
 - Python 3.12 or newer (`uv` can provide it)
-- `git`, for the git plugins (fugitive, gitsigns, diffview)
+- `git`, for the git plugins (fugitive, gitsigns)
 - A [Nerd Font](https://www.nerdfonts.com) in your terminal, for icons in the statusline,
   pickers and file explorer
 
@@ -249,7 +249,7 @@ Leader groups (which-key shows these):
 |---|---|---|
 | `<leader>c` | Conflict (choose a side) | conflict-marker |
 | `<leader>f` | Find (pickers, find and replace) | snacks, lspconfig, grug-far |
-| `<leader>g` | Git (`<leader>gh` GitHub) | fugitive, flog, diffview, snacks (lazygit, gh) |
+| `<leader>g` | Git (`<leader>gh` GitHub) | fugitive, flog, snacks (lazygit, gh) |
 | `<leader>p` | Paste with replacement (operator) | mini.operators |
 | `<leader>q` | Quit (windows, buffers, tabs) | mini.bufremove |
 | `<leader>t` | Toggle | snacks, colorizer, which-key |
@@ -836,6 +836,7 @@ startup the working directory becomes the repository root.
 | `<leader>go` | Same, as the only window |
 | `<leader>gO` | Same, after deleting all buffers |
 | `<leader>gb` | Blame (`:Git blame -s`) |
+| `<leader>gd` | `:Gvdiffsplit` (the current file against the index, side by side) |
 | `<leader>gl` / `<leader>gL` | Log graph for the current branch / all branches |
 | `<leader>gr` | File revisions in the quickfix list (`:1,$GcLog!`); in visual mode, for the selection |
 | `<leader>ge` | `:Gedit` (back to the working-tree version) |
@@ -867,46 +868,6 @@ Change marks in the sign column and line numbers, and hunk navigation.
 
 All custom; gitsigns ships no mappings.
 
-#### diffview.nvim (`99-diffview.lua`)
-
-Side-by-side diffs for the working tree, revisions and file history, plus a
-merge tool (`diff4_mixed` layout). The file panel is a flat list 25 columns
-wide and is closed every time a view opens; `<C-\>` brings it back. This
-config disables the plugin's default keymaps and declares its own full set;
-the ones that differ from the defaults are marked.
-
-| Key | Action |
-|---|---|
-| `<leader>gd` | `:DiffviewOpen` (working tree against index) |
-| `<leader>gR` | `:DiffviewFileHistory %` (history of the current file) |
-
-In the diff view and the panels (the staging, restore, log and refresh keys
-exist only in the file panel; `X` and `L` also in the history panel):
-
-| Key | Action |
-|---|---|
-| `]q` / `[q` (also `]a` / `[a` in the file panel) | Next / previous file (custom; default `<Tab>` / `<S-Tab>`) |
-| `<C-\>` | Toggle the file panel (custom; default `<leader>b`) |
-| `gf` | Open the file in a new tab (custom; default opens in place) |
-| `[c` / `]c` | Previous / next conflict (custom; default `[x` / `]x`) |
-| `<leader>co` `ct` `cb` `ca` | Choose ours / theirs / base / all for the conflict |
-| `<leader>cO` `cT` `cB` `cA` | Same, for the whole file |
-| `dx` / `dX` | Delete the conflict region / all conflict regions |
-| `2do` / `3do` (`1do` in 4-way) | Take the hunk from ours / theirs (base) |
-| `-` | Stage / unstage the entry |
-| `X` | Restore the entry |
-| `L` | Commit log |
-| `<F5>` | Refresh (custom; default `R`) |
-| `dt` (history panel) | Open the entry in a diffview |
-| `y` (history panel) | Copy the commit hash |
-| `g!` (history panel) | Options |
-| `j`/`k`, `<CR>`/`o`/`l`, `h`, `zo`/`zc`/`za`/`zR`/`zM`, `<C-b>`/`<C-f>` | Move, open, collapse, fold, scroll |
-| `g?` | Help for the current panel |
-
-The default multi-select (`w`, `C`, `H`), staging (`s`, `S`, `U`), listing
-style (`i`, `f`) and layout-cycling (`g<C-x>`) keys are intentionally not
-bound.
-
 #### Conflict hunks (`99-conflict-marker.lua`)
 
 | Key | Action |
@@ -916,11 +877,9 @@ bound.
 | `<leader>cO` `cT` `cB` `cA` | Same, for every conflict in the file |
 
 The choose maps read the markers, so they need no diff: they work in fugitive's
-3-way diff, in a plain buffer, and in diffview (whose own maps of the same name
-do the same). Base needs git's `merge.conflictStyle` set to `diff3` or `zdiff3`;
+3-way diff and in a plain buffer. Base needs git's `merge.conflictStyle` set to `diff3` or `zdiff3`;
 without it `cb` / `cB` report an error and change nothing. To take a diff hunk
-instead of a marker block, use fugitive's `d2o` / `d3o` in its 3-way diff, or
-diffview's `2do` / `3do`.
+instead of a marker block, use fugitive's `d2o` / `d3o` in its 3-way diff.
 
 Resolving conflicts with fugitive: `:Git mergetool` loads the conflicts into the
 quickfix list. On each file, open the 3-way diff with `:Gvdiffsplit!` if you want
@@ -1091,7 +1050,6 @@ Installed because another plugin requires them; no user-facing behaviour:
 | `:FormatEnable` `:FormatDisable` `:FormatToggle` | 90-lspconfig | dprint format on save for this buffer |
 | `:Git` `:Gedit` `:Gwrite` `:Gdiffsplit` `:GcLog` … | fugitive | Git |
 | `:Flog` `:Flogsplit` | flog | Commit graph |
-| `:DiffviewOpen` `:DiffviewFileHistory` `:DiffviewClose` | diffview | Diffs |
 | `:TodoQuickFix` `:TodoLocList` | todo-comments | List `TODO:` comments |
 | `:GrugFar` `:GrugFarWithin` | grug-far | Find and replace across files / within the visual range |
 | `:Toc` `:Toch` `:Toct` | markdown-plus (markdown buffers) | Navigable table of contents in a split / tab |

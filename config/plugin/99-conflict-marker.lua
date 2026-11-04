@@ -26,9 +26,8 @@ vim.keymap.set("n", "[x", function()
   jump_conflict(false)
 end, { desc = "Previous conflict" })
 
--- Choose a side of a conflict by its markers, like diffview's `<leader>c*` maps (which
--- shadow these in its own buffers). Needs no diff, so it works in fugitive's 3-way
--- diff and in a plain buffer alike.
+-- Choose a side of a conflict by its markers. Needs no diff, so it works in
+-- fugitive's 3-way diff and in a plain buffer alike.
 
 ---Every complete conflict in `lines`, as the line numbers of its markers (`base` is
 ---the `|||||||` line that diff3/zdiff3 conflict styles add).
@@ -53,7 +52,7 @@ local function conflicts(lines)
 end
 
 ---Replace the conflict under the cursor (or every one, with `all_blocks`) with its
----`side`: "ours", "theirs", "base", or "all" (ours, base and theirs, as diffview).
+---`side`: "ours", "theirs", "base", or "all" (ours, base and theirs).
 ---@param side "ours"|"theirs"|"base"|"all"
 ---@param all_blocks boolean
 local function choose(side, all_blocks)
