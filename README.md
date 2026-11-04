@@ -387,11 +387,10 @@ All custom. LazyGit, `just` and the dashboard's `!` commands open in a floating
 Snacks terminal that closes when the command exits.
 
 `nvim` with no file opens a dashboard: the Fresh2Dev glasses drawn in box
-characters (only when the keys still fit; their temples appear as the height
-allows), the keys in the table below, and the Neovim version with the plugin
-count and startup time (from `init.lua` to the dashboard). Keys whose tool is
-missing are hidden. `<leader><Space>` opens it again later, as a float without a
-border.
+characters (only when the keys still fit), the keys in the table below, and the
+Neovim version with the plugin count and startup time (from `init.lua` to the
+dashboard). Keys whose tool is missing are hidden. `<leader><Space>` opens it
+again later, as a float without a border.
 
 | Key | Action |
 |---|---|
