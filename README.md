@@ -307,7 +307,6 @@ file named after it: `[p` and `[e` (`99-unimpaired.lua`), `.` (`99-repeat.lua`),
 | `.` | n | Repeat without moving the cursor (it follows its text if lines are added or removed above; a [count] is passed through). Repeating the `[p` family replays the whole mapping |
 | `y` | n, x | Yank without moving the cursor or scrolling (only the mapped keys; `:yank` behaves as usual) |
 | `Y` | n | Yank to end of line without moving the cursor or scrolling |
-| `<C-w>t` | n | Open the current buffer in a new tab (keeps the original window) |
 | `<Esc>` | n | Clear search highlight |
 | `<C-n>` `<C-p>` | c | Walk command history unless the wildmenu is open |
 | `<Esc><Esc>` `<C-u>` | t | Leave terminal insert mode |

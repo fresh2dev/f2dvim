@@ -156,9 +156,6 @@ vim.keymap.set("n", "gp", "`[v`]", { desc = "Select last pasted text" })
 -- Buffers, windows and tabs
 vim.keymap.set("n", "gb", ":ls<CR>:b<Space>", { desc = "List buffers and switch" })
 
--- Open the current buffer in a new tab (like <C-w>T but preserves the original window)
-vim.keymap.set("n", "<C-w>t", "<Cmd>tab split<CR>", { desc = "Buffer in new tab" })
-
 -- NOTE: <C-hjkl> window navigation and <C-Arrow> window resizing are provided
 -- by mini.basics (plugin/99-mini.basics.lua).
 
