@@ -564,13 +564,14 @@ match. No mappings.
 
 #### mini.basics (`99-mini.basics.lua`)
 
-Only three pieces are enabled: `<C-hjkl>` window navigation and `<C-Arrow>`
+Only three pieces are enabled: `<C-hjkl>` window navigation (also on
+`<A-hjkl>`, set in the same file) and `<C-Arrow>`
 window resizing, relative line numbers in linewise/blockwise visual mode, and
 bold window borders.
 
 | Key | Action |
 |---|---|
-| `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Focus the window in that direction |
+| `<C-h>` `<C-j>` `<C-k>` `<C-l>`, `<A-h>` `<A-j>` `<A-k>` `<A-l>` | Focus the window in that direction |
 | `<C-Left>` `<C-Right>` | Decrease / increase window width (takes a count) |
 | `<C-Down>` `<C-Up>` | Decrease / increase window height (takes a count) |
 

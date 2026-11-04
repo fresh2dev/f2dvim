@@ -23,3 +23,11 @@ require("mini.basics").setup({
   -- Whether to disable showing non-error feedback
   silent = true,
 })
+
+-- `<A-hjkl>` mirrors `<C-hjkl>` (an exception to the no-Alt rule).
+for _, dir in ipairs({ "h", "j", "k", "l" }) do
+  vim.keymap.set("n", "<A-" .. dir .. ">", "<C-w>" .. dir, {
+    desc = "Focus window "
+      .. ({ h = "left", j = "below", k = "above", l = "right" })[dir],
+  })
+end
