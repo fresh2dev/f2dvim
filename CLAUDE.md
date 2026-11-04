@@ -122,13 +122,14 @@ plugin's own file.
 
 Two labelled sections, ~250 lines and ~45 lines:
 
-1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, small core keymaps, the `'tabline'` (`util.tabline`), diagnostics config and basic autocmds. Custom functionality modelled on a plugin lives in a `plugin/99-*.lua` named after that plugin instead (see below).
+1. **SECTION 1: FOUNDATION** — leader keys, all `vim.o`/`vim.opt` options, small core keymaps, the `'tabline'` (`util.tabline`) and basic autocmds. Custom functionality modelled on a plugin lives in a `plugin/99-*.lua` named after that plugin instead (see below).
 2. **SECTION 2: PLUGIN MANAGER HOOKS** — the `PackChanged` build dispatcher described above.
 
 No plugin is loaded from `init.lua`.
 
 ### LSP (`plugin/90-lspconfig.lua`)
 
+- `vim.diagnostic.config` (display, and the float that `[d`/`]d` open) is set here, not in `init.lua`.
 - Servers are declared in one `servers` table, then applied with a `vim.lsp.config(name, server)` + `vim.lsp.enable(name)` loop. Add a server by adding a table entry; use `root_markers`, not the deprecated `lspconfig.util.root_pattern`.
 - **There is no Mason.** Language servers must be on `$PATH` already.
 - Python uses `ty` (type checking) and `ruff`; ruff's formatting is stripped like every other server's (see Formatting below).

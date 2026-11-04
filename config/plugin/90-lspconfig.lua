@@ -20,6 +20,30 @@ require("symbol-usage").setup({
   kinds = { SymbolKind.Class, SymbolKind.Method, SymbolKind.Function },
 })
 
+-- [[ Diagnostics ]]
+
+-- See `:help vim.diagnostic.Opts`.
+vim.diagnostic.config({
+  update_in_insert = false,
+  severity_sort = true,
+  float = { border = "rounded", source = "if_many" },
+  underline = { severity = { min = vim.diagnostic.severity.WARN } },
+
+  virtual_text = true, -- Text shows up at the end of the line
+  virtual_lines = false, -- Text shows up underneath the line, with virtual lines
+
+  -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
+  jump = {
+    on_jump = function(_, bufnr)
+      vim.diagnostic.open_float({
+        bufnr = bufnr,
+        scope = "cursor",
+        focus = false,
+      })
+    end,
+  },
+})
+
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
   callback = function(event)
@@ -29,7 +53,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     -- Neovim's own `K`, `grn`, `gra`, `grx` and insert-mode `<C-s>` are not
-    -- re-declared; nor is `[d`/`]d`, whose float comes from `jump.on_jump` in init.lua.
+    -- re-declared; nor is `[d`/`]d`, whose float comes from `jump.on_jump` above.
     local pick = function(keys, source, desc)
       map(keys, function()
         Snacks.picker[source]()
