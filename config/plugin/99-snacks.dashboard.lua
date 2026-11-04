@@ -65,19 +65,6 @@ Snacks.config.dashboard = {
         Snacks.lazygit()
       end, vim.fn.executable("lazygit") == 1),
       key("t", "", "Terminal", util.float_terminal),
-      key(
-        "s",
-        " ",
-        "Sessions",
-        util.sessions,
-        vim.env.ZELLIJ ~= nil and vim.fn.executable("fzj") == 1
-      ),
-      {
-        key = "0",
-        action = util.sessions,
-        hidden = true,
-        enabled = vim.env.ZELLIJ ~= nil and vim.fn.executable("fzj") == 1,
-      },
       -- The f2dvim package replaces vim.pack.update with a warning.
       key("u", " ", "Update plugins", function()
         vim.pack.update()

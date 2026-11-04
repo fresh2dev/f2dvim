@@ -19,7 +19,7 @@ vim.pack.add({ "https://github.com/folke/lazydev.nvim" })
 def test_commented_out_declarations_are_ignored() -> None:
     source = """
 -- vim.pack.add({
---   { src = "https://github.com/fresh2dev/zellij-agent-pane" },
+--   { src = "https://github.com/old/commented-plugin" },
 -- })
 --[[
 vim.pack.add({ "https://github.com/old/plugin" })

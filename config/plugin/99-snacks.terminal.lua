@@ -29,8 +29,6 @@ vim.keymap.set("n", "<leader>gg", function()
   Snacks.lazygit()
 end, { desc = "LazyGit" })
 
-vim.keymap.set("n", "<leader>fp", util.sessions, { desc = "[F]ind [P]roject" })
-
 -- TODO: add commands `:LazyGit [<args>]` `:Just [<args>]`, `:J [<args>]`
 
 -- TODO: *replace* this with a command named `:Just`

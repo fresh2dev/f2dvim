@@ -61,12 +61,6 @@ function M.tabline()
   return line .. "%T%="
 end
 
---- Open the fzj session picker in a Snacks terminal. Inside zellij, fzj needs
---- `--here`; otherwise it opens its own floating pane.
-function M.sessions()
-  Snacks.terminal(vim.env.ZELLIJ and { "fzj", "--here" } or { "fzj" })
-end
-
 --- Toggle the floating shell terminal. A separate count gives it its
 --- own instance; Snacks ignores `position` for an existing terminal, so the
 --- bottom terminal would otherwise be reused.

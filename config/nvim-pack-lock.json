@@ -185,10 +185,6 @@
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
       "src": "https://github.com/folke/which-key.nvim"
-    },
-    "zellij.vim": {
-      "rev": "6b80425dc93963a65aef7e9518deaa4dadf6865e",
-      "src": "https://github.com/fresh2dev/zellij.vim"
     }
   }
 }

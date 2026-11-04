@@ -44,8 +44,6 @@ config-dir = "config"
 # The Exclusion list: Plugin files (relative to config-dir) left out of f2dvim.
 exclude = [
   "plugin/90-treesitter.lua",
-  "plugin/99-zellij.lua",
-  "plugin/99-zellij-agent-pane.lua",
 ]
 
 # SPDX ids for Plugins that state their license only in their README or docs.

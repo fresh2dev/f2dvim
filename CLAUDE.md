@@ -83,7 +83,7 @@ language server finds the file from its root marker, searching up from the edite
 
 This config uses Neovim's **built-in `vim.pack`**, not lazy.nvim/packer/paq. There
 is no central plugin spec table. The only module under `lua/` is `lua/util.lua`
-(cross-file helpers: `cabbrev`, `keep_cursor`, `sessions`, `tabline`); plugin
+(cross-file helpers: `cabbrev`, `keep_cursor`, `tabline`, `float_terminal`); plugin
 configuration never goes there. Instead:
 
 - Every plugin lives in its own `plugin/NN-<name>.lua`, which calls `vim.pack.add({ { src = "https://github.com/..." } })` and then immediately configures the plugin (`require(...).setup{}`, keymaps, autocmds, user commands).
@@ -100,8 +100,7 @@ snacks.nvim is split like mini, one file per module, but has a single setup:
 each `99-snacks.<module>.lua` assigns `Snacks.config.<module>` (with
 `enabled = true`) instead. Snacks reads a module's config on `UIEnter` or first
 use, so file order doesn't matter; a module that `Snacks.setup` itself reads
-(`notifier`, `statuscolumn`) must stay in the setup call. The fzj `sessions`
-helper they share is in `lua/util.lua`.
+(`notifier`, `statuscolumn`) must stay in the setup call.
 
 Adding a plugin means adding one new `plugin/99-*.lua` file — do not thread it
 into an existing file unless the two are genuinely coupled.
@@ -177,7 +176,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
   - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.picker.lua`).
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.
   - `s`/`S`: normal `s`/`S` and visual `s` are vim-sneak (`99-sneak.lua`); visual `S` is mini.surround's "surround selection" (`99-mini.surround.lua`). Neither is mapped in operator-pending mode, so `ys`/`ds`/`cs` keep working. The visual `S` mapping must stay a `:<C-u>lua MiniSurround.add("visual")<CR>` command mapping, not a Lua callback: leaving Visual mode via `:` is what refreshes the `'<`/`'>` marks the function reads, and a callback sees the previous selection's marks (wrong text, or an out-of-range cursor error).
-  - `<C-hjkl>` window navigation and `<C-Arrow>` resize come from mini.basics (`99-mini.basics.lua`); `zellij.vim` then overrides `<C-hjkl>` with its navigator (falls back to `wincmd`).
+  - `<C-hjkl>` window navigation and `<C-Arrow>` resize come from mini.basics (`99-mini.basics.lua`).
   - The core buffer/window keymaps (`<leader>w`, `<leader>x`, `<leader>q*`) and the `:Quit*` / `:Bdelete` commands live in `99-mini.bufremove.lua`. Bulk deletes (`:QuitHidden`, `:QuitOther`, `:QuitAll`) only touch listed buffers with an empty `buftype`, skip modified buffers unless given `!`, and report what they kept. `:QuitGit` also leaves a modified git buffer's window open without `!`: closing it would delete a commit message, since `gitcommit`/`gitrebase` buffers have `bufhidden=delete`.
   - The Diffview keymap table is intentionally exhaustive (`disable_defaults = true`); don't shrink it to overrides.
   - Markdown buffers (`ftplugin/markdown.lua`) map `<CR>`, `<Tab>`, `<S-Tab>`, `<BS>`, `<A-CR>`, `o`, `O`, `[[`/`]]` and `[f`/`]f` buffer-locally to markdown-plus `<Plug>` mappings. The plugin's own defaults are disabled (`keymaps.enabled = false`) because `<localleader>` is `<Space>` and its `<localleader>t`/`]b` defaults would shadow the Toggle group and buffer navigation; the context-aware keys hand the key back to blink/mini.pairs/native outside lists and tables. `<BS>` is the one key not mapped straight to a `<Plug>`: it is an expression mapping that removes an empty list marker and otherwise returns `MiniPairs.bs()`, so pairs still delete as a whole. `gd` and `<C-t>` are deliberately not mapped.

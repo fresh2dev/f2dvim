@@ -154,7 +154,6 @@ To keep the wheel pure Python, f2dvim leaves out:
 - **nvim-treesitter**, because its parsers are native code. Neovim's built-in parsers
   (c, lua, markdown, query, vim, vimdoc) still work, and language servers provide
   semantic highlighting.
-- **The zellij integrations**.
 
 blink.cmp uses its pure-Lua fuzzy matcher instead of its Rust one.
 
@@ -380,13 +379,12 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>tZ` / `gZ` | Toggle zen mode; also turns off line numbers in that window |
 | `<leader>gg` | LazyGit |
 | `<leader><Space>` | Dashboard (`q` closes it) |
-| `<leader>fp` | [F]ind [P]rojects (TODO: document) |
 | `` <leader>` `` | Toggle a terminal below |
 | `<leader>tt` / `<C-/>` | Toggle a floating terminal |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
 
-All custom. LazyGit, `just`, `fzj` and the dashboard's `!` commands open in a
-floating Snacks terminal that closes when the command exits.
+All custom. LazyGit, `just` and the dashboard's `!` commands open in a floating
+Snacks terminal that closes when the command exits.
 
 `nvim` with no file opens a dashboard: the Fresh2Dev glasses drawn in box
 characters (only when the keys still fit; their temples appear as the height
@@ -402,7 +400,6 @@ border.
 | `/` | Grep |
 | `\` | mini.files, like the global `\` |
 | `g` | LazyGit (with `lazygit` installed) |
-| `s` / `0` | Sessions, `fzj` (inside zellij, with `fzj` installed; `0` is not listed) |
 | `u` | Update plugins (`vim.pack.update()`; hidden when run as the `f2dvim` package) |
 | `q` | Close the dashboard; quit Neovim if no other buffer is open |
 
@@ -573,7 +570,7 @@ bold window borders.
 
 | Key | Action |
 |---|---|
-| `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Focus the window in that direction (zellij.vim re-maps these; at the edge of Neovim the focus moves to the Zellij pane or tab) |
+| `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Focus the window in that direction |
 | `<C-Left>` `<C-Right>` | Decrease / increase window width (takes a count) |
 | `<C-Down>` `<C-Up>` | Decrease / increase window height (takes a count) |
 
@@ -1040,17 +1037,6 @@ Loaded for Lua buffers only. Teaches `lua_ls` about the Neovim runtime and
 `vim.uv` types lazily, so editing this config gets completions without a slow
 workspace scan. Also feeds blink's `lazydev` source.
 
-### Integrations
-
-#### zellij.vim (`99-zellij.lua`)
-
-Seamless `<C-hjkl>` navigation between Neovim windows and Zellij panes; when
-there is no window in that direction the focus moves to the Zellij pane (or
-tab, with the `move_focus_or_tab` setting on). Outside Zellij it falls back to
-plain window navigation. Commands: `:ZellijNewPane`, `:ZellijNewPaneSplit`,
-`:ZellijNewPaneVSplit`, `:ZellijNewTab`, `:ZellijNavigate{Up,Down,Left,Right}`.
-Pair it with zellij-autolock so Zellij keybindings do not intercept Neovim's.
-
 ### Filetype-specific
 
 #### Markdown (`ftplugin/markdown.lua`)
@@ -1112,7 +1098,6 @@ Installed because another plugin requires them; no user-facing behaviour:
 | `:Toc` `:Toch` `:Toct` | markdown-plus (markdown buffers) | Navigable table of contents in a split / tab |
 | `:ColorizerToggle` | colorizer | Colour preview |
 | `:Remove` `:Move` `:Rename` `:Chmod` `:Mkdir` `:SudoWrite` … | eunuch | Filesystem (`:Rename` is Snacks) |
-| `:ZellijNewPane` `:ZellijNewTab` … | zellij.vim | Zellij panes |
 | `:TSUpdate` `:TSInstall` | treesitter | Parsers |
 
 Command-line abbreviations: `g`, `git`.

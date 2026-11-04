@@ -7,7 +7,6 @@ require("which-key").setup({
     return ctx.plugin and 0 or 1500
   end,
   spec = {
-    { "<leader>a", group = "[A]gent" },
     { "<leader>c", group = "[C]onflict" },
     { "<leader>f", group = "[F]ind" },
     { "<leader>g", group = "[G]it" },
