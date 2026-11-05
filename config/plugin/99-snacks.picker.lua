@@ -29,6 +29,11 @@ local picker_keys = {
 Snacks.config.picker = {
   enabled = true,
   layout = "vertical",
+  layouts = {
+    -- The preview (the preset's 3rd window) takes 60% of the picker's height,
+    -- not 40%. A table without `[1]` is merged into the preset, not swapped in.
+    vertical = { layout = { [3] = { height = 0.6 } } },
+  },
   sources = {
     -- `smart` gets these too: its files finder inherits the `files` source.
     files = { cmd = "rg", hidden = true, follow = true },
