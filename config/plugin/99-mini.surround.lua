@@ -2,10 +2,24 @@ vim.pack.add({
   { src = "https://github.com/nvim-mini/mini.surround" },
 })
 
+-- Whether the `MiniSurround.add` in progress acts on whole lines (`ysip`, `yss`,
+-- visual `V`); set by the wrapper below.
+local linewise = false
+
 require("mini.surround").setup({
   custom_surroundings = {
-    -- Surround in triple backticks (markdown code block)
-    c = { input = { "```\n().-()\n```" }, output = { left = "```\n", right = "\n```" } },
+    -- Code: a fenced block when adding line-wise, inline backticks otherwise.
+    -- `ds`/`cs` find either; inline code stays on one line, so a cursor inside a
+    -- block finds the fence rather than the backticks of its two fence lines.
+    c = {
+      input = { { "```%w*\n().-()\n```", "`()[^`\n]-()`" } },
+      output = function()
+        if linewise then
+          return { left = "```\n", right = "\n```" }
+        end
+        return { left = "`", right = "`" }
+      end,
+    },
   },
 
   highlight_duration = 500,
@@ -57,6 +71,9 @@ for _, name in ipairs({ "add", "delete", "replace" }) do
   local fn = MiniSurround[name]
   MiniSurround[name] = function(...)
     local args, restore = { ... }, nil
+    local mode = args[1]
+    linewise = name == "add"
+      and (mode == "line" or mode == "visual" and vim.fn.visualmode() == "V")
     if name == "add" then
       restore, restore_ys = restore_ys, nil
     end

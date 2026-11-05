@@ -511,7 +511,7 @@ Add, delete and change surrounding pairs, mapped like tpope's vim-surround.
 | `S{char}` | x | Surround the selection (custom) |
 | `ds{char}` | n | Delete surrounding (custom, default `sd`) |
 | `cs{old}{new}` | n | Change surrounding (custom, default `sr`) |
-| `c` as a `{char}` | | Markdown code fence (custom surrounding) |
+| `c` as a `{char}` | | Code (custom surrounding): a ```` ``` ```` fenced block when adding line-wise (`ysip`, `yss`, visual `V`), inline `` ` `` otherwise; `ds`/`cs` find either |
 
 Find / highlight / update mappings and the `n`/`l` (next / last) suffixes are
 disabled. Only the surrounding that covers the cursor is considered
