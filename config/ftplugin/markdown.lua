@@ -33,6 +33,9 @@ if not vim.g.loaded_markdown_config then
   })
 end
 
+-- Prose reads better wrapped; `init.lua` turns 'wrap' off everywhere else.
+vim.opt_local.wrap = true
+
 local mp = require("markdown-plus")
 local buf = vim.api.nvim_get_current_buf()
 
