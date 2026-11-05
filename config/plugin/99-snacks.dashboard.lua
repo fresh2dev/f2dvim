@@ -37,12 +37,17 @@ Snacks.config.dashboard = {
   preset = {
     keys = {
       key("f", " ", "Find files", ":lua Snacks.picker.smart()"),
-      key("/", " ", "Search", ":lua Snacks.picker.grep()"),
+      key("/", " ", "Grep files", ":lua Snacks.picker.grep()"),
       key("\\", " ", "Explore", ":lua require('mini.files').open(nil, false)"),
       key("i", " ", "New file", ":enew | startinsert"),
-      key("g", " ", "LazyGit", function()
-        Snacks.lazygit()
-      end, vim.fn.executable("lazygit") == 1),
+      -- Checked once, at startup: hidden when Neovim starts outside a git repo.
+      key(
+        "g",
+        " ",
+        "Git status",
+        ":lua Snacks.picker.git_status()",
+        vim.fs.root(vim.fn.getcwd(), ".git") ~= nil
+      ),
       -- The f2dvim package replaces vim.pack.update with a warning.
       key("u", " ", "Update plugins", function()
         vim.pack.update()
@@ -50,7 +55,7 @@ Snacks.config.dashboard = {
       -- Snacks has already closed a floating dashboard before running an action.
       -- One that owns its window (at startup) quits Neovim when no listed buffer
       -- is left, else mini.bufremove deletes it and keeps the window.
-      key("q", " ", "Close", function(self)
+      key("q", " ", "Quit", function(self)
         if not vim.api.nvim_buf_is_valid(self.buf) then
           return
         elseif #vim.fn.getbufinfo({ buflisted = 1 }) == 0 then

@@ -397,7 +397,7 @@ again later, as a float without a border.
 | `f` | Find files, recent first (`smart`, like `<leader>ff`) |
 | `/` | Grep |
 | `\` | mini.files, like the global `\` |
-| `g` | LazyGit (with `lazygit` installed) |
+| `g` | Git status (like `<leader>fg`; hidden outside a git repo) |
 | `u` | Update plugins (`vim.pack.update()`; hidden when run as the `f2dvim` package) |
 | `q` | Close the dashboard; quit Neovim if no other buffer is open |
 
