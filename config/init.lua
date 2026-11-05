@@ -156,6 +156,18 @@ vim.keymap.set("n", "gp", "`[v`]", { desc = "Select last pasted text" })
 -- Buffers, windows and tabs
 vim.keymap.set("n", "gb", ":ls<CR>:b<Space>", { desc = "List buffers and switch" })
 
+-- Copy the current file's path (relative to the cwd, or absolute) to the clipboard.
+for lhs, path in pairs({ gy = { "%:.", "relative" }, gY = { "%:p", "absolute" } }) do
+  vim.keymap.set("n", lhs, function()
+    local name = vim.fn.expand(path[1])
+    if name == "" then
+      return vim.notify("No file name", vim.log.levels.WARN)
+    end
+    vim.fn.setreg("+", name)
+    vim.notify("Copied " .. name)
+  end, { desc = "Copy the " .. path[2] .. " file path" })
+end
+
 -- NOTE: <C-hjkl> window navigation and <C-Arrow> window resizing are provided
 -- by mini.basics (plugin/99-mini.basics.lua).
 

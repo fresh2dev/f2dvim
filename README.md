@@ -303,6 +303,7 @@ file named after it: `[p` and `[e` (`99-unimpaired.lua`), `.` (`99-repeat.lua`),
 | `gp` | n | Select the last pasted text |
 | `gco` `gcO` | n | Add a commented line below / above |
 | `gb` | n | `:ls` then prompt for a buffer number |
+| `gy` / `gY` | n | Copy the current file's path, relative to the cwd / absolute, to the system clipboard |
 | `p` | x | Paste over the selection without the replaced text taking over the register |
 | `.` | n | Repeat without moving the cursor (it follows its text if lines are added or removed above; a [count] is passed through). Repeating the `[p` family replays the whole mapping |
 | `y` | n, x | Yank without moving the cursor or scrolling (only the mapped keys; `:yank` behaves as usual) |
