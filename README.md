@@ -515,7 +515,8 @@ Add, delete and change surrounding pairs, mapped like tpope's vim-surround.
 
 Find / highlight / update mappings and the `n`/`l` (next / last) suffixes are
 disabled. Only the surrounding that covers the cursor is considered
-(`search_method = "cover"`), searched within 25 lines.
+(`search_method = "cover"`), searched within 25 lines. Every operation leaves
+the cursor on the text it was on.
 
 #### mini.operators (`99-mini.operators.lua`)
 

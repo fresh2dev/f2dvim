@@ -18,21 +18,23 @@ end
 
 local keep_cursor_ns = vim.api.nvim_create_namespace("util.keep_cursor")
 
---- Run `fn` and put the cursor back on the text it was on beforehand. The
---- position is tracked with an extmark rather than saved as a row/col, so it
---- follows the text when `fn` inserts or deletes lines above the cursor, and
---- it cannot end up out of range when `fn` deletes the cursor's own line.
---- The cursor is restored even if `fn` errors; the error is then re-raised.
----@param fn fun()
-function M.keep_cursor(fn)
+--- Remember the text under the cursor. Returns a function that puts the cursor
+--- back on that text. The position is tracked with an extmark rather than saved
+--- as a row/col, so it follows the text when lines are inserted or deleted above
+--- the cursor, and it cannot end up out of range when the cursor's own line is
+--- deleted. The returned function works once and does nothing if the window no
+--- longer shows the buffer.
+---@return fun()
+function M.mark_cursor()
   local win = vim.api.nvim_get_current_win()
   local buf = vim.api.nvim_win_get_buf(win)
   local row, col = unpack(vim.api.nvim_win_get_cursor(win))
   local id = vim.api.nvim_buf_set_extmark(buf, keep_cursor_ns, row - 1, col, {})
 
-  local ok, err = pcall(fn)
-
-  if vim.api.nvim_buf_is_valid(buf) then
+  return function()
+    if not vim.api.nvim_buf_is_valid(buf) then
+      return
+    end
     local pos = vim.api.nvim_buf_get_extmark_by_id(buf, keep_cursor_ns, id, {})
     vim.api.nvim_buf_del_extmark(buf, keep_cursor_ns, id)
     if
@@ -43,6 +45,18 @@ function M.keep_cursor(fn)
       vim.api.nvim_win_set_cursor(win, { pos[1] + 1, pos[2] })
     end
   end
+end
+
+--- Run `fn` and put the cursor back on the text it was on beforehand (see
+--- `mark_cursor`). Pass `restore` from an earlier `mark_cursor()` to return to
+--- that position instead. The cursor is restored even if `fn` errors; the error
+--- is then re-raised.
+---@param fn fun()
+---@param restore? fun()
+function M.keep_cursor(fn, restore)
+  restore = restore or M.mark_cursor()
+  local ok, err = pcall(fn)
+  restore()
   if not ok then
     error(err, 0)
   end
