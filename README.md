@@ -684,7 +684,7 @@ fuzzy-match their whole input.
 | `<leader>f/` | n | Live grep |
 | `<leader>f?` | n | Live grep, including ignored files |
 | `<leader>f/` | x | Grep the selection |
-| `<leader>fg` | n | Git status: changed and untracked files |
+| `<leader>fg` | n | Git status: changed and untracked files, with lines added / removed |
 | `<leader>fG` | n | Git diff: staged and unstaged hunks |
 | `gl` | n | Lines in the current buffer |
 | `<leader>fb` | n | Buffers |

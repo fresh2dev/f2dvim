@@ -26,6 +26,26 @@ local picker_keys = {
   ["<a-w>"] = false,
 }
 
+-- Added/removed line counts for `git_status`, keyed by path from the repo root:
+-- one `git diff --numstat HEAD` per picker run, staged and unstaged together.
+-- Untracked and binary files get none, and so does a repo with no commits.
+local function numstat(cwd)
+  local out = vim
+    .system({ "git", "diff", "--numstat", "--no-renames", "-z", "HEAD" }, {
+      cwd = cwd,
+      text = true,
+    })
+    :wait()
+  local counts = {}
+  for _, entry in ipairs(out.code == 0 and vim.split(out.stdout, "\0") or {}) do
+    local added, removed, file = entry:match("^(%d+)\t(%d+)\t(.+)$")
+    if file then
+      counts[file] = { added = added, removed = removed }
+    end
+  end
+  return counts
+end
+
 Snacks.config.picker = {
   enabled = true,
   layout = "vertical",
@@ -40,6 +60,26 @@ Snacks.config.picker = {
     grep = { hidden = true, follow = true },
     grep_word = { hidden = true, follow = true },
     smart = { filter = { cwd = true } },
+    git_status = {
+      -- `git diff` runs here, not in `transform`: the finder streams items from a
+      -- process callback (a fast event), where `vim.system():wait()` is an error.
+      finder = function(opts, ctx)
+        ctx.meta.numstat = numstat(ctx:git_root())
+        return require("snacks.picker.source.git").status(opts, ctx)
+      end,
+      transform = function(item, ctx)
+        item.numstat = ctx.meta.numstat[item.file]
+      end,
+      format = function(item, picker)
+        local ret = Snacks.picker.format.git_status(item, picker)
+        if item.numstat then
+          ret[#ret + 1] = { " +" .. item.numstat.added, "SnacksPickerGitStatusAdded" }
+          ret[#ret + 1] =
+            { " -" .. item.numstat.removed, "SnacksPickerGitStatusDeleted" }
+        end
+        return ret
+      end,
+    },
   },
   win = {
     input = {
