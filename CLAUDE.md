@@ -190,7 +190,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - `vim.o.modeline = false` — mitigates editor-config injection from untrusted files.
 - `swapfile` and `writebackup` are off (files are assumed to be in version control); `undofile` is on, with `fundo` for persistence.
 - `laststatus = 3` (global statusline) is assumed by the snacks `zen` config.
-- Snacks' `quickfile` is disabled on purpose. `Snacks.picker` is the only picker and the `vim.ui.select` handler (ADR 0002); its defaults live in `Snacks.config.picker` in `99-snacks.picker.lua` (`files`/`grep`/`grep_word`: `rg`, hidden, follow; `layout = "vertical"`), so keymaps pass only what differs (`ignored = true` for `<leader>fF`/`<leader>fG`). Inside a picker, `<c-o>` is split below (`<c-s>` is unbound), `<c-/>` toggles the preview and every `<a-*>` default is set to `false`; Snacks sets up the picker on `UIEnter`, which headless `nvim` never fires.
+- Snacks' `quickfile` is disabled on purpose. `Snacks.picker` is the only picker and the `vim.ui.select` handler (ADR 0002); its defaults live in `Snacks.config.picker` in `99-snacks.picker.lua` (`files`/`grep`/`grep_word`: `rg`, hidden, follow; `layout = "vertical"`), so keymaps pass only what differs (`ignored = true` for `<leader>fF`/`<leader>f?`). Inside a picker, `<c-o>` is split below (`<c-s>` is unbound), `<c-/>` toggles the preview and every `<a-*>` default is set to `false`; Snacks sets up the picker on `UIEnter`, which headless `nvim` never fires.
 
 ### Packaging constraints
 

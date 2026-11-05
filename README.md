@@ -667,7 +667,7 @@ The picker for files, grep, buffers, LSP locations, git objects and more. Also
 provides `vim.ui.select`. The preview sits below the list (the `vertical`
 layout) except in `vim.ui.select` and the history pickers. Files and grep use
 `rg`, include hidden files, follow symlinks and are smart-case; `.gitignore`d
-files are left out except by `<leader>fF` and `<leader>fG`. See
+files are left out except by `<leader>fF` and `<leader>f?`. See
 [ADR 0002](docs/adr/0002-snacks-picker.md) for why it replaced fzf-lua.
 
 In the grep pickers, anything after ` -- ` in the input is passed to `rg` as
@@ -681,12 +681,15 @@ fuzzy-match their whole input.
 | `<leader>fa` | n | All pickers |
 | `<leader>ff` | n | Files, open buffers and recent files first (`smart`, current directory only) |
 | `<leader>fF` | n | Files, including ignored ones |
-| `<leader>fg` | n | Live grep |
-| `<leader>fG` | n | Live grep, including ignored files |
-| `<leader>fg` | x | Grep the selection |
+| `<leader>f/` | n | Live grep |
+| `<leader>f?` | n | Live grep, including ignored files |
+| `<leader>f/` | x | Grep the selection |
+| `<leader>fg` | n | Git status: changed and untracked files |
+| `<leader>fG` | n | Git diff: staged and unstaged hunks |
 | `gl` | n | Lines in the current buffer |
 | `<leader>fb` | n | Buffers |
 | `<leader>f"` | n | Registers |
+| `<leader>fy` | n | Clipboard history (needs `cliphist`) |
 | `<leader>fj` / `<leader>f<C-o>` | n | Jump list |
 | `<leader>fm` | n | Marks |
 | `<leader>fq` | n | Quickfix list |
@@ -699,7 +702,6 @@ fuzzy-match their whole input.
 | `<leader>fu` / `U` | n | Undo history, with a diff preview |
 | `<leader>fc` | n | Commands |
 | `<leader>fC` | n | Command history |
-| `<leader>f/` | n | Search history |
 | `<leader>fh` | n | Help tags |
 | `<leader>fk` | n | Keymaps |
 
