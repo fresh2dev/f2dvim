@@ -108,7 +108,7 @@ into an existing file unless the two are genuinely coupled.
 Custom functionality modelled on a plugin goes in a `plugin/99-*.lua` named after
 that plugin, whose first line says so and that no plugin is installed:
 `99-cutlass.lua`, `99-unimpaired.lua` (`[p` family, `[e`/`]e`), `99-sticky-yank.lua`,
-`99-comment.lua` (`gco`/`gcO`, after Comment.nvim), `99-smartcolumn.lua` (the colour
+`99-comment.lua` (`gco`/`gcO`/`gcA`/`gb`, after Comment.nvim; the one such file that installs a plugin, nvim-ts-context-commentstring, for `gb`'s block comment strings), `99-smartcolumn.lua` (the colour
 column that shows only while a line exceeds `'textwidth'`, which editorconfig's
 `max_line_length` sets). The list pairs `[a`/`[b`/`[q`/`[l`, `[d` and `[<Space>` are
 Neovim defaults and are not re-declared.
@@ -173,6 +173,7 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - Ownership of contested keys, so they are not re-declared elsewhere:
   - `<leader>gd` is fugitive's `:Gvdiffsplit` (`99-fugitive.lua`); `dt` in the status buffer diffs the file under the cursor in a new tab. Fugitive is the only diff tool.
   - `<leader>c{o,t,b,a}` (and uppercase for the whole file) choose a conflict side by its markers (`99-conflict-marker.lua`), so they work without a diff. Hunk-based picks stay with fugitive's `d2o`/`d3o`.
+  - `gb`/`gbc` (block comment toggle) and `gcA` are `99-comment.lua`'s. nvim-ts-context-commentstring is set up with `enable_autocmd = false` and no `vim.filetype.get_option` hook, so `gc`/`gcc` (and `gco`/`gcO`/`gcA`, which run `gcc`) keep Neovim's own context-aware `'commentstring'`; only `gb` asks the plugin for `__multiline`.
   - `gS` is mini.splitjoin's split/join toggle (`99-mini.splitjoin.lua`).
   - `gs` is mini.operators' sort operator (`99-mini.operators.lua`); the Snacks document / workspace symbol pickers are `<leader>fs` / `<leader>fS` (`99-snacks.picker.lua`).
   - `n`/`N` are defined in `99-hlslens.lua` (direction-aware, all of `n`/`x`/`o`), not `init.lua`.

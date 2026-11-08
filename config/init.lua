@@ -153,9 +153,6 @@ vim.keymap.set("x", "p", "pgvy", { desc = "Paste over selection (keep register)"
 
 vim.keymap.set("n", "gp", "`[v`]", { desc = "Select last pasted text" })
 
--- Buffers, windows and tabs
-vim.keymap.set("n", "gb", ":ls<CR>:b<Space>", { desc = "List buffers and switch" })
-
 -- Copy the current file's path (relative to the cwd, or absolute) to the clipboard.
 for lhs, path in pairs({ gy = { "%:.", "relative" }, gY = { "%:p", "absolute" } }) do
   vim.keymap.set("n", lhs, function()
