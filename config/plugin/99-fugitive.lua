@@ -84,7 +84,7 @@ vim.keymap.set(
 vim.keymap.set(
   "n",
   "<leader>gd",
-  "<Cmd>Gvdiffsplit<CR>",
+  "<Cmd>Gvdiffsplit!<CR>",
   { desc = "[G]it [D]iff (vertical split)" }
 )
 
