@@ -287,6 +287,7 @@ Operators and their prefixes:
 | `<leader>p` `<leader>pp` `<leader>P` | replace with register (motion / line / to end of line) | mini.operators |
 | `gs` `gss` | sort | mini.operators |
 | `gc` `gcc` | toggle comment | Neovim |
+| `gb` `gbc` | toggle block comment | nvim-ts-context-commentstring |
 | `ga` | align | vim-easy-align |
 | `gz` `gZ` | zoom / zen mode | snacks |
 
@@ -294,7 +295,7 @@ Operators and their prefixes:
 
 These live in `init.lua`, except the ones modelled on a plugin, which live in a
 file named after it: `[p` and `[e` (`99-unimpaired.lua`), `.` (`99-repeat.lua`),
-`y` / `Y` (`99-sticky-yank.lua`) and `gco` / `gcO` (`99-comment.lua`).
+`y` / `Y` (`99-sticky-yank.lua`) and `gco` / `gcO` / `gcA` (`99-comment.lua`).
 
 | Key | Mode | Action |
 |---|---|---|
@@ -302,7 +303,7 @@ file named after it: `[p` and `[e` (`99-unimpaired.lua`), `.` (`99-repeat.lua`),
 | `g/` | x | Start a search limited to the selection |
 | `gp` | n | Select the last pasted text |
 | `gco` `gcO` | n | Add a commented line below / above |
-| `gb` | n | `:ls` then prompt for a buffer number |
+| `gcA` | n | Add a comment two spaces after the end of the line (on a blank line, comment the line) |
 | `gy` / `gY` | n | Copy the current file's path, relative to the cwd / absolute, to the system clipboard |
 | `p` | x | Paste over the selection without the replaced text taking over the register |
 | `.` | n | Repeat without moving the cursor (it follows its text if lines are added or removed above; a [count] is passed through). Repeating the `[p` family replays the whole mapping |
@@ -499,6 +500,16 @@ select-mode selection (snippet placeholders) go to the blackhole register. `d`,
 case the register you deleted into is put back as it was (the numbered and
 small-delete registers still record it). `d` stays Neovim's own, so `do` / `dp`
 and `.` work as usual.
+
+#### Block comments (`99-comment.lua`) with nvim-ts-context-commentstring
+
+`gb{motion}`, `[count]gbc` and visual `gb` toggle a block comment (`/* */`,
+`--[[ ]]`, `<!-- -->`, and `""" """` in Python) around the text, picked for the
+language at the start of the range, so Lua in a Markdown code block gets
+`--[[ ]]`. Linewise ranges put the markers after the first line's indent and at
+the end of the last line. In a language with no block comment (shell, TOML,
+YAML), `gb` warns and changes nothing. The plugin only supplies the strings:
+`gc` keeps Neovim's own `'commentstring'`.
 
 #### mini.surround (`99-mini.surround.lua`)
 

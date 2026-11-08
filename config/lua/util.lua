@@ -21,28 +21,40 @@ local keep_cursor_ns = vim.api.nvim_create_namespace("util.keep_cursor")
 --- Remember the text under the cursor. Returns a function that puts the cursor
 --- back on that text. The position is tracked with an extmark rather than saved
 --- as a row/col, so it follows the text when lines are inserted or deleted above
---- the cursor, and it cannot end up out of range when the cursor's own line is
---- deleted. The returned function works once and does nothing if the window no
---- longer shows the buffer.
+--- the cursor. If the text under the cursor is replaced (native `gc` sets whole
+--- lines, which would carry the extmark to the next line), it falls back to the
+--- saved row and column, clamped to the buffer. The returned function works once
+--- and does nothing if the window no longer shows the buffer.
 ---@return fun()
 function M.mark_cursor()
   local win = vim.api.nvim_get_current_win()
   local buf = vim.api.nvim_win_get_buf(win)
   local row, col = unpack(vim.api.nvim_win_get_cursor(win))
-  local id = vim.api.nvim_buf_set_extmark(buf, keep_cursor_ns, row - 1, col, {})
+  local id = vim.api.nvim_buf_set_extmark(
+    buf,
+    keep_cursor_ns,
+    row - 1,
+    col,
+    { invalidate = true }
+  )
 
   return function()
     if not vim.api.nvim_buf_is_valid(buf) then
       return
     end
-    local pos = vim.api.nvim_buf_get_extmark_by_id(buf, keep_cursor_ns, id, {})
+    local pos =
+      vim.api.nvim_buf_get_extmark_by_id(buf, keep_cursor_ns, id, { details = true })
     vim.api.nvim_buf_del_extmark(buf, keep_cursor_ns, id)
     if
       pos[1]
       and vim.api.nvim_win_is_valid(win)
       and vim.api.nvim_win_get_buf(win) == buf
     then
-      vim.api.nvim_win_set_cursor(win, { pos[1] + 1, pos[2] })
+      if pos[3].invalid then
+        pos = { row - 1, col }
+      end
+      local last = vim.api.nvim_buf_line_count(buf)
+      vim.api.nvim_win_set_cursor(win, { math.min(pos[1] + 1, last), pos[2] })
     end
   end
 end
