@@ -6,6 +6,12 @@ vim.pack.add({
 
 Snacks = require("snacks")
 
+-- `smart` turns its matcher's frecency off, so nothing else would set the store up,
+-- and its `transform` runs in a fast event where setup (an augroup) is an error.
+-- Set it up now, not on `UIEnter`: `nvim -c` can open the picker before that.
+-- Setup also records visits, so it should run from startup anyway.
+require("snacks.picker.core.frecency").new()
+
 -- Shared by the picker's input and list windows. The `<a-*>` defaults are
 -- unbound because this config maps no Alt keys; their actions are not rebound.
 local picker_keys = {
@@ -59,7 +65,35 @@ Snacks.config.picker = {
     files = { cmd = "rg", hidden = true, follow = true },
     grep = { hidden = true, follow = true },
     grep_word = { hidden = true, follow = true },
-    smart = { filter = { cwd = true } },
+    smart = {
+      filter = { cwd = true },
+      -- The frecency bonus would make empty-prompt scores differ and bury the tiers.
+      matcher = { frecency = false },
+      sort = { fields = { "score:desc", "tier:asc", "rank:asc", "idx" } },
+      -- Tier 1: open buffers, then recent files (arrival order is recency: the
+      -- finders emit most recent first). Tier 2: files with a frecency record,
+      -- most frecent first. Tier 3: everything else. The tiers only order items
+      -- with equal scores, i.e. the empty prompt (`sort_empty`); typing sorts by match.
+      transform = function(item, ctx)
+        local t = require("snacks.picker.transform")
+        if t.unique_file(item, ctx) == false then
+          return false
+        end
+        ctx.meta.n = (ctx.meta.n or 0) + 1
+        if item.source_id < 3 then
+          item.tier, item.rank = 1, ctx.meta.n
+          return
+        end
+        ctx.meta.frecency = ctx.meta.frecency
+          or require("snacks.picker.core.frecency").new()
+        local f = ctx.meta.frecency:get(item, { seed = false })
+        if f > 0 then
+          item.tier, item.rank = 2, -f
+        else
+          item.tier = 3
+        end
+      end,
+    },
     git_status = {
       -- `git diff` runs here, not in `transform`: the finder streams items from a
       -- process callback (a fast event), where `vim.system():wait()` is an error.
