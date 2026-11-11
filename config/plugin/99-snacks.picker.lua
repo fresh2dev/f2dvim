@@ -15,6 +15,7 @@ require("snacks.picker.core.frecency").new()
 -- Shared by the picker's input and list windows. The `<a-*>` defaults are
 -- unbound because this config maps no Alt keys; their actions are not rebound.
 local picker_keys = {
+  ["<CR>"] = { "confirm_or_qflist", mode = { "i", "n" } },
   ["<c-o>"] = { "edit_split", mode = { "i", "n" } },
   ["<c-s>"] = false,
   ["<c-/>"] = { "toggle_preview", mode = { "i", "n" } },
@@ -55,6 +56,13 @@ end
 Snacks.config.picker = {
   enabled = true,
   layout = "vertical",
+  actions = {
+    -- The default `confirm` opens every selected item as a buffer but shows
+    -- only the first; with more than one selected, list them in quickfix.
+    confirm_or_qflist = function(picker)
+      picker:action(#picker:selected() > 1 and "qflist" or "confirm")
+    end,
+  },
   layouts = {
     -- The preview (the preset's 3rd window) takes 60% of the picker's height,
     -- not 40%. A table without `[1]` is merged into the preset, not swapped in.
