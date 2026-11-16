@@ -40,6 +40,17 @@ Snacks.toggle.diagnostics():map("<leader>td")
 -- Snacks.toggle.option('background', { off = 'light', on = 'dark', name = 'Dark Background' }):map '<leader>tb'
 Snacks.toggle.inlay_hints():map("<leader>th")
 Snacks.toggle.indent():map("<leader>ti")
+Snacks.toggle.words():map("<leader>tW")
+-- The buffer flag that 90-lspconfig.lua's format-on-save and `:Format*` use.
+Snacks.toggle({
+  name = "Format on Save",
+  get = function()
+    return not vim.b.disable_autoformat
+  end,
+  set = function(state)
+    vim.b.disable_autoformat = not state
+  end,
+}):map("<leader>tf")
 -- Snacks.toggle.dim():map("<leader>tD")
 
 -- vim.keymap.set({ 'n', 'x' }, '<leader>gB', Snacks.gitbrowse, { desc = "Git Browse" })

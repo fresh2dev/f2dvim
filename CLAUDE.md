@@ -152,7 +152,7 @@ filetype there to format it.
 
 When dprint attaches, a buffer-local `BufWritePre` formats with
 `vim.lsp.buf.format({ name = "dprint" })`, gated on `vim.b.disable_autoformat`
-(`:FormatEnable` / `:FormatDisable` / `:FormatToggle`).
+(`:FormatEnable` / `:FormatDisable` / `:FormatToggle`, and the `<leader>tf` Snacks toggle in `99-snacks.lua`).
 
 ### Treesitter (`plugin/90-treesitter.lua`)
 

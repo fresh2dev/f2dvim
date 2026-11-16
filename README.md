@@ -380,6 +380,8 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>tz` / `gz` | Toggle zoom (current window full-size); also turns off line numbers in that window |
 | `<leader>tZ` / `gZ` | Toggle zen mode; also turns off line numbers in that window |
 | `<leader>gg` | LazyGit |
+| `<leader>tW` | Toggle highlighting of the word under the cursor (LSP references) |
+| `<leader>tf` | Toggle format on save in this buffer (same flag as `:FormatToggle`) |
 | `<leader>to` | Toggle the diff overlay in this buffer (mini.diff, `99-mini.diff.lua`) |
 | `<leader><Space>` | Dashboard (`q` closes it) |
 | `` <leader>` `` | Toggle a terminal below |
