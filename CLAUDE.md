@@ -171,7 +171,8 @@ auto-installs it. Highlighting and indent are started manually via `vim.treesitt
 - Never use `Alt`/`Meta` (`<A-…>`, `<M-…>`, `<a-…>`) as a modifier in any mapping this config defines, including plugin-internal keymap tables. The one exception is normal-mode `<A-hjkl>` window navigation in `99-mini.basics.lua`, mirroring `<C-hjkl>`.
 - Every mapping gets a `desc`; group letters are marked in the description with brackets (`"[G]oto [D]efinition"`).
 - Ownership of contested keys, so they are not re-declared elsewhere:
-  - `<leader>gd` is fugitive's `:Gvdiffsplit` (`99-fugitive.lua`); `dt` in the status buffer diffs the file under the cursor in a new tab. Fugitive is the only diff tool.
+  - `<leader>gd` is fugitive's `:Gvdiffsplit` (`99-fugitive.lua`); `dt` in the status buffer diffs the file under the cursor in a new tab. Fugitive is the only diff-split tool; mini.diff's overlay (`<leader>to`) is inline.
+  - `[c`/`]c`/`[C`/`]C` (git hunks, with diff-mode `[c`/`]c` in diff windows), `gh`/`gH` (stage / reset hunks) and the `gh` textobject are mini.diff's (`99-mini.diff.lua`). Its default `[h`/`]h` goto maps are disabled: they are global and would not fall back in diff mode. mini.map's `diff()` integration and the statusline's change counts read mini.diff too.
   - `<leader>c{o,t,b,a}` (and uppercase for the whole file) choose a conflict side by its markers (`99-conflict-marker.lua`), so they work without a diff. Hunk-based picks stay with fugitive's `d2o`/`d3o`.
   - `gb`/`gbc` (block comment toggle) and `gcA` are `99-comment.lua`'s. nvim-ts-context-commentstring is set up with `enable_autocmd = false` and no `vim.filetype.get_option` hook, so `gc`/`gcc` (and `gco`/`gcO`/`gcA`, which run `gcc`) keep Neovim's own context-aware `'commentstring'`; only `gb` asks the plugin for `__multiline`.
   - `gS` is mini.splitjoin's split/join toggle (`99-mini.splitjoin.lua`).

@@ -24,6 +24,11 @@ statusline.setup({
     active = function()
       local mode, mode_hl = statusline.section_mode({})
       local info = {}
+      -- mini.diff's "#2 +3 ~1 -2" without the hunk count; empty when unchanged
+      local diff = (vim.b.minidiff_summary_string or ""):gsub("^#%d+ ?", "")
+      if diff ~= "" then
+        table.insert(info, diff)
+      end
       if is_markdown() then
         table.insert(info, wordcount())
         table.insert(info, readingtime())

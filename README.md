@@ -72,7 +72,7 @@ uvx f2dvim
 
 - Neovim 0.12 or newer, on `PATH`
 - Python 3.12 or newer (`uv` can provide it)
-- `git`, for the git plugins (fugitive, gitsigns)
+- `git`, for the git plugins (fugitive, mini.diff)
 - A [Nerd Font](https://www.nerdfonts.com) in your terminal, for icons in the statusline,
   pickers and file explorer
 
@@ -263,7 +263,7 @@ Bracket pairs (unimpaired-style, `[` previous / `]` next):
 | `[b` `]b` `[B` `]B` | buffers |
 | `[q` `]q` `[Q` `]Q` | quickfix entries |
 | `[l` `]l` `[L` `]L` | location list entries |
-| `[c` `]c` | git hunks (or diff hunks in diff mode) |
+| `[c` `]c` `[C` `]C` | git hunks (`[c` `]c` are diff hunks in diff mode) |
 | `[x` `]x` | merge conflict markers |
 | `[d` `]d` | diagnostics |
 | `[e` `]e` | move current line / selection up / down |
@@ -340,7 +340,8 @@ Colorscheme. The `carbonfox` variant is active (`background = "dark"` and
 #### mini.statusline (`99-mini.statusline.lua`)
 
 Statusline. A single global statusline (`laststatus = 3`) showing mode,
-relative file path, filetype, progress and location. In markdown and asciidoc
+relative file path, the buffer's git change counts (`+3 ~1 -2`, hidden when
+unchanged), filetype, progress and location. In markdown and asciidoc
 buffers it also shows a word count and estimated reading time. No mappings.
 
 #### Tabline (`init.lua`, `util.tabline`)
@@ -379,6 +380,7 @@ under the cursor), and `zen`. Animations are off.
 | `<leader>tz` / `gz` | Toggle zoom (current window full-size); also turns off line numbers in that window |
 | `<leader>tZ` / `gZ` | Toggle zen mode; also turns off line numbers in that window |
 | `<leader>gg` | LazyGit |
+| `<leader>to` | Toggle the diff overlay in this buffer (mini.diff, `99-mini.diff.lua`) |
 | `<leader><Space>` | Dashboard (`q` closes it) |
 | `` <leader>` `` | Toggle a terminal below |
 | `<C-w>` (terminal mode) | Leave terminal mode and start a window command |
@@ -872,15 +874,22 @@ toggle, `=` inline diff, `cc` commit, `ca` amend, `dv` vertical diff, `X`
 discard, `g?` help. In the flog graph: `<CR>` opens the commit, `a` toggles
 all branches, `u` refreshes, `y<C-g>` yanks the hash, `gq` quits, `g?` help.
 
-#### gitsigns.nvim (`99-gitsigns.lua`)
+#### mini.diff (`99-mini.diff.lua`)
 
-Change marks in the sign column and line numbers, and hunk navigation.
+Change marks in the sign column, hunk navigation, and staging or resetting
+hunks. The buffer is compared with the git index, so a staged hunk loses its
+marks. Untracked files show no marks.
 
 | Key | Mode | Action |
 |---|---|---|
-| `]c` / `[c` | n | Next / previous hunk with a preview (falls back to diff-mode `]c` in diffs) |
+| `]c` / `[c` | n | Next / previous hunk, wrapping at the ends (custom; diff-mode `]c` / `[c` in diffs) |
+| `]C` / `[C` | n | Last / first hunk (custom) |
+| `gh` | n, x | Stage the hunks in a motion or selection; `ghgh` stages the hunk under the cursor |
+| `gH` | n, x | Reset the hunks in a motion or selection to the index; `gHgh` resets the hunk under the cursor |
+| `gh` | o | Textobject: the hunk under the cursor |
+| `<leader>to` | n | Toggle the overlay: deleted lines and changed words shown inline (custom) |
 
-All custom; gitsigns ships no mappings.
+mini.diff's own `[h` / `]h` / `[H` / `]H` are unmapped.
 
 #### Conflict hunks (`99-conflict-marker.lua`)
 
