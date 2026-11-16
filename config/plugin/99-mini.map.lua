@@ -1,5 +1,6 @@
 vim.pack.add({
   { src = "https://github.com/nvim-mini/mini.map" },
+  { src = "https://github.com/folke/snacks.nvim" },
 })
 
 local MiniMap = require("mini.map")
@@ -15,8 +16,12 @@ MiniMap.setup({
   },
 })
 
+-- Off until <leader>tmm turns it on
+local enabled = false
+
 -- open()/close() only on a state change: open() on an open map re-renders it
 local function set_map_open(want)
+  want = want and enabled
   local win = MiniMap.current.win_data[vim.api.nvim_get_current_tabpage()]
   if want ~= (win ~= nil and vim.api.nvim_win_is_valid(win)) then
     (want and MiniMap.open or MiniMap.close)()
@@ -52,3 +57,14 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
     set_map_open(file_buffer() and width - col >= 20)
   end,
 })
+
+Snacks.toggle({
+  name = "Minimap",
+  get = function()
+    return enabled
+  end,
+  set = function(state)
+    enabled = state
+    set_map_open(file_buffer())
+  end,
+}):map("<leader>tmm")
